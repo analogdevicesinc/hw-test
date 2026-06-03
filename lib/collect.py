@@ -1,5 +1,5 @@
 """
-Match workflow-run-to-context output against tests/*.toml metafiles.
+Match workflow-run-to-context output against tests/**/config.toml metafiles.
 
 Input (stdin): JSON produced by workflow-run-to-context@action, e.g.:
   {
@@ -30,9 +30,12 @@ import tomllib
 
 def load_test_metas():
     metas = []
-    for path in sorted(glob.glob('tests/*.toml')):
+    for path in sorted(glob.glob('tests/**/config.toml', recursive=True)):
+        uid = path[len('tests/'):-len('/config.toml')]
         with open(path, 'rb') as f:
-            metas.append(tomllib.load(f))
+            meta = tomllib.load(f)
+        meta['_uid'] = uid
+        metas.append(meta)
     return metas
 
 
@@ -64,7 +67,7 @@ def match_tests(context, metas):
     results = []
 
     for meta in metas:
-        name = meta.get('name')
+        name = meta['_uid']
         repo_rules = meta.get('repo', [])
 
         triggered = False
