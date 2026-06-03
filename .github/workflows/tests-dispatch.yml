@@ -1,0 +1,42 @@
+name: Tests dispatch
+run-name: Tests dispatch ${{ inputs.workflow_run_url }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      workflow_run_url:
+        description: "The api url of the workflow_run"
+        required: true
+        type: string
+
+jobs:
+  context:
+    runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    permissions:
+      contents: read
+    outputs:
+      data: ${{ toJSON(steps.context.outputs) }}
+
+    steps:
+    - uses:  gastmaier/hw-tests/workflow-run-to-context@main
+      id: context
+      with:
+        url: ${{ inputs.workflow_run_url }}
+
+    - name: Debug
+      env:
+        context: ${{ toJson(steps.context.outputs) }}
+      run: |
+        echo "$context"
+
+  run:
+    needs: [context]
+    runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    permissions:
+      contents: read
+    steps:
+    - name: Debug
+      env:
+        context: ${{ needs.context.outputs.data }}
+      run: |
+        echo "$context" | jq
