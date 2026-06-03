@@ -1,10 +1,12 @@
 name: linux-iio-dac
 repos:
   - name: linux
-    ref: refs/heads/xlnx/main
+    ref: refs/heads/main
+    branch: main
     path: |
       drivers/iio/dac/*
   - name: hdl
     ref: refs/heads/main
+    branch: main
     path: |
       library/dac/*

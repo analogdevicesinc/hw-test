@@ -55,19 +55,22 @@ def match_tests(context, metas):
     """
     triggering_repo = context.get('repository', '')
     head_sha = context.get('head_sha', '')
+    branch = context.get('branch', '')
     raw_files = context.get('changed_files', '')
     changed_files = [f for f in raw_files.replace(' ', '\n').splitlines() if f.strip()]
 
     results = []
 
     for meta in metas:
-        name = meta.get('name') or meta.get('name')
+        name = meta.get('name')
         repo_rules = meta.get('repos', [])
 
         triggered = False
         for rule in repo_rules:
             name_ = rule.get('name', '')
-            if name_ == triggering_repo and paths_match(changed_files, rule.get('path', '')):
+            if (name_ == triggering_repo and
+                paths_match(changed_files, rule.get('path', '')) and
+                branch == rule.get('branch', '')):
                 triggered = True
                 break
 
