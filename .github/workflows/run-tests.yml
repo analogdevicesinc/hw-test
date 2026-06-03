@@ -32,10 +32,6 @@ jobs:
         context: ${{ toJson(steps.context.outputs) }}
       run: |
         [[ "${{ runner.debug }}" == "1" ]] && set -x
-        python3 -m venv venv
-        source ./venv/bin/activate
-        python3 -m ensurepip
-        pip3 install pyyaml --upgrade
 
         echo "$context" | python3 lib/collect.py result.json
 

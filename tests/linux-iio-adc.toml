@@ -1,0 +1,16 @@
+name = "linux-iio-dac"
+
+[[repo]]
+name = "linux"
+on.branch = "main"
+on.path = '''
+drivers/iio/dac/*
+include/drivers/iio/dac/*
+'''
+
+[[repo]]
+name = "hdl"
+on.branch = "main"
+on.path = '''
+library/dac/*
+'''
