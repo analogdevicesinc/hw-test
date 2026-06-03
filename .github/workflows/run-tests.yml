@@ -1,0 +1,67 @@
+name: Run Tests
+run-name: Run Tests for ${{ inputs.workflow_run_url }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      workflow_run_url:
+        description: "The api url of the workflow_run"
+        required: true
+        type: string
+
+jobs:
+  collect:
+    runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    permissions:
+      contents: read
+    outputs:
+      tests: ${{ steps.collect.outputs.tests }}
+      names: ${{ steps.collect.outputs.names }}
+
+    steps:
+    - uses: analogdevicesinc/doctools/workflow-run-to-context@action
+      id: context
+      with:
+        url: ${{ inputs.workflow_run_url }}
+
+    - uses: actions/checkout@v6
+
+    - name: Collect tests to run
+      id: collect
+      env:
+        context: ${{ toJson(steps.context.outputs) }}
+      run: |
+        [[ "${{ runner.debug }}" == "1" ]] && set -x
+        python3 -m venv venv
+        source ./venv/bin/activate
+        python3 -m ensurepip
+        pip3 install pyyaml --upgrade
+
+        echo "$context" | python3 lib/collect.py result.json
+
+        tests="$(cat result.json)"
+
+        echo 'tests<<EOF' >> $GITHUB_OUTPUT
+        echo "$tests" >> $GITHUB_OUTPUT
+        echo 'EOF' >> $GITHUB_OUTPUT
+
+        names=$(cat result.json | jq '[.[].name]' -c)
+        echo "names: $names"
+        echo "names=$names" >> $GITHUB_OUTPUT
+
+  run-tests:
+    needs: collect
+    if: needs.collect.outputs.names != '[]'
+    runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        test: ${{ fromJson(needs.collect.outputs.names) }}
+    steps:
+    - name: Echo test payload
+      env:
+        tests: ${{ needs.collect.outputs.tests }}
+        name: ${{ matrix.test }}
+      run: |
+        payload=$(echo "$tests" | jq --arg n "$name" '.[] | select(.name == $n)')
+        echo "$payload" | jq
