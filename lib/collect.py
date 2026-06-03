@@ -14,7 +14,7 @@ Output: JSON list written to <output_path> (or stdout), one entry per matched te
     {
       "name": "linux-iio-dac",
       "with": {
-        "linux": {"ref": "010c31d..."},   <- head_sha: this repo triggered
+        "linux": {"ref": "010c31d..."},   <- merge_commit_sha || head_sha: this repo triggered
         "hdl":   {"ref": "refs/heads/main"} <- default ref: other repo
       }
     }
@@ -54,7 +54,9 @@ def match_tests(context, metas):
     repository.  Emit at most one result entry per test.
     """
     triggering_repo = context.get('repository', '')
-    head_sha = context.get('head_sha', '')
+    sha = context.get('merge_commit_sha', '')
+    if sha == '':
+      sha = context.get('head_sha', '')
     branch = context.get('branch', '')
     raw_files = context.get('changed_files', '')
     changed_files = [f for f in raw_files.replace(' ', '\n').splitlines() if f.strip()]
@@ -82,7 +84,7 @@ def match_tests(context, metas):
             name_ = rule.get('name', '')
             default_ref = rule.get('ref', '')
             if name_ == triggering_repo:
-                with_repos[name_] = {'ref': head_sha if head_sha else default_ref}
+                with_repos[name_] = {'ref': sha if sha else default_ref}
             else:
                 with_repos[name_] = {'ref': default_ref}
 
