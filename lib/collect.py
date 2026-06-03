@@ -1,5 +1,5 @@
 """
-Match workflow-run-to-context output against tests/*.yml metafiles.
+Match workflow-run-to-context output against tests/*.toml metafiles.
 
 Input (stdin): JSON produced by workflow-run-to-context@action, e.g.:
   {
@@ -25,14 +25,14 @@ import fnmatch
 import glob
 import json
 import sys
-import yaml
+import tomllib
 
 
 def load_test_metas():
     metas = []
-    for path in sorted(glob.glob('tests/*.yml')):
-        with open(path) as f:
-            metas.append(yaml.safe_load(f))
+    for path in sorted(glob.glob('tests/*.toml')):
+        with open(path, 'rb') as f:
+            metas.append(tomllib.load(f))
     return metas
 
 
@@ -65,14 +65,15 @@ def match_tests(context, metas):
 
     for meta in metas:
         name = meta.get('name')
-        repo_rules = meta.get('repos', [])
+        repo_rules = meta.get('repo', [])
 
         triggered = False
         for rule in repo_rules:
             name_ = rule.get('name', '')
+            on = rule.get('on', {})
             if (name_ == triggering_repo and
-                paths_match(changed_files, rule.get('path', '')) and
-                branch == rule.get('branch', '')):
+                paths_match(changed_files, on.get('path', '')) and
+                branch == on.get('branch', '')):
                 triggered = True
                 break
 
@@ -82,7 +83,7 @@ def match_tests(context, metas):
         with_repos = {}
         for rule in repo_rules:
             name_ = rule.get('name', '')
-            default_ref = rule.get('ref', '')
+            default_ref = rule.get('default', {}).get('ref', '')
             if name_ == triggering_repo:
                 with_repos[name_] = {'ref': sha if sha else default_ref}
             else:

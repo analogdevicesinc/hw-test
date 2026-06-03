@@ -1,0 +1,18 @@
+name = "linux-iio-dac"
+
+[[repo]]
+name = "linux"
+on.branch = "mirror_ci/jic23/iio/testing" # TODO: maybe on.ref = "refs/heads"
+on.path = '''
+drivers/iio/dac/*
+include/drivers/iio/dac/*
+'''
+default.ref = "refs/heads/main"
+
+[[repo]]
+name = "hdl"
+on.branch = "main"
+on.path = '''
+library/dac/*
+'''
+default.ref = "refs/heads/main"
