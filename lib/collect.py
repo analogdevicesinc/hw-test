@@ -1,7 +1,7 @@
 """
 Match workflow-run-to-context output against tests/**/config.toml metafiles.
 
-Input (stdin): JSON produced by workflow-run-to-context@action, e.g.:
+Input: JSON by workflow-run-to-context@action, e.g.:
   {
     "repository": "linux",
     "head_sha": "010c31d...",
@@ -25,6 +25,8 @@ import glob
 import json
 import sys
 import tomllib
+
+from sys import stderr
 
 
 def load_test_metas():
@@ -60,6 +62,7 @@ def match_tests(context, metas):
     if sha == '':
       sha = context.get('head_sha', '')
     branch = context.get('branch', '')
+    ref = f"refs/heads/{branch}"
     raw_files = context.get('changed_files', '')
     changed_files = [f for f in raw_files.replace(' ', '\n').splitlines() if f.strip()]
 
@@ -73,9 +76,10 @@ def match_tests(context, metas):
         for repo in meta_repos:
             name_ = repo.get('name', '')
             on = repo.get('on', {})
+            on_ref = on.get('ref', None)
             if (name_ == triggering_repo and
                 paths_match(changed_files, on.get('path', '')) and
-                branch == on.get('branch', '')):
+                (on_ref is not None and ref == on_ref)):
                 triggered = True
                 break
 
@@ -88,7 +92,7 @@ def match_tests(context, metas):
             if name_ == triggering_repo and sha:
                 with_repos[name_] = {'ref': sha}
 
-        print(f"matched test '{name}'", file=sys.stderr)
+        print(f"Matched test '{name}'", file=stderr)
         results.append({
             'name': name,
             'with': with_repos,
