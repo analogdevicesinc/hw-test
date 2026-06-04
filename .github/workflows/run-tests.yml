@@ -48,16 +48,11 @@ jobs:
   run-tests:
     needs: collect
     if: needs.collect.outputs.names != '[]'
-    runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
     strategy:
       fail-fast: false
       matrix:
-        test: ${{ fromJson(needs.collect.outputs.names) }}
-    steps:
-    - name: Echo test payload
-      env:
-        tests: ${{ needs.collect.outputs.tests }}
-        name: ${{ matrix.test }}
-      run: |
-        payload=$(echo "$tests" | jq --arg n "$name" '.[] | select(.name == $n)')
-        echo "$payload" | jq
+        name: ${{ fromJson(needs.collect.outputs.names) }}
+    uses: ./.github/workflows/run-test.yml
+    with:
+      name: ${{ matrix.name }}
+      set: ${{ needs.collect.outputs.tests }}

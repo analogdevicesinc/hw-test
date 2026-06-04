@@ -1,0 +1,36 @@
+name: Run Test
+run-name: Run Test for ${{ inputs.name }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "Test to run"
+        required: true
+        type: string
+      set:
+        # { "name": "demo/linux-iio-dac", "with": { "linux": { "ref": "010c..." } } }
+        description: "Test context"
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      set:
+        required: false
+        type: string
+
+
+jobs:
+  run-test:
+    runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    steps:
+    - name: Echo test payload
+      env:
+        name: ${{ inputs.name }}
+        set: ${{ inputs.set }}
+      run: |
+        payload=$(echo "$set" | jq --arg n "$name" '.[] | select(.name == $n)')
+        echo "$payload" | jq
