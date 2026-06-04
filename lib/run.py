@@ -12,8 +12,9 @@ Input: Test to run:
 
 import json
 import tomllib
+import importlib.util
 
-from sys import stderr, stdin, exit
+from sys import stderr, stdin, modules, exit
 from pathlib import Path
 
 
@@ -41,8 +42,15 @@ def run_test(context):
             default_ref = repo.get('on', {}).get('ref', '')
             context['with'][name_] = {'ref': default_ref}
 
-    print(context)
-    # TODO run test.py
+    print(f"invoking '{path}' with context:\n{context}")
+
+    test_script = path / "test.py"
+    spec = importlib.util.spec_from_file_location("dynamic_test_mod", test_script)
+    module = importlib.util.module_from_spec(spec)
+    modules["dynamic_test_mod"] = module
+    spec.loader.exec_module(module)
+    module.main(context)
+
     return
 
 
