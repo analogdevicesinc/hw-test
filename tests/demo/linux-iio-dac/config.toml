@@ -1,6 +1,6 @@
 [[repo]]
 name = "linux"
-on.branch = "mirror_ci/jic23/iio/testing"
+on.ref = "refs/heads/mirror_ci/jic23/iio/testing"
 on.path = '''
 drivers/iio/dac/*
 include/drivers/iio/dac/*
@@ -8,7 +8,7 @@ include/drivers/iio/dac/*
 
 [[repo]]
 name = "hdl"
-on.branch = "main"
+on.ref = "refs/heads/main"
 on.path = '''
 library/dac/*
 '''

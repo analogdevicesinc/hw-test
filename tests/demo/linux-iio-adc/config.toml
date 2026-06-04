@@ -1,6 +1,6 @@
 [[repo]]
 name = "linux"
-on.branch = "main"
+on.ref = "refs/heads/main"
 on.path = '''
 drivers/iio/adc/*
 include/drivers/iio/adc/*
@@ -9,7 +9,7 @@ default.ref = "refs/heads/main"
 
 [[repo]]
 name = "hdl"
-on.branch = "main"
+on.ref = "refs/heads/main"
 on.path = '''
 library/adc/*
 '''
