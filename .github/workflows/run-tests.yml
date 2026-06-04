@@ -33,7 +33,7 @@ jobs:
       run: |
         [[ "${{ runner.debug }}" == "1" ]] && set -x
 
-        echo "$context" | python3 lib/collect.py result.json
+        echo "$context" | python3 hw_tests/collect.py result.json
 
         tests="$(cat result.json)"
 

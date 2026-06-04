@@ -38,4 +38,4 @@ jobs:
         payload=$(echo "$set" | jq --arg n "$name" '.[] | select(.name == $n)')
         echo "$payload" | jq
 
-        echo "$payload" | python3 lib/run.py
+        echo "$payload" | python3 hw_tests/run.py
