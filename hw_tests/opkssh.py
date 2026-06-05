@@ -1,11 +1,14 @@
 import shutil
 import subprocess
 import hashlib
+import logging
 import urllib.request
 import re
 
 from os import environ
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 script_url = "https://raw.githubusercontent.com/openpubkey/opkssh/v0.14.0/scripts/install-linux.sh"
 script_sha = "493cc42f55b2da31491c3947fd75dc2589d691d1a79fa284fc8e9fef3815ca54"
@@ -44,7 +47,7 @@ class OPKSSH():
             self._authorized = result.returncode == 0
             return
 
-        print("No environment matched, assuming already authorized.")
+        logger.info("No environment matched, assuming already authorized.")
         self._authorized = True
         return
 
@@ -71,7 +74,7 @@ class OPKSSH():
         if shutil.which("opkssh"):
             return
 
-        print("Package 'opkssh' not installed.")
+        logger.info("Package 'opkssh' not installed.")
         if not shutil.which("sudo"):
             raise ValueError("Package 'sudo' is required.") # Also needed by install-linux.sh
 
@@ -80,12 +83,12 @@ class OPKSSH():
         if not pkg:
             raise ValueError("No package manager mached.") # Also needed by install-linux.sh
 
-        print(f"Trying to install from package manager '{pkg}'...")
+        logger.info(f"Trying to install from package manager '{pkg}'...")
         result = subprocess.run(["sudo", pkg, "install", "-y", "opkssh"])
         if result.returncode == 0 and shutil.which("opkssh"):
             return
 
-        print(f"Trying to install from 'opkssh/install-linux.sh'...")
+        logger.info("Trying to install from 'opkssh/install-linux.sh'...")
         with urllib.request.urlopen(script_url) as response:
             script = response.read()
 
