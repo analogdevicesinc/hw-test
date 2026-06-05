@@ -29,13 +29,8 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: Echo test payload
+    - name: Run test
       env:
         name: ${{ inputs.name }}
         set: ${{ inputs.set }}
-      run: |
-        [[ -n "$set" ]] || set="[{ \"name\": \"$name\"}]"
-        payload=$(echo "$set" | jq --arg n "$name" '.[] | select(.name == $n)')
-        echo "$payload" | jq
-
-        echo "$payload" | python3 hw_tests/run.py
+      run: python3 hw_tests/run.py

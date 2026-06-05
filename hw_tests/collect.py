@@ -26,6 +26,7 @@ import json
 import sys
 import tomllib
 
+from os import environ
 from sys import stderr
 
 
@@ -102,16 +103,20 @@ def match_tests(context, metas):
 
 
 def main():
-    output_path = sys.argv[1] if len(sys.argv) > 1 else None
-    context = json.load(sys.stdin)
+    context = json.loads(environ['context'])
     metas = load_test_metas()
     matched = match_tests(context, metas)
-    serialized = json.dumps(matched, indent=2)
-    if output_path:
-        with open(output_path, 'w') as f:
-            f.write(serialized)
-    else:
-        print(serialized)
+
+    names = json.dumps([t['name'] for t in matched])
+    tests = json.dumps(matched, indent=2)
+
+    print(f"names: {names}")
+    print(f"tests: {tests}")
+
+    if environ.get('GITHUB_ACTIONS') == 'true':
+        with open(environ['GITHUB_OUTPUT'], 'a') as f:
+            f.write(f'names={names}\n')
+            f.write(f'tests<<EOF\n{tests}\nEOF\n')
 
 if __name__ == '__main__':
     main()
