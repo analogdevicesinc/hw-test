@@ -23,11 +23,14 @@ Output: JSON list written to <output_path> (or stdout), one entry per matched te
 import fnmatch
 import glob
 import json
-import sys
+import logging
 import tomllib
 
 from os import environ
-from sys import stderr
+
+from .logging import set_logging
+
+logger = logging.getLogger(__name__)
 
 
 def load_test_metas():
@@ -93,7 +96,7 @@ def match_tests(context, metas):
             if name_ == triggering_repo and sha:
                 with_repos[name_] = {'ref': sha}
 
-        print(f"Matched test '{name}'", file=stderr)
+        logger.info(f"Matched test '{name}'")
         results.append({
             'name': name,
             'with': with_repos,
@@ -103,6 +106,8 @@ def match_tests(context, metas):
 
 
 def main():
+    set_logging()
+
     context = json.loads(environ['context'])
     metas = load_test_metas()
     matched = match_tests(context, metas)
@@ -110,8 +115,8 @@ def main():
     names = json.dumps([t['name'] for t in matched])
     tests = json.dumps(matched, indent=2)
 
-    print(f"names: {names}")
-    print(f"tests: {tests}")
+    logger.info(f"names: {names}")
+    logger.info(f"tests: {tests}")
 
     if environ.get('GITHUB_ACTIONS') == 'true':
         with open(environ['GITHUB_OUTPUT'], 'a') as f:

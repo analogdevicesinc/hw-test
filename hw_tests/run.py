@@ -11,23 +11,28 @@ Input: Test to run:
 """
 
 import json
+import logging
 import tomllib
 import importlib.util
 
 from os import environ
-from sys import stderr, modules, exit
+from sys import modules, exit
 from pathlib import Path
+
+from .logging import set_logging
+
+logger = logging.getLogger(__name__)
 
 
 def run_test(context):
     name = context.get('name')
     if name is None:
-        print("No '.name' provided", file=stderr)
+        logger.error("No '.name' provided")
         exit(1)
 
     path = Path(f"tests/{name}")
     if not Path.is_dir(path):
-        print(f"Test path '{path}' does not exist", file=stderr)
+        logger.error(f"Test path '{path}' does not exist")
         exit(1)
 
     with path.joinpath('config.toml').open('rb') as meta_:
@@ -43,7 +48,7 @@ def run_test(context):
             default_ref = repo.get('on', {}).get('ref', '')
             context['with'][name_] = {'ref': default_ref}
 
-    print(f"invoking '{path}' with context:\n{context}")
+    logger.info(f"invoking '{path}' with context:\n{context}")
 
     test_script = path / "test.py"
     spec = importlib.util.spec_from_file_location("dynamic_test_mod", test_script)
@@ -56,11 +61,13 @@ def run_test(context):
 
 
 def main():
+    set_logging()
+
     name = environ.get('name')
     set_val = environ.get('set', '') or json.dumps([{"name": name}])
     items = json.loads(set_val)
     context = next((item for item in items if item['name'] == name), None)
-    print(f"test: {json.dumps(context, indent=2)}")
+    logger.info(f"test: {json.dumps(context, indent=2)}")
 
     run_test(context)
 
