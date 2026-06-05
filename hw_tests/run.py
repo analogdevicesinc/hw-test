@@ -14,7 +14,8 @@ import json
 import tomllib
 import importlib.util
 
-from sys import stderr, stdin, modules, exit
+from os import environ
+from sys import stderr, modules, exit
 from pathlib import Path
 
 
@@ -55,7 +56,12 @@ def run_test(context):
 
 
 def main():
-    context = json.load(stdin)
+    name = environ.get('name')
+    set_val = environ.get('set', '') or json.dumps([{"name": name}])
+    items = json.loads(set_val)
+    context = next((item for item in items if item['name'] == name), None)
+    print(f"test: {json.dumps(context, indent=2)}")
+
     run_test(context)
 
 if __name__ == '__main__':

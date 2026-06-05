@@ -30,20 +30,7 @@ jobs:
       id: collect
       env:
         context: ${{ toJson(steps.context.outputs) }}
-      run: |
-        [[ "${{ runner.debug }}" == "1" ]] && set -x
-
-        echo "$context" | python3 hw_tests/collect.py result.json
-
-        tests="$(cat result.json)"
-
-        echo 'tests<<EOF' >> $GITHUB_OUTPUT
-        echo "$tests" >> $GITHUB_OUTPUT
-        echo 'EOF' >> $GITHUB_OUTPUT
-
-        names=$(cat result.json | jq '[.[].name]' -c)
-        echo "names: $names"
-        echo "names=$names" >> $GITHUB_OUTPUT
+      run: python3 hw_tests/collect.py
 
   run-tests:
     needs: collect
