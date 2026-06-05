@@ -30,11 +30,14 @@ jobs:
       id: collect
       env:
         context: ${{ toJson(steps.context.outputs) }}
-      run: python3 hw_tests/collect.py
+      run: python3 -m hw_tests.collect
 
   run-tests:
     needs: collect
     if: needs.collect.outputs.names != '[]'
+    permissions:
+      id-token: write
+      contents: read
     strategy:
       fail-fast: false
       matrix:

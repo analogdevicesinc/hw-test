@@ -26,6 +26,9 @@ on:
 jobs:
   run-test:
     runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - uses: actions/checkout@v6
 
@@ -33,4 +36,9 @@ jobs:
       env:
         name: ${{ inputs.name }}
         set: ${{ inputs.set }}
-      run: python3 hw_tests/run.py
+      run: |
+        python3 -m venv venv
+        source ./venv/bin/activate
+        python3 -m ensurepip
+        pip3 install -e .
+        python3 -m hw_tests.run
