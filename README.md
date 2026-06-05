@@ -32,3 +32,16 @@ A context has the format:
 
 The `hw_tests/run.py`, before invoking `tests/**/test.py`, fills the context with the default values (in the example, the `hdl.ref`).
 At this point, the individual `test.py` executes its test steps, which may include fetching artifacts, acquiring hardware and communicating through ssh.
+
+## OPKSSH
+
+`opkssh` enables ssh to be used with OpenID Connect allowing SSH access to be managed via identities instead of long-lived SSH keys.
+This enables short-lived authentication to hosts, like `labgrid executors`.
+Tests that leverage it, simply:
+
+```{python}
+# host = some_lib.get_host('example')
+# Install opkssh and acquire authentication
+opkssh = OPKSSH(host=host)
+# ssh {opkssh.host} 'echo "hello world!"'
+```
