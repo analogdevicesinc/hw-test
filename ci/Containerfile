@@ -23,8 +23,7 @@ RUN dnf -y install \
     opkssh \
     git openssh-clients rsync curl wget \
     tar gzip unzip \
-    iproute iputils nmap-ncat \
-    systemd-udev
+    iproute
 
 RUN mkdir -p /usr/local/bin
 WORKDIR /usr/local/bin
