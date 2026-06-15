@@ -1,0 +1,25 @@
+targets:
+  MUN-01-SC598_EZKIT-02:
+    resources:
+      RemotePlace:
+        name: "MUN-01-SC598_EZKIT-02"
+      NetworkService:
+        username: "ci"
+        address: "adi-lf-test.local"
+    drivers:
+      - SerialDriver:
+          name: serial
+          bindings:
+            port: console
+      - NetworkPowerDriver:
+          name: power
+          bindings:
+            port: power
+      - OpenOCDDriver:
+          load_commands:
+            - "source [find interface/adi-dbgagent.cfg]"
+            - "source [find target/adspsc59x_a55.cfg]"
+            - "source [find /tools/u-boot.tcl]"
+            - "init"
+            - "autoboot_elf"
+            - "shutdown"
