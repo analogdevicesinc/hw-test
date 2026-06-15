@@ -1,0 +1,15 @@
+[[repo]]
+name = "linux"
+on.ref = "refs/heads/adsp-6.18.31-y"
+on.path = '''
+arch/arm64/boot/dts/adi/sc598*
+drivers/spi/*
+'''
+
+[[repo]]
+name = "u-boot"
+on.ref = "refs/heads/adi-u-boot-2025.10.y"
+on.path = '''
+board/adi/sc598*
+configs/sc598*
+'''
