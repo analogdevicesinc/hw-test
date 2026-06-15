@@ -41,4 +41,5 @@ jobs:
         source ./venv/bin/activate
         python3 -m ensurepip
         pip3 install -e .
+        [ -f "tests/${name}/requirements.txt" ] && pip install -r "tests/${name}/requirements.txt" || :
         python3 -m hw_tests.run
