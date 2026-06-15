@@ -1,4 +1,5 @@
 from hw_tests.opkssh import OPKSSH
+from hw_tests.cloudsmith import Cloudsmith
 
 
 def main(context):
@@ -8,3 +9,6 @@ def main(context):
 
     print(f"ready to talk to {opkssh.host}")
     # ssh {opkssh.host} 'echo "hello world!"'
+
+    Cloudsmith()
+    print("ready to talk do cloudsmith stuff")
