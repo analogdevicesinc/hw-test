@@ -45,3 +45,8 @@ Tests that leverage it, simply:
 opkssh = OPKSSH(host=host)
 # ssh {opkssh.host} 'echo "hello world!"'
 ```
+
+## Labgrid
+
+- `coordinator`: Through `grpc`, acquires hardware and provide a exporter.
+- `exporter`: Through `ssh`, manipulates hardware. Authenticated with `opkssh`.
