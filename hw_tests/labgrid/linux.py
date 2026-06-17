@@ -1,4 +1,3 @@
-import os
 import shlex
 import subprocess
 from contextlib import contextmanager
@@ -10,8 +9,6 @@ from labgrid.util.ssh import sshmanager
 
 from hw_tests.labgrid.hosts import parse_host_map
 from hw_tests.labgrid.uboot import run_uboot_command
-
-HTTP_PORT = 8000
 
 
 def linux_artifact_path(value, name):
@@ -25,18 +22,18 @@ def linux_artifact_path(value, name):
 class RemoteHTTPServer:
     host: str
     url_host: str
-    port: int
     remote_dir: str
     kernel_name: str
     devicetree_name: str
 
 
-def _remote_sh(command):
-    return f"sh -c {shlex.quote(command)}"
+def _remote_python(script, *args):
+    command = ["python3", "-c", script, *map(str, args)]
+    return " ".join(shlex.quote(part) for part in command)
 
 
-def boot_http_host_for(remote_host):
-    host_map = parse_host_map(os.environ.get("HW_TEST_HOSTS"))
+def boot_http_host_for(remote_host, ssh_hosts=None):
+    host_map = parse_host_map(ssh_hosts)
     return host_map.get(remote_host, remote_host)
 
 
@@ -90,49 +87,98 @@ def _put_file_checked(host, ssh, local_path, remote_path):
 
 
 @contextmanager
-def remote_http_server(target, kernel_path, devicetree_path):
+def remote_http_server(target, kernel_path, devicetree_path, ssh_hosts=None):
     openocd = target.get_driver("OpenOCDDriver", activate=False)
     host = openocd.interface.host
     ssh = sshmanager.open(host)
-    url_host = boot_http_host_for(host)
+    url_host = boot_http_host_for(host, ssh_hosts=ssh_hosts)
 
     kernel_name = kernel_path.name
     devicetree_name = devicetree_path.name
 
-    remote_dir = ssh.run_check("mktemp -d /tmp/hw-test-http.XXXXXX")[0]
+    remote_dir = ssh.run_check(
+        _remote_python(
+            """
+import tempfile
 
-    start_script = f"""
-set -eu
-cd {shlex.quote(remote_dir)}
-nohup python3 -m http.server {HTTP_PORT} --bind 0.0.0.0 > http.log 2>&1 < /dev/null &
-pid=$!
-echo "$pid" > http.pid
-sleep 1
-if ! kill -0 "$pid" 2>/dev/null; then
-  cat http.log >&2 || true
-  exit 1
-fi
+print(tempfile.mkdtemp(prefix="hw-test-http.", dir="/tmp"))
 """
-    cleanup_script = f"""
-set +e
-if [ -f {shlex.quote(remote_dir)}/http.pid ]; then
-  kill "$(cat {shlex.quote(remote_dir)}/http.pid)" 2>/dev/null || true
-fi
-rm -rf {shlex.quote(remote_dir)}
+        )
+    )[0]
+
+    start_script = """
+import os
+import subprocess
+import sys
+import time
+
+remote_dir = sys.argv[1]
+log_path = os.path.join(remote_dir, "http.log")
+pid_path = os.path.join(remote_dir, "http.pid")
+
+log = open(log_path, "ab", buffering=0)
+process = subprocess.Popen(
+    ["python3", "-m", "http.server", "--bind", "0.0.0.0"],
+    cwd=remote_dir,
+    stdin=subprocess.DEVNULL,
+    stdout=log,
+    stderr=subprocess.STDOUT,
+    start_new_session=True,
+    close_fds=True,
+)
+log.close()
+
+with open(pid_path, "w", encoding="ascii") as pid_file:
+    pid_file.write(f"{process.pid}\\n")
+
+time.sleep(1)
+returncode = process.poll()
+if returncode is not None:
+    with open(log_path, encoding="utf-8", errors="replace") as log_file:
+        sys.stderr.write(log_file.read())
+    raise SystemExit(returncode or 1)
+"""
+    cleanup_script = """
+import glob
+import os
+import shutil
+import signal
+import sys
+
+remote_dir = sys.argv[1]
+pid_path = os.path.join(remote_dir, "http.pid")
+
+try:
+    with open(pid_path, encoding="ascii") as pid_file:
+        pid = int(pid_file.read().strip())
+except (FileNotFoundError, ValueError):
+    pid = None
+
+if pid is not None:
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+
+shutil.rmtree(remote_dir, ignore_errors=True)
+
+# Cleanup all orphaned http directories
+for old_dir in glob.glob("/tmp/hw-test-http.*"):
+    try:
+        shutil.rmtree(old_dir, ignore_errors=True)
+    except Exception:
+        pass
 """
 
     try:
-        print("Copying kernel image")
         ssh = _put_file_checked(host, ssh, kernel_path, f"{remote_dir}/{kernel_name}")
-        print("Copying device tree")
         ssh = _put_file_checked(
             host, ssh, devicetree_path, f"{remote_dir}/{devicetree_name}"
         )
-        ssh.run_check(_remote_sh(start_script))
+        ssh.run_check(_remote_python(start_script, remote_dir))
         yield RemoteHTTPServer(
             host=host,
             url_host=url_host,
-            port=HTTP_PORT,
             remote_dir=remote_dir,
             kernel_name=kernel_name,
             devicetree_name=devicetree_name,
@@ -141,13 +187,12 @@ rm -rf {shlex.quote(remote_dir)}
         try:
             if not ssh.isconnected():
                 ssh = _fresh_ssh(host)
-            ssh.run_check(_remote_sh(cleanup_script))
+            ssh.run_check(_remote_python(cleanup_script, remote_dir))
         except Exception:
             pass
 
 
 def boot_linux_from_uboot(console, server):
-    run_uboot_command(console, f"setenv httpdstp {server.port}")
     run_uboot_command(console, "dhcp", timeout=120)
     run_uboot_command(
         console,
