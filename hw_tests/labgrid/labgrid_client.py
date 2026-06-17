@@ -45,7 +45,15 @@ def list_places(client):
 
 
 def acquire_place(client, place):
-    return client.run("acquire", place=place)
+    result = client.run("acquire", place=place, check=False)
+    if result.returncode == 0:
+        return True
+
+    output = f"{result.stdout}\n{result.stderr}"
+    if f"You have already acquired place {place}." in output:
+        return False
+
+    result.check_returncode()
 
 
 def release_place(client, place):
@@ -58,8 +66,8 @@ def acquired_places(client, places, acquire=True):
     try:
         if acquire:
             for place in places:
-                acquire_place(client, place)
-                acquired.append(place)
+                if acquire_place(client, place):
+                    acquired.append(place)
         yield
     finally:
         for place in reversed(acquired):

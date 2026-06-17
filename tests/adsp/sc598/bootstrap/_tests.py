@@ -62,9 +62,7 @@ def test_bootstrap_linux_installer_to_spi_uboot(pytestconfig):
 
     coordinator = coordinator_from_pytest(pytestconfig)
     client = LabgridClient(coordinator=coordinator, config=config_file)
-    preacquired = os.environ.get("HW_TEST_TARGETS_PREACQUIRED") == "true"
-
-    with acquired_places(client, places, acquire=not preacquired):
+    with acquired_places(client, places):
         with labgrid_environment(config_file, coordinator=coordinator) as env:
             for place in places:
                 target = get_target(env, place, config_file)
