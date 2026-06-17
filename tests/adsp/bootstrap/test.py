@@ -1,43 +1,69 @@
-import os
-import sys
-import tempfile
-from pathlib import Path
+import re
 
-import pytest
+from hw_tests.github import GitHub
+from hw_tests.labgrid.environment import labgrid_environment
+from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places
+from hw_tests.opkssh import OPKSSH
+from hw_tests.labgrid.linux import (
+    boot_linux_from_uboot,
+    remote_http_server,
+)
+from hw_tests.labgrid.uboot import (
+    boot_to_uboot,
+    get_boot_mode_output,
+    run_uboot_command,
+    set_spi_boot_mode,
+    wait_for_prompt,
+)
 
-from hw_tests.cloudsmith import Cloudsmith
+
+def find_one(path, pattern):
+    matches = sorted(path.glob(pattern))
+    assert matches, f"missing {path / pattern}"
+    assert len(matches) == 1, f"multiple files match {path / pattern}"
+    return matches[0]
 
 
 def main(context):
-    refs = context.get("with", {})
-    uboot_ref = refs.get("u-boot", {}).get("ref") or None
-    linux_ref = refs.get("linux", {}).get("ref") or None
+    target = context.get('labgrid_target')
+    assert target, "missing labgrid_target in context"
+    coordinator = context.get('labgrid_coordinator')
+    assert coordinator, "missing labgrid_coordinator in context"
+    ssh_hosts = context.get('ssh-hosts')
+    config_file = f"envs/{target}.yaml"
 
-    cloudsmith = Cloudsmith()
-    uboot_dest = Path(tempfile.mkdtemp(prefix="hw-test-uboot-"))
-    linux_dest = Path(tempfile.mkdtemp(prefix="hw-test-linux-"))
+    github = GitHub(context)
+    images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
 
-    cloudsmith.download(repository="u-boot", artifact="u-boot-spl", version=uboot_ref, dest=uboot_dest)
-    cloudsmith.download(repository="u-boot", artifact="u-boot", version=uboot_ref, dest=uboot_dest)
-    cloudsmith.download(repository="linux", artifact="Image", version=linux_ref, dest=linux_dest)
-    cloudsmith.download(repository="linux", artifact="sc598-som-ezkit.dtb", version=linux_ref, dest=linux_dest)
+    spl = images / "u-boot-spl"
+    uboot = images / "u-boot"
+    kernel = images / "Image"
+    devicetree = find_one(images, "*.dtb")
 
-    coordinator = os.environ.get("LABGRID_COORDINATOR", "")
-    env = os.environ.get("LABGRID_ENV", "")
+    OPKSSH(host=target, ssh_hosts=ssh_hosts)
 
-    args = [
-        str(Path(__file__).parent / "_tests.py"),
-        "-v",
-        "--timeout=600",
-    ]
-    if coordinator:
-        args += ["--lg-coordinator", coordinator]
-    if env:
-        args += ["--lg-env", env]
+    client = LabgridClient(coordinator=coordinator, config=config_file)
+    with acquired_places(client, [target]):
+        with labgrid_environment(config_file, coordinator=coordinator, ssh_hosts=ssh_hosts) as env:
+            target_ = env.get_target(target)
+            get_boot_mode_output(target_, required=True)
 
-    os.environ.setdefault("UBOOT_SPL", str(uboot_dest / "u-boot-spl"))
-    os.environ.setdefault("UBOOT", str(uboot_dest / "u-boot"))
-    os.environ.setdefault("KERNEL_IMAGE", str(linux_dest / "Image"))
-    os.environ.setdefault("DEVICETREE", str(linux_dest / "sc598-som-ezkit.dtb"))
+            console = boot_to_uboot(target_, spl, uboot)
+            output = run_uboot_command(console, "version", require_output=True)
+            assert "U-Boot" in output, "version output did not contain U-Boot"
 
-    sys.exit(pytest.main(args))
+            with remote_http_server(target_, kernel, devicetree, ssh_hosts=ssh_hosts) as server:
+                boot_linux_from_uboot(console, server)
+                console.expect(re.escape("Continue? [y/N]:"), timeout=240)
+                print("Linux booted")
+                console.sendline("y")
+                console.expect(re.escape("SPI install complete"), timeout=600)
+                print("SPI install complete")
+                console.expect(re.escape("Waiting for switch"), timeout=120)
+
+                set_spi_boot_mode(target_, required=True)
+                wait_for_prompt(console, timeout=240)
+
+            output = run_uboot_command(console, "version", require_output=True)
+            assert "U-Boot" in output, "version output did not contain U-Boot"
+            print("SPI U-Boot verified")

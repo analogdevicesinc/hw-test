@@ -1,22 +1,55 @@
-import os
-import sys
-from pathlib import Path
+import subprocess
+from shutil import which
 
-import pytest
+from hw_tests.labgrid.environment import labgrid_environment
+from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places, list_places
+from hw_tests.opkssh import OPKSSH
 
 
 def main(context):
-    coordinator = os.environ.get("LABGRID_COORDINATOR", "")
-    env = os.environ.get("LABGRID_ENV", "")
+    target = context.get('labgrid_target')
+    assert target, "missing labgrid_target in context"
+    coordinator = context.get('labgrid_coordinator')
+    assert coordinator, "missing labgrid_coordinator in context"
+    ssh_hosts = context.get('ssh-hosts')
+    config_file = f"envs/{target}.yaml"
 
-    args = [
-        str(Path(__file__).parent / "_tests.py"),
-        "-v",
-        "--timeout=120",
-    ]
-    if coordinator:
-        args += ["--lg-coordinator", coordinator]
-    if env:
-        args += ["--lg-env", env]
+    for executable in ("labgrid-client", "ssh"):
+        assert which(executable), f"missing executable: {executable}"
 
-    sys.exit(pytest.main(args))
+    client = LabgridClient(coordinator=coordinator, timeout=20)
+    list_places(client)  # verify coordinator is reachable
+
+    # TODO Why is all ssh_hosts being configured?
+    # Why can't labgrid tell me a single, non-hardcoded target?
+    OPKSSH(host=target, ssh_hosts=ssh_hosts)
+
+    # Verify SSH works
+    result = subprocess.run(
+        ["ssh", "ci@adi-lf-test.local", "echo", "hello"],
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, f"SSH test failed: {result.stderr}"
+
+    client = LabgridClient(coordinator=coordinator, config=config_file)
+    with acquired_places(client, [target]):
+        with labgrid_environment(config_file, coordinator=coordinator, ssh_hosts=ssh_hosts) as env:
+            target_ = env.get_target(target)
+
+            from labgrid.driver import SSHDriver
+            from labgrid.exceptions import NoDriverFoundError
+            from labgrid.resource import NetworkService
+
+            networkservice = target_.get_resource(NetworkService)
+            assert networkservice.username, (
+                f"missing NetworkService.username for target {target}"
+            )
+
+            try:
+                ssh = target_.get_driver("SSHDriver")
+            except NoDriverFoundError:
+                target_.set_binding_map({"networkservice": networkservice.name})
+                ssh = SSHDriver(target_, name=networkservice.name)
+                target_.activate(ssh)
+
+            ssh.run_check("true")

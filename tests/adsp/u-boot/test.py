@@ -1,36 +1,32 @@
-import os
-import sys
-import tempfile
-from pathlib import Path
 
-import pytest
-
-from hw_tests.cloudsmith import Cloudsmith
+from hw_tests.github import GitHub
+from hw_tests.labgrid.environment import labgrid_environment
+from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places
+from hw_tests.labgrid.uboot import boot_to_uboot, run_uboot_command
+from hw_tests.opkssh import OPKSSH
 
 
 def main(context):
-    uboot_ref = context.get("with", {}).get("u-boot", {}).get("ref") or None
+    target = context.get('labgrid_target')
+    assert target, "missing labgrid_target in context"
+    coordinator = context.get('labgrid_coordinator')
+    assert coordinator, "missing labgrid_coordinator in context"
+    ssh_hosts = context.get('ssh-hosts')
+    config_file = f"envs/{target}.yaml"
 
-    cloudsmith = Cloudsmith()
-    dest = Path(tempfile.mkdtemp(prefix="hw-test-uboot-"))
+    github = GitHub(context)
+    images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
 
-    cloudsmith.download(repository="u-boot", artifact="u-boot-spl", version=uboot_ref, dest=dest)
-    cloudsmith.download(repository="u-boot", artifact="u-boot", version=uboot_ref, dest=dest)
+    spl = images / "u-boot-spl"
+    uboot = images / "u-boot"
 
-    coordinator = os.environ.get("LABGRID_COORDINATOR", "")
-    env = os.environ.get("LABGRID_ENV", "")
+    OPKSSH(host=target, ssh_hosts=ssh_hosts)
 
-    args = [
-        str(Path(__file__).parent / "_tests.py"),
-        "-v",
-        "--timeout=300",
-    ]
-    if coordinator:
-        args += ["--lg-coordinator", coordinator]
-    if env:
-        args += ["--lg-env", env]
-
-    os.environ.setdefault("UBOOT_SPL", str(dest / "u-boot-spl"))
-    os.environ.setdefault("UBOOT", str(dest / "u-boot"))
-
-    sys.exit(pytest.main(args))
+    client = LabgridClient(coordinator=coordinator, config=config_file)
+    with acquired_places(client, [target]):
+        with labgrid_environment(config_file, coordinator=coordinator, ssh_hosts=ssh_hosts) as env:
+            target_ = env.get_target(target)
+            console = boot_to_uboot(target_, spl, uboot)
+            output = run_uboot_command(console, "version", require_output=True)
+            assert "U-Boot" in output, "version output did not contain U-Boot"
+            print(output)
