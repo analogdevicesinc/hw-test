@@ -1,6 +1,5 @@
 import socket
 from functools import wraps
-from os import environ
 
 _ORIGINAL_GETADDRINFO = socket.getaddrinfo
 _INSTALLED = False
@@ -45,9 +44,7 @@ def parse_host_map(value):
 def install_host_aliases(value=None):
     global _INSTALLED
 
-    host_map = parse_host_map(
-        value if value is not None else environ.get("HW_TEST_HOSTS")
-    )
+    host_map = parse_host_map(value)
     if not host_map or _INSTALLED:
         return
 

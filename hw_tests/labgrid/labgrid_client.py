@@ -1,4 +1,3 @@
-import os
 import subprocess
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -33,10 +32,6 @@ class LabgridClient:
 
 def split_places(value):
     return (value or "").replace(",", " ").split()
-
-
-def places_from_env():
-    return split_places(os.environ.get("LG_TARGETS") or os.environ.get("LG_PLACE"))
 
 
 def list_places(client):

@@ -1,5 +1,4 @@
 import time
-from pathlib import Path
 
 from labgrid.protocol import ConsoleProtocol, DigitalOutputProtocol
 from labgrid.util.ssh import sshmanager
@@ -7,13 +6,6 @@ from pexpect import TIMEOUT
 
 BOOT_MODE_RESOURCE = "boot-mode"
 CONSOLE_RESOURCE = "console"
-
-
-def artifact_path(value, name):
-    path = Path(value).expanduser().resolve()
-    if not path.is_file():
-        raise AssertionError(f"missing {name}: {path}")
-    return path
 
 
 def get_boot_mode_output(target, required=False):
