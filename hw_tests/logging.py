@@ -1,5 +1,6 @@
 import logging
 import logging.config
+from os import environ
 
 NC = "\033[0m"
 BLUE = "\033[94m"
@@ -52,4 +53,6 @@ LOGGING_CONFIG = {
 
 
 def set_logging():
+    if environ.get('RUNNER_DEBUG') == '1':
+        LOGGING_CONFIG['root']['level'] = 'DEBUG'
     logging.config.dictConfig(LOGGING_CONFIG)
