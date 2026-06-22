@@ -7,8 +7,8 @@ def main(context):
 
     opkssh = OPKSSH(host='localhost') # TODO get from labgrid coordinator
 
-    print(f"ready to talk to {opkssh.host}")
+    print(f"opkssh auth done")
     # ssh {opkssh.host} 'echo "hello world!"'
 
     Cloudsmith()
-    print("ready to talk do cloudsmith stuff")
+    print("cloudsmith auth done")
