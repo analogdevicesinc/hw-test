@@ -1,25 +1,19 @@
 name: Run Test
-run-name: Run Test for ${{ inputs.name }}
+run-name: Run Test for ${{ fromJson(inputs.set).name }}
 
 on:
   workflow_dispatch:
     inputs:
-      name:
-        description: "Test to run"
-        required: true
-        type: string
       set:
-        # { "name": "demo/linux-iio-dac", "with": { "linux": { "ref": "010c..." } } }
-        description: "Test context"
-        required: false
+        # { "name": "demo/linux-iio-dac", "repository": { "linux": { "ref": "010c..." } } }
+        description: "Test set"
+        required: true
+        default: '{ "name": "demo/linux-iio-dac" }'
         type: string
   workflow_call:
     inputs:
-      name:
-        required: true
-        type: string
       set:
-        required: false
+        required: true
         type: string
 
 
@@ -29,17 +23,12 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      actions: read
     steps:
     - uses: actions/checkout@v6
+      with:
+        repository: 'analogdevicesinc/hw-test'
 
-    - name: Run test
-      env:
-        name: ${{ inputs.name }}
+    - uses: ./run-test
+      with:
         set: ${{ inputs.set }}
-      run: |
-        python3 -m venv venv
-        source ./venv/bin/activate
-        python3 -m ensurepip
-        pip3 install -e .
-        [ -f "tests/${name}/requirements.txt" ] && pip install -r "tests/${name}/requirements.txt" || :
-        python3 -m hw_tests.run
