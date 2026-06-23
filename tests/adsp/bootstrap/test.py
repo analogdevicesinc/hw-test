@@ -4,19 +4,7 @@ import logging
 import pytest
 
 from hw_tests.github import GitHub
-from hw_tests.labgrid.environment import labgrid_environment
-from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places
-from hw_tests.labgrid.linux import (
-    boot_linux_from_uboot,
-    remote_http_server,
-)
-from hw_tests.labgrid.uboot import (
-    boot_to_uboot,
-    get_boot_mode_output,
-    run_uboot_command,
-    set_spi_boot_mode,
-    wait_for_prompt,
-)
+from hw_tests.labgrid import LabgridClient, exporter_http_server
 
 logger = logging.getLogger(__name__)
 
@@ -38,30 +26,63 @@ def test_bootstrap(context):
     kernel = images / "Image"
     devicetree = find_one(images, "*.dtb")
 
-    client = LabgridClient(context, require_place=True)
+    client = LabgridClient(context)
+    with client.acquire() as target:
+        spi_boot = target.get_driver("SerialPortDigitalOutputDriver", name="spi_boot")
+        power = target.get_driver("PowerProtocol")
+        ssh = target.get_driver("SSHDriver")
+        openocd = target.get_driver("OpenOCDDriver", activate=False)
+        uboot_driver = target.get_driver("UBootDriver", name="uboot", activate=False)
+        console = uboot_driver.console
 
-    place = client.place
-    with acquired_places(client, [place]):
-        with labgrid_environment(client.config, coordinator=client.coordinator) as env:
-            place_ = env.get_target(place)
-            get_boot_mode_output(place_, required=True)
+        spi_boot.set(True)
+        power.cycle()
 
-            console = boot_to_uboot(place_, spl, uboot)
-            output = run_uboot_command(console, "version", require_output=True)
-            assert "U-Boot" in output, "version output did not contain U-Boot"
+        ssh.put(str(spl), "u-boot-spl")
+        ssh.put(str(uboot), "u-boot")
 
-            with remote_http_server(place_, kernel, devicetree) as server:
-                boot_linux_from_uboot(console, server)
-                console.expect(re.escape("Continue? [y/N]:"), timeout=240)
-                logger.info("Linux booted")
-                console.sendline("y")
-                console.expect(re.escape("SPI install complete"), timeout=600)
-                logger.info("SPI install complete")
-                console.expect(re.escape("Waiting for switch"), timeout=120)
+        target.activate(openocd)
+        try:
+            openocd.execute(openocd.load_commands)
+        finally:
+            target.deactivate(openocd)
 
-                set_spi_boot_mode(place_, required=True)
-                wait_for_prompt(console, timeout=240)
+        target.activate(uboot_driver)
+        console.sendline("version")
+        console.expect("U-Boot", timeout=30)
+        console.expect(uboot_driver.prompt, timeout=30)
 
-            output = run_uboot_command(console, "version", require_output=True)
-            assert "U-Boot" in output, "version output did not contain U-Boot"
+        with exporter_http_server(ssh, kernel, devicetree):
+            console.sendline("dhcp")
+            console.expect(uboot_driver.prompt, timeout=120)
+
+            console.sendline(
+                f"wget ${{kernel_addr_r}} {openocd.interface.host}:/{kernel.name}"
+            )
+            console.expect(uboot_driver.prompt, timeout=180)
+
+            console.sendline(
+                f"wget ${{fdt_addr_r}} {openocd.interface.host}:/{devicetree.name}"
+            )
+            console.expect(uboot_driver.prompt, timeout=180)
+
+            console.sendline("booti ${kernel_addr_r} - ${fdt_addr_r}")
+            uboot_driver.await_boot()
+            target.deactivate(uboot_driver)
+            logger.info("Linux booted")
+
+            console.expect(re.escape("Continue? [y/N]:"), timeout=240)
+            console.sendline("y")
+            console.expect(re.escape("SPI install complete"), timeout=600)
+            logger.info("SPI install complete")
+
+            console.expect(re.escape("Waiting for switch"), timeout=120)
+
+            spi_boot.set(False)
+            target.deactivate(spi_boot)
+
+            target.activate(uboot_driver)
+            console.sendline("version")
+            console.expect("U-Boot", timeout=30)
+            console.expect(uboot_driver.prompt, timeout=30)
             logger.info("SPI U-Boot verified")
