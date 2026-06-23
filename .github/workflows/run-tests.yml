@@ -16,7 +16,6 @@ jobs:
       contents: read
     outputs:
       tests: ${{ steps.collect.outputs.tests }}
-      names: ${{ steps.collect.outputs.names }}
 
     steps:
     - uses: analogdevicesinc/doctools/workflow-run-to-context@action
@@ -34,15 +33,15 @@ jobs:
 
   run-tests:
     needs: collect
-    if: needs.collect.outputs.names != '[]'
+    if: needs.collect.outputs.tests != '[]'
     permissions:
       id-token: write
       contents: read
+      actions: read
     strategy:
       fail-fast: false
       matrix:
-        name: ${{ fromJson(needs.collect.outputs.names) }}
+        test: ${{ fromJson(needs.collect.outputs.tests) }}
     uses: ./.github/workflows/run-test.yml
     with:
-      name: ${{ matrix.name }}
-      set: ${{ needs.collect.outputs.tests }}
+      set: ${{ toJson(matrix.test) }}
