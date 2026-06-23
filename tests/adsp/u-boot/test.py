@@ -1,10 +1,9 @@
 import logging
+
 import pytest
 
 from hw_tests.github import GitHub
-from hw_tests.labgrid.environment import labgrid_environment
-from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places
-from hw_tests.labgrid.uboot import boot_to_uboot, run_uboot_command
+from hw_tests.labgrid import LabgridClient
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +14,34 @@ def test_uboot_version(context):
     images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
 
     spl = images / "u-boot-spl"
-    uboot = images / "u-boot"
+    uboot_image = images / "u-boot"
 
-    client = LabgridClient(context, require_place=True)
+    assert spl.is_file(), f"missing SPL image: {spl}"
+    assert uboot_image.is_file(), f"missing U-Boot image: {uboot_image}"
 
-    place = client.place
-    with acquired_places(client, [place]):
-        with labgrid_environment(client.config, coordinator=client.coordinator) as env:
-            place_ = env.get_target(place)
-            console = boot_to_uboot(place_, spl, uboot)
-            output = run_uboot_command(console, "version", require_output=True)
-            assert "U-Boot" in output, "version output did not contain U-Boot"
-            logger.info(output)
+    client = LabgridClient(context)
+    with client.acquire() as target:
+        spi_boot = target.get_driver("SerialPortDigitalOutputDriver", name="spi_boot")
+        power = target.get_driver("PowerProtocol")
+        ssh = target.get_driver("SSHDriver")
+        openocd = target.get_driver("OpenOCDDriver", activate=False)
+        uboot_driver = target.get_driver("UBootDriver", name="uboot", activate=False)
+        console = uboot_driver.console
+
+        spi_boot.set(True)
+        power.cycle()
+
+        ssh.put(str(spl), "u-boot-spl")
+        ssh.put(str(uboot_image), "u-boot")
+
+        target.activate(openocd)
+        try:
+            openocd.execute(openocd.load_commands)
+        finally:
+            target.deactivate(openocd)
+
+        target.activate(uboot_driver)
+        console.sendline("version")
+        console.expect("U-Boot", timeout=30)
+        console.expect(uboot_driver.prompt, timeout=30)
+        logger.info("U-Boot prompt verified")
