@@ -1,14 +1,14 @@
-[[repo]]
+[[repository]]
 name = "linux"
-on.ref = "refs/heads/mirror_ci/jic23/iio/testing"
-on.path = '''
+ref = "refs/heads/mirror_ci/jic23/iio/testing"
+path = '''
 drivers/iio/dac/*
 include/drivers/iio/dac/*
 '''
 
-[[repo]]
+[[repository]]
 name = "hdl"
-on.ref = "refs/heads/main"
-on.path = '''
+ref = "refs/heads/main"
+path = '''
 library/dac/*
 '''
