@@ -1,14 +1,17 @@
+import logging
 from hw_tests.opkssh import OPKSSH
 from hw_tests.cloudsmith import Cloudsmith
 
+logger = logging.getLogger(__name__)
+
 
 def main(context):
-    print(f"got {context}")
+    logger.info(f"got {context}")
 
-    opkssh = OPKSSH(host='localhost') # TODO get from labgrid coordinator
+    OPKSSH()
 
-    print(f"ready to talk to {opkssh.host}")
+    logger.info("opkssh auth done")
     # ssh {opkssh.host} 'echo "hello world!"'
 
     Cloudsmith()
-    print("ready to talk do cloudsmith stuff")
+    logger.info("cloudsmith auth done")
