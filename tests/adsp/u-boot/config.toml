@@ -1,0 +1,10 @@
+labgrid_target = "MUN-01-SC598_EZKIT-01"
+
+[[repository]]
+name = "u-boot"
+ref = "refs/heads/adi-u-boot-2025.10.y"
+path = '''
+arch/arm/dts/sc598*
+board/adi/sc598*
+configs/sc598*
+'''

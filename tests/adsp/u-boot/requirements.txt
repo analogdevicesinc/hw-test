@@ -1,0 +1,4 @@
+labgrid @ git+https://github.com/labgrid-project/labgrid.git@master
+pexpect
+pytest
+pytest-timeout
