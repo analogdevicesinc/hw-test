@@ -6,16 +6,23 @@ targets:
       NetworkService:
         username: "labgrid-client"
         address: "10.44.3.61"
+
     drivers:
       - SerialDriver:
           name: serial
           bindings:
             port: console
+
       - NetworkPowerDriver:
           name: power
           bindings:
             port: power
+
+      - SSHDriver:
+          name: ssh
+
       - OpenOCDDriver:
+          name: openocd
           load_commands:
             - "source [find interface/adi-dbgagent.cfg]"
             - "source [find target/adspsc59x_a55.cfg]"
@@ -23,3 +30,11 @@ targets:
             - "init"
             - "autoboot_elf"
             - "shutdown"
+
+      - UBootDriver:
+          name: uboot
+          prompt: "=> "
+          login_timeout: 240
+          boot_timeout: 240
+          bindings:
+            console: serial
