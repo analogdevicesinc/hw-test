@@ -23,7 +23,7 @@ A context has the format:
 ```{json}
 {
   'name': 'demo/linux-iio-dac',
-  'with': {
+  'repository': {
     'linux': {'ref': '010c31d76bfb49bb2c53cc4cb9a0ae63031a6ead'},
     'hdl': {'ref': 'refs/heads/main'}}}
   }

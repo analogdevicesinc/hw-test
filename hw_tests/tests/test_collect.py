@@ -1,4 +1,3 @@
-
 from hw_tests.collect import load_test_metas, match_tests
 
 
@@ -19,6 +18,7 @@ CONTEXT_LINUX_DAC = {
     "is_fork": "",
     "merge_commit_sha": "",
     "base_branch_head_sha": "83e04bccee664e7f526c56bfab33eb84903ee848",
+    "workflow_run_url": "https://api.github.com/repos/analogdevicesinc/linux/actions/runs/26882970726",
 }
 
 
@@ -29,7 +29,7 @@ def test_linux_dac_matches():
     assert len(results) == 1
     result = results[0]
     assert result["name"] == "demo/linux-iio-dac"
-    assert result["with"]["linux"]["ref"] == CONTEXT_LINUX_DAC["head_sha"]
+    assert result["repository"]["linux"]["ref"] == CONTEXT_LINUX_DAC["head_sha"]
 
 
 def test_no_match_wrong_ref():
@@ -55,4 +55,4 @@ def test_merge_commit_sha_takes_precedence():
     merge_sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     context = {**CONTEXT_LINUX_DAC, "merge_commit_sha": merge_sha}
     results = match_tests(context, load_test_metas())
-    assert results[0]["with"]["linux"]["ref"] == merge_sha
+    assert results[0]["repository"]["linux"]["ref"] == merge_sha

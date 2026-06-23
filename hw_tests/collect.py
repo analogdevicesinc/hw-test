@@ -74,32 +74,32 @@ def match_tests(context, metas):
 
     for meta in metas:
         name = meta['_uid']
-        meta_repos = meta.get('repo', [])
+        meta_repos = meta.get('repository', [])
 
         triggered = False
         for repo in meta_repos:
             name_ = repo.get('name', '')
-            on = repo.get('on', {})
-            on_ref = on.get('ref', None)
+            repo_ref = repo.get('ref', None)
             if (name_ == triggering_repo and
-                paths_match(changed_files, on.get('path', '')) and
-                (on_ref is not None and ref == on_ref)):
+                paths_match(changed_files, repo.get('path', '')) and
+                (repo_ref is not None and repo_ref == ref)):
                 triggered = True
                 break
 
         if not triggered:
             continue
 
-        with_repos = {}
+        repository = {}
         for repo in meta_repos:
             name_ = repo.get('name', '')
             if name_ == triggering_repo and sha:
-                with_repos[name_] = {'ref': sha}
+                repository[name_] = {'ref': sha}
 
         logger.info(f"Matched test '{name}'")
         results.append({
             'name': name,
-            'with': with_repos,
+            'repository': repository,
+            'workflow_run_url': context.get('url', ''),
         })
 
     return results
@@ -112,15 +112,12 @@ def main():
     metas = load_test_metas()
     matched = match_tests(context, metas)
 
-    names = json.dumps([t['name'] for t in matched])
     tests = json.dumps(matched, indent=2)
 
-    logger.info(f"names: {names}")
     logger.info(f"tests: {tests}")
 
     if environ.get('GITHUB_ACTIONS') == 'true':
         with open(environ['GITHUB_OUTPUT'], 'a') as f:
-            f.write(f'names={names}\n')
             f.write(f'tests<<EOF\n{tests}\nEOF\n')
 
 if __name__ == '__main__':
