@@ -28,6 +28,8 @@ from urllib.parse import quote
 
 import requests
 
+from hw_tests.github import GitHub, _extract_if_archive
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,9 +43,8 @@ class Cloudsmith():
         self._token = environ.get('CLOUDSMITH_API_KEY', '').strip()
 
         if self._token != '':
-            if environ.get('GITHUB_ACTIONS') == 'true':
-                print(f"::add-mask::{self._token}", flush=True)
-        elif environ.get('GITHUB_ACTIONS') == 'true':
+            GitHub.mask(self._token)
+        elif GitHub.in_actions():
             self.github_oidc()
 
         if self._token != '':
@@ -57,33 +58,14 @@ class Cloudsmith():
         if cs_service_slug == '':
             return
 
-        github_owner = environ.get("GITHUB_REPOSITORY_OWNER")
-        github_audience = f"https://github.com/{github_owner}"
-
-        id_token = Cloudsmith.get_github_id_token(github_audience)
+        id_token = GitHub.get_id_token()
         self._token = Cloudsmith.get_api_token(cs_namespace, cs_service_slug, id_token)
 
-        environ.set("CLOUDSMITH_API_KEY", self._token)
+        environ["CLOUDSMITH_API_KEY"] = self._token
         with open(environ['GITHUB_ENV'], 'a') as f:
-            f.write(f'CLOUDSMITH_API_KEY={self._token}')
+            f.write(f'CLOUDSMITH_API_KEY={self._token}\n')
 
         return
-
-    @staticmethod
-    def get_github_id_token(audience: str) -> str:
-        logger.debug("Requesting GitHub OIDC token...")
-        base_url = environ["ACTIONS_ID_TOKEN_REQUEST_URL"]
-        auth_token = environ["ACTIONS_ID_TOKEN_REQUEST_TOKEN"]
-
-        url = f"{base_url}&audience={quote(audience, safe='')}"
-        headers = {
-            "Authorization": f"Bearer {auth_token}",
-        }
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        id_token = response.json()["value"]
-        print(f"::add-mask::{id_token}", flush=True)
-        return id_token
 
     @staticmethod
     def get_api_token(org_name: str, cs_service_slug: str, id_token: str, api_host: str = "api.cloudsmith.io") -> str:
@@ -98,7 +80,7 @@ class Cloudsmith():
         token = response.json().get("token", "")
         if not token or not isinstance(token, str) or not token.strip():
             raise ValueError("Cloudsmith returned an empty or invalid token in the response")
-        print(f"::add-mask::{token}", flush=True)
+        GitHub.mask(token)
         return token
 
     @staticmethod
@@ -127,7 +109,7 @@ class Cloudsmith():
 
     def _find_package(
         self,
-        org_repo: str,
+        owner_repository: str,
         artifact: str,
         version: str | None,
         tags: tuple | list,
@@ -158,7 +140,7 @@ class Cloudsmith():
 
         query = "+".join(parts)
         url = (
-            f"https://{api_host}/v1/packages/{org_repo}/"
+            f"https://{api_host}/v1/packages/{owner_repository}/"
             f"?query={quote(query, safe=':+/^$')}&sort=-date&page_size=1"
         )
         response = requests.get(url, headers=self._headers())
@@ -167,7 +149,7 @@ class Cloudsmith():
 
         if not results:
             raise LookupError(
-                f"Artifact {artifact!r} not found in {org_repo} "
+                f"Artifact {artifact!r} not found in {owner_repository} "
                 f"(query: {query!r})"
             )
 
@@ -176,10 +158,10 @@ class Cloudsmith():
     def download(
         self,
         repository: str,
-        artifact: str,
+        name: str,
         version: str | None = None,
         tags: tuple | list = (),
-        dest: Path | str | None = None,
+        path: Path | str | None = None,
     ) -> Path:
         """Download a single artifact from Cloudsmith.
 
@@ -194,26 +176,34 @@ class Cloudsmith():
 
         Returns path to the file.
         """
-        org_repo = self._org_repo(repository)
-        package = self._find_package(org_repo, artifact, version, tags)
+        owner_repository = self._org_repo(repository)
+        package = self._find_package(owner_repository, name, version, tags)
 
         sha = package.get("version", "<unknown>")
-        logger.info(f"Resolved {repository!r}/{artifact!r} to SHA {sha}")
+        logger.info(f"Resolved {repository!r}/{name!r} to SHA {sha}")
 
         cdn_url = package.get("cdn_url")
         if not cdn_url:
-            raise ValueError(f"Package {artifact!r} has no cdn_url")
-
-        dest_dir = Path(dest) if dest is not None else Path(tempfile.mkdtemp(prefix="hw-test-cs-"))
+            raise ValueError(f"Package {name!r} has no cdn_url")
+        dest_dir = (
+            Path(path)
+            if path is not None
+            else Path(tempfile.mkdtemp(prefix="hw-test-cs-"))
+        )
         dest_dir.mkdir(parents=True, exist_ok=True)
-        dest_file = dest_dir / artifact
+        dest_file = dest_dir / name
 
-        logger.info(f"Downloading {artifact} from {cdn_url}")
-        response = requests.get(cdn_url, headers=self._headers(), stream=True)
+        logger.info(f"Downloading {name} from {cdn_url}")
+        response = requests.get(
+            cdn_url,
+            headers=self._headers(),
+            stream=True
+        )
         response.raise_for_status()
         with open(dest_file, "wb") as f:
             for chunk in response.iter_content(chunk_size=1 << 20):
                 f.write(chunk)
 
-        logger.info(f"Downloaded {artifact} to {dest_file}")
-        return dest_file
+        _extract_if_archive(dest_file)
+
+        return dest_dir
