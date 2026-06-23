@@ -1,0 +1,17 @@
+labgrid_target = "MUN-01-SC598_EZKIT-01"
+
+[[repository]]
+name = "linux"
+ref = "refs/heads/adsp-6.18.31-y"
+path = '''
+arch/arm64/boot/dts/adi/sc598*
+drivers/spi/*
+'''
+
+[[repository]]
+name = "u-boot"
+ref = "refs/heads/adi-u-boot-2025.10.y"
+path = '''
+board/adi/sc598*
+configs/sc598*
+'''

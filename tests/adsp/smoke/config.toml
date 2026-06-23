@@ -1,0 +1,8 @@
+labgrid_target = "MUN-01-SC598_EZKIT-01"
+
+[[repository]]
+name = "linux"
+ref = "refs/heads/adsp-6.18.31-y"
+path = '''
+*
+'''
