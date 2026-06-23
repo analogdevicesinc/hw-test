@@ -1,4 +1,4 @@
-labgrid_target = "MUN-01-SC598_EZKIT-01"
+labgrid_place = "MUN-01-SC598_EZKIT-01"
 
 [[repository]]
 name = "linux"

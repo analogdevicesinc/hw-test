@@ -1,8 +1,8 @@
 import logging
 import re
 import subprocess
+from os import environ
 from contextlib import contextmanager
-from dataclasses import dataclass
 
 from hw_tests.ssh_config import SSHConfig
 from hw_tests.github import GitHub
@@ -15,12 +15,26 @@ _EXPORTER_RE = re.compile(
 _HOST_RE = re.compile(r"'host':\s*'([^']+)'")
 
 
-@dataclass(frozen=True)
 class LabgridClient:
     coordinator: str | None = None
-    config: str | None = None
     place: str | None = None
+    config: str | None = None
     timeout: int = 30
+
+    def __init__(self, context, require_place=False):
+        self.coordinator = context.get('labgrid_coordinator', None)
+        if self.coordinator is None:
+            self.coordinator = environ.get('LG_COORDINATOR', None)
+
+        self.place = context.get('labgrid_place', None)
+        if self.place is None:
+            self.place = environ.get('LG_PLACE', None)
+
+        if require_place is True:
+            assert self.coordinator, "neither labgrid_coordinator in context or LG_COORDINATOR in environment"
+            assert self.place, "neither labgrid_place in context or in LG_PLACE environment"
+
+        self.config = f"envs/{self.place}.yaml"
 
     def __post_init__(self):
         if self.place:

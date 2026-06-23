@@ -28,12 +28,6 @@ def find_one(path, pattern):
 
 
 def main(context):
-    target = context.get('labgrid_target')
-    assert target, "missing labgrid_target in context"
-    coordinator = context.get('labgrid_coordinator')
-    assert coordinator, "missing labgrid_coordinator in context"
-    config_file = f"envs/{target}.yaml"
-
     github = GitHub(context)
     images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
 
@@ -42,19 +36,20 @@ def main(context):
     kernel = images / "Image"
     devicetree = find_one(images, "*.dtb")
 
+    client = LabgridClient(context, require_place=True)
     OPKSSH()
 
-    client = LabgridClient(coordinator=coordinator, config=config_file, place=target)
-    with acquired_places(client, [target]):
-        with labgrid_environment(config_file, coordinator=coordinator) as env:
-            target_ = env.get_target(target)
-            get_boot_mode_output(target_, required=True)
+    place = client.place
+    with acquired_places(client, [place]):
+        with labgrid_environment(client.config, coordinator=client.coordinator) as env:
+            place_ = env.get_target(place)
+            get_boot_mode_output(place_, required=True)
 
-            console = boot_to_uboot(target_, spl, uboot)
+            console = boot_to_uboot(place_, spl, uboot)
             output = run_uboot_command(console, "version", require_output=True)
             assert "U-Boot" in output, "version output did not contain U-Boot"
 
-            with remote_http_server(target_, kernel, devicetree) as server:
+            with remote_http_server(place_, kernel, devicetree) as server:
                 boot_linux_from_uboot(console, server)
                 console.expect(re.escape("Continue? [y/N]:"), timeout=240)
                 logger.info("Linux booted")
@@ -63,7 +58,7 @@ def main(context):
                 logger.info("SPI install complete")
                 console.expect(re.escape("Waiting for switch"), timeout=120)
 
-                set_spi_boot_mode(target_, required=True)
+                set_spi_boot_mode(place_, required=True)
                 wait_for_prompt(console, timeout=240)
 
             output = run_uboot_command(console, "version", require_output=True)
