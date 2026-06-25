@@ -1,19 +1,22 @@
 from dataclasses import dataclass
 from pathlib import Path
+from hw_tests.github import GitHub
+
+
+ssh_config_path = Path.cwd() / "_ssh_config"
 
 
 @dataclass
 class SSHConfig:
-    path: Path = Path.home() / ".ssh" / "config"
+    path: Path = ssh_config_path
 
     def _read_lines(self):
         if not self.path.exists():
-            return []
+            return ["Include ~/.ssh/config", ""]
         return self.path.read_text(encoding="utf-8").splitlines()
 
     def _write_lines(self, lines):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.parent.chmod(0o700)
         self.path.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
         self.path.chmod(0o600)
 
@@ -77,11 +80,18 @@ class SSHConfig:
         self._write_lines(lines)
 
     def configure_host(self, host):
-        self.set_host_options([host], {
-            "User": "ci",
-            "IdentityFile": "~/.ssh/id_ecdsa",
-            "CertificateFile": "~/.ssh/id_ecdsa-cert.pub",
-            "IdentitiesOnly": "yes",
-            "StrictHostKeyChecking": "accept-new",
-        })
+        if GitHub.in_actions():
+            options = {
+                "User": "ci",
+                "IdentityFile": "~/.ssh/id_ecdsa",
+                "CertificateFile": "~/.ssh/id_ecdsa-cert.pub",
+                "IdentitiesOnly": "yes",
+                "StrictHostKeyChecking": "accept-new",
+            }
+        else:
+            options = {
+                "User": "ci",
+                "StrictHostKeyChecking": "accept-new",
+            }
+        self.set_host_options([host], options)
 
