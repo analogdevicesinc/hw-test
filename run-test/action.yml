@@ -12,6 +12,22 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install test dependencies
+      shell: bash
+      env:
+        set: ${{ inputs.set }}
+      run: |
+        # Install test dependencies
+        venv=$(mktemp -dt hw-test.XXX)
+        echo "venv=$venv" >> "$GITHUB_ENV"
+
+        python3 -m venv $venv
+        source "$venv/bin/activate"
+        python3 -m ensurepip
+        pip3 install -e '.[test]'
+        name=$(echo "$set" | jq -r '.name')
+        [ -f "tests/${name}/requirements.txt" ] && pip install -r "tests/${name}/requirements.txt" || :
+
     - name: Run test
       shell: bash
       env:
@@ -19,11 +35,13 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
       run: |
         # Run test
-        python3 -m venv venv
-        source ./venv/bin/activate
-        python3 -m ensurepip
-        pip3 install -e '.[test]'
-        name=$(echo "$set" | jq -r '.name')
-        [ -f "tests/${name}/requirements.txt" ] && pip install -r "tests/${name}/requirements.txt" || :
+        source "$venv/bin/activate"
         [[ "${{ runner.debug }}" == "1" ]] && v="-v"
         pytest $v
+
+    - name: Clean-up
+      shell: bash
+      if: always()
+      run: |
+        # Clean-up
+        rm -rf "$venv"
