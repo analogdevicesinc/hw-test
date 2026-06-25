@@ -6,6 +6,7 @@ from contextlib import contextmanager
 
 from hw_tests.ssh_config import SSHConfig
 from hw_tests.github import GitHub
+from hw_tests.opkssh import OPKSSH
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +37,12 @@ class LabgridClient:
 
         self.config = f"envs/{self.place}.yaml"
 
+        self.hosts = set()
+        self.ssh_config = SSHConfig()
         if self.place:
             self._resolve_place_hosts()
+
+        self._opkssh = OPKSSH(self)
 
     def command(self, *args, place=None):
         command = ["labgrid-client"]
@@ -70,18 +75,16 @@ class LabgridClient:
             )
             return
 
-        hosts = set()
         for line in result.stdout.splitlines():
             match = _HOST_RE.search(line)
             if match:
                 host = match.group(1)
                 GitHub.mask(host)
                 if "://" not in host:
-                    hosts.add(host)
+                    self.hosts.add(host)
 
-        ssh_config = SSHConfig()
-        for host in hosts:
-            ssh_config.configure_host(host)
+        for host in self.hosts:
+            self.ssh_config.configure_host(host)
 
 
 def split_places(value):

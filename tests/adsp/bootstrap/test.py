@@ -6,7 +6,6 @@ import pytest
 from hw_tests.github import GitHub
 from hw_tests.labgrid.environment import labgrid_environment
 from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places
-from hw_tests.opkssh import OPKSSH
 from hw_tests.labgrid.linux import (
     boot_linux_from_uboot,
     remote_http_server,
@@ -40,7 +39,6 @@ def test_bootstrap(context):
     devicetree = find_one(images, "*.dtb")
 
     client = LabgridClient(context, require_place=True)
-    OPKSSH()
 
     place = client.place
     with acquired_places(client, [place]):
