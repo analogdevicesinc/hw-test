@@ -120,10 +120,9 @@ def _make_client(show_output, tmp_path):
         patch("hw_tests.labgrid.labgrid_client.subprocess.run", _fake_run(show_output)),
         patch("hw_tests.labgrid.labgrid_client.SSHConfig", lambda: SSHConfig(path=ssh_config_path)),
     ):
-        client = LabgridClient(
-            coordinator="10.75.168.208:20408",
-            place="MUN-01-SC598_EZKIT-01",
-        )
+        client = LabgridClient({
+            "labgrid_place": "MUN-01-SC598_EZKIT-01"
+        })
 
     return client, ssh_config_path
 
@@ -166,7 +165,9 @@ def test_resolve_place_hosts_show_failure(tmp_path):
         patch("hw_tests.labgrid.labgrid_client.subprocess.run", fail_run),
         patch("hw_tests.labgrid.labgrid_client.SSHConfig", lambda: SSHConfig(path=ssh_config_path)),
     ):
-        LabgridClient(coordinator="10.75.168.208:20408", place="MUN-01-SC598_EZKIT-01")
+        LabgridClient({
+            "labgrid_place": "MUN-01-SC598_EZKIT-01"
+        })
 
     assert not ssh_config_path.exists()
 
@@ -174,6 +175,6 @@ def test_resolve_place_hosts_show_failure(tmp_path):
 def test_no_place_skips_resolve(tmp_path):
     """Without a place, no coordinator query is made."""
     with patch("hw_tests.labgrid.labgrid_client.subprocess.run") as mock_run:
-        LabgridClient(coordinator="10.75.168.208:20408")
+        LabgridClient({})
 
     mock_run.assert_not_called()
