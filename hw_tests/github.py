@@ -50,38 +50,44 @@ def _extract_if_archive(archive: Path) -> None:
 class GitHub:
     _token = None
     _owner_repository = None
+    _test_name = None
     _run_id = None
+    __down_counter = 0
 
     def __init__(self, context):
 
-        self._token = environ.get("GITHUB_TOKEN", None)
-        self._owner_repository, self._run_id = self._split_context(context)
+        self._token = environ.get("GITHUB_TOKEN")
+        self._get_workflow_run_vars(context)
+        self._test_name = context.get("name") # for fallback
+
+        if self._token is None:
+            logger.info("No 'GITHUB_TOKEN' set, only auth-less API calls will work")
 
     @staticmethod
     def in_actions():
         return environ.get("GITHUB_ACTIONS") == "true"
 
-    @staticmethod
-    def _split_context(context):
-        """Get common variables from the context/enviroment."""
-        if isinstance(context, dict) and 'workflow_run_url' in context:
+    def _get_workflow_run_vars(self, context):
+        """Get common variables from the context/environment."""
+
+        # Test running as a shared job at top-level.yml
+        self._owner_repository = environ.get("GITHUB_REPOSITORY")
+        self._run_id = environ.get("GITHUB_RUN_ID")
+
+        if 'workflow_run_url' in context:
             # Test was triggered from a WebHook, workflow_run_url
             #   https://api.github.com/repos/<owner>/<repository>/actions/runs/<run_id>
             # is in the context
             url = context['workflow_run_url']
             parts = url.rstrip('/').split('/')
 
-            return (f"{parts[4]}/{parts[5]}", parts[-1])
-
-        elif environ.get("GITHUB_ACTIONS") == "true":
-            # Test running as a shared job at top-level.yml
-            return (environ.get("GITHUB_REPOSITORY", None), environ.get("GITHUB_RUN_ID", None))
-
-        return (None, None)
+            self._owner_repository = f"{parts[4]}/{parts[5]}"
+            self._run_id = parts[-1]
+            return
 
     @staticmethod
     def mask(value):
-        if environ.get("GITHUB_ACTIONS") == "true":
+        if GitHub.in_actions():
             print(f"::add-mask::{value}", flush=True)
 
     @staticmethod
@@ -122,10 +128,26 @@ class GitHub:
     ) -> Path:
         """Download artifact a single artifact from GitHub.
         Behaves like actions/download-artifact"""
+        local_ = Path.cwd() / '_artifacts' / self._test_name / str(self.__down_counter) # fallback
+        self.__down_counter += 1
+
+        msg__ = f"cannot download artifacts; assuming you have them at '{local_}'"
+        msg_ = "Neither 'workflow_run_url' in context or '{}' in environment, " + msg__
+
         if owner_repository is None:
             owner_repository = self._owner_repository
         if run_id is None:
             run_id = self._run_id
+        if owner_repository is None:
+            logger.warning(msg_.format('GITHUB_REPOSITORY'))
+            return local_
+        if run_id is None:
+            logger.warning(msg_.format('GITHUB_RUN_ID'))
+            return local_
+        if self._token is None:
+            # API always requires a token
+            logger.warning(f"No 'GITHUB_TOKEN' in environment, {msg__}")
+            return local_
 
         response = requests.get(
             f"https://api.github.com/repos/{owner_repository}/actions/runs/{run_id}/artifacts",
@@ -143,7 +165,7 @@ class GitHub:
         )
         if artifact is None:
             raise LookupError(
-                f"GitHub artifact {owner_repository}/{run_id}/{name!r} not found"
+                f"GitHub artifact '{owner_repository}/{run_id}/{name!r}' not found"
             )
 
         dest_dir = (
@@ -153,13 +175,13 @@ class GitHub:
         )
         dest_dir.mkdir(parents=True, exist_ok=True)
 
-        logger.info(f"Downloading GitHub artifact {name}")
         response = requests.get(
             artifact["archive_download_url"],
             headers=self._headers(),
             stream=True
         )
         response.raise_for_status()
+        logger.info(f"Downloaded GitHub artifact '{name}'")
 
         dest_file = dest_dir / name
         with open(dest_file, "wb") as f:
