@@ -36,6 +36,7 @@ At this point, the individual `test.py` executes its test steps, which may inclu
 Run a test with
 ```{bash}
 # Use defaults
+$ export LG_COORDINATOR=<address>
 $ pytest "tests/adsp/smoke/test.py"
 
 # With overwrites
