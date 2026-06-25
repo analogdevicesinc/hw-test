@@ -1,8 +1,11 @@
 import subprocess
 from unittest.mock import patch
 
+import pytest
+
 from hw_tests.github import GitHub
 from hw_tests.labgrid.labgrid_client import LabgridClient
+from hw_tests.opkssh import OPKSSH
 from hw_tests.ssh_config import SSHConfig
 
 SHOW_OUTPUT = """\
@@ -120,6 +123,7 @@ def _make_client(show_output, tmp_path):
     with (
         patch("hw_tests.labgrid.labgrid_client.subprocess.run", _fake_run(show_output)),
         patch("hw_tests.labgrid.labgrid_client.SSHConfig", lambda: SSHConfig(path=ssh_config_path)),
+        patch("hw_tests.labgrid.labgrid_client.OPKSSH"),
     ):
         client = LabgridClient({
             "labgrid_place": "MUN-01-SC598_EZKIT-01"
@@ -169,6 +173,7 @@ def test_resolve_place_hosts_show_failure(tmp_path):
     with (
         patch("hw_tests.labgrid.labgrid_client.subprocess.run", fail_run),
         patch("hw_tests.labgrid.labgrid_client.SSHConfig", lambda: SSHConfig(path=ssh_config_path)),
+        patch("hw_tests.labgrid.labgrid_client.OPKSSH"),
     ):
         LabgridClient({
             "labgrid_place": "MUN-01-SC598_EZKIT-01"
@@ -177,9 +182,27 @@ def test_resolve_place_hosts_show_failure(tmp_path):
     assert not ssh_config_path.exists()
 
 
+def test_ssh_auth_failure_raises(tmp_path):
+    """A failed SSH auth probe must raise PermissionError."""
+    client, _ = _make_client(SHOW_OUTPUT, tmp_path)
+    opkssh = OPKSSH.__new__(OPKSSH)
+
+    def fail_ssh(cmd, **kwargs):
+        return subprocess.CompletedProcess(cmd, 255, stdout="", stderr="Permission denied (publickey).")
+
+    with (
+        patch("hw_tests.opkssh.subprocess.run", fail_ssh),
+        pytest.raises(PermissionError, match="SSH auth to 10.44.3.61 failed"),
+    ):
+        opkssh.check_ssh_auth(client)
+
+
 def test_no_place_skips_resolve(tmp_path):
     """Without a place, no coordinator query is made."""
-    with patch("hw_tests.labgrid.labgrid_client.subprocess.run") as mock_run:
+    with (
+        patch("hw_tests.labgrid.labgrid_client.subprocess.run") as mock_run,
+        patch("hw_tests.labgrid.labgrid_client.OPKSSH"),
+    ):
         LabgridClient({})
 
     mock_run.assert_not_called()

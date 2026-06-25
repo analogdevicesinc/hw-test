@@ -5,7 +5,6 @@ from hw_tests.github import GitHub
 from hw_tests.labgrid.environment import labgrid_environment
 from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places
 from hw_tests.labgrid.uboot import boot_to_uboot, run_uboot_command
-from hw_tests.opkssh import OPKSSH
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,6 @@ def test_uboot_version(context):
     uboot = images / "u-boot"
 
     client = LabgridClient(context, require_place=True)
-    OPKSSH()
 
     place = client.place
     with acquired_places(client, [place]):

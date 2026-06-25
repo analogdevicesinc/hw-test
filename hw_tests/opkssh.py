@@ -18,14 +18,13 @@ class OPKSSH():
     _strict = None
     _authorized = False
 
-    def __init__(self):
+    def __init__(self, client=None):
         OPKSSH.ensure()
-        self.authenticate()
+        self.authenticate(client)
 
-    def authenticate(self):
+    def authenticate(self, client=None):
         if not GitHub.in_actions():
-            logger.debug("Not a CI environment, assuming user ssh config authorizes.")
-            self._authorized = True
+            self.check_ssh_auth(client)
             return
 
         if not environ.get('ACTIONS_ID_TOKEN_REQUEST_URL'):
@@ -46,6 +45,33 @@ class OPKSSH():
             GitHub.mask(token)
 
         self._authorized = True
+
+    def check_ssh_auth(self, client):
+        if client is None:
+            self._authorized = True
+            return
+
+        logger.debug(f"Test ssh config target '{client}'.")
+        for host in client.hosts:
+            result = subprocess.run(
+                ["ssh",
+                 "-F", str(client.ssh_config.path),
+                 "-o", "BatchMode=yes",
+                 "-o", "ConnectTimeout=10",
+                 "-o", "StrictHostKeyChecking=accept-new",
+                 host, "true"],
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode != 0:
+                raise PermissionError(
+                    f"SSH auth to {host} failed: {result.stderr.strip()}\n"
+                    f"Check that your key is accepted by the exporter host."
+                )
+            logger.debug("SSH auth to %s: OK", host)
+
+        self._authorized = True
+        return
 
     @staticmethod
     def ensure():
