@@ -1,4 +1,4 @@
-from hw_tests.run import reformat_named_lists, deep_merge
+from hw_tests.context import reformat_named_lists, deep_merge
 
 
 def test_reformat_named_lists():

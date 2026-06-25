@@ -1,4 +1,5 @@
 import logging
+import pytest
 
 from hw_tests.github import GitHub
 from hw_tests.labgrid.environment import labgrid_environment
@@ -8,7 +9,9 @@ from hw_tests.opkssh import OPKSSH
 
 logger = logging.getLogger(__name__)
 
-def main(context):
+
+@pytest.mark.uboot
+def test_uboot_version(context):
     github = GitHub(context)
     images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
 
