@@ -24,7 +24,7 @@ class OPKSSH():
 
     def authenticate(self):
         if not GitHub.in_actions():
-            logger.info("No environment matched, assuming already authorized.")
+            logger.debug("Not a CI environment, assuming user ssh config authorizes.")
             self._authorized = True
             return
 
