@@ -3,6 +3,22 @@ from pathlib import Path
 import pytest
 
 from hw_tests.context import parse_set_env, build_context, test_name
+from hw_tests.ssh_config import ssh_config_path
+
+
+def pytest_configure(config):
+    from labgrid.util.ssh import SSHConnection
+
+    _original = SSHConnection._get_ssh_base_args
+
+    @staticmethod
+    def _patched():
+        args = _original()
+        if ssh_config_path.exists():
+            args += ["-F", str(ssh_config_path)]
+        return args
+
+    SSHConnection._get_ssh_base_args = _patched
 
 
 def pytest_collection_modifyitems(config, items):

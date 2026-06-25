@@ -1,6 +1,7 @@
 import subprocess
 from unittest.mock import patch
 
+from hw_tests.github import GitHub
 from hw_tests.labgrid.labgrid_client import LabgridClient
 from hw_tests.ssh_config import SSHConfig
 
@@ -133,10 +134,14 @@ def test_resolve_place_hosts_configures_ssh(tmp_path):
     text = ssh_config_path.read_text()
     assert "Host 10.44.3.61" in text
     assert "User ci" in text
-    assert "IdentityFile ~/.ssh/id_ecdsa" in text
-    assert "CertificateFile ~/.ssh/id_ecdsa-cert.pub" in text
-    assert "IdentitiesOnly yes" in text
     assert "StrictHostKeyChecking accept-new" in text
+    if GitHub.in_actions():
+        assert "IdentityFile ~/.ssh/id_ecdsa" in text
+        assert "CertificateFile ~/.ssh/id_ecdsa-cert.pub" in text
+        assert "IdentitiesOnly yes" in text
+    else:
+        assert "IdentityFile" not in text
+        assert "CertificateFile" not in text
 
 
 def test_resolve_place_hosts_skips_url_hosts(tmp_path):
