@@ -31,12 +31,11 @@ class LabgridClient:
             self.place = environ.get('LG_PLACE', None)
 
         if require_place is True:
-            assert self.coordinator, "neither labgrid_coordinator in context or LG_COORDINATOR in environment"
-            assert self.place, "neither labgrid_place in context or in LG_PLACE environment"
+            assert self.coordinator, "Neither 'labgrid_coordinator' in context or LG_COORDINATOR in environment"
+            assert self.place, "Neither 'labgrid_place' in context or in LG_PLACE environment"
 
         self.config = f"envs/{self.place}.yaml"
 
-    def __post_init__(self):
         if self.place:
             self._resolve_place_hosts()
 
