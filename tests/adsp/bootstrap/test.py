@@ -1,6 +1,8 @@
 import re
 import logging
 
+import pytest
+
 from hw_tests.github import GitHub
 from hw_tests.labgrid.environment import labgrid_environment
 from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places
@@ -27,7 +29,8 @@ def find_one(path, pattern):
     return matches[0]
 
 
-def main(context):
+@pytest.mark.bootstrap
+def test_bootstrap(context):
     github = GitHub(context)
     images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
 

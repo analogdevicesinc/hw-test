@@ -19,12 +19,39 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = [
+    "pytest",
+    "labgrid",
     "requests",
 ]
 requires-python = ">=3.11"
 dynamic = ["version"]
 
+[project.optional-dependencies]
+
+test = [
+    "ruff",
+]
+
 [tool.setuptools.packages.find]
 where = [""]
 include = ["hw_tests*"]
 namespaces = true
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+    "--import-mode=importlib"
+]
+
+python_files = ["test.py", "test_*.py"]
+
+
+markers = [
+    "smoke: validates the environment and the test framework",
+    "uboot: U-Boot related hardware tests",
+    "linux: Linux boot related hardware tests",
+    "bootstrap: bootstrap Linux and install U-Boot to SPI flash",
+]

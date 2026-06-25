@@ -1,10 +1,12 @@
+import pytest
 
 from hw_tests.labgrid.environment import labgrid_environment
 from hw_tests.labgrid.labgrid_client import LabgridClient, acquired_places, list_places
 from hw_tests.opkssh import OPKSSH
 
 
-def main(context):
+@pytest.mark.smoke
+def test_smoke(context):
     client = LabgridClient(context, require_place=True)
     list_places(client)
     OPKSSH()

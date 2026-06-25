@@ -30,8 +30,34 @@ A context has the format:
 }
 ```
 
-The `hw_tests/run.py`, before invoking `tests/**/test.py`, fills the context with the default values (in the example, the `hdl.ref`).
+The `hw_tests/context.py`, before invoking `tests/**/test.py`, fills the context with the default values (in the example, the `hdl.ref`).
 At this point, the individual `test.py` executes its test steps, which may include fetching artifacts, acquiring hardware and communicating through ssh.
+
+Run a test with
+```{bash}
+# Use defaults
+$ pytest "tests/adsp/smoke/test.py"
+
+# With overwrites
+$ set='{"name": "adsp/u-boot", "labgrid_target": "MUN-01-SC598_EZKIT-02"}' pytest
+
+# All hardware tests (danger!)
+$ pytest tests
+```
+
+Full example with `labgrid` and `github` classes:
+```
+# requisite: have your public SSH key in the exporter
+$ export GITHUB_TOKEN=***
+$ export LG_COORDINATOR=<address>
+$ set="{'name': 'adsp/bootstrap', 'workflow_run_url': 'https://api.github.com/repos/analogdevicesinc/br2-external/actions/runs/27766740938'}" pytest -vvs
+```
+
+For testing the `hw_library` library:
+```
+$ pytest hw_tests
+```
+
 
 ## OPKSSH
 

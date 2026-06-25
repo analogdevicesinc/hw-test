@@ -1,5 +1,5 @@
 """
-Run a test from tests/**/.
+Prepare context for a test from tests/**/.
 
 Input: Test to run:
   {
@@ -20,17 +20,9 @@ That is, any [{'name': '...', ...}], the list is replaced with dict, where name 
 """
 
 import json
-import logging
 import tomllib
-import importlib.util
-
-from os import environ
-from sys import modules, exit
 from pathlib import Path
-
-from .logging import set_logging
-
-logger = logging.getLogger(__name__)
+from os import environ
 
 
 def reformat_named_lists(d):
@@ -59,46 +51,40 @@ def deep_merge(base, override):
     return result
 
 
-def run_test(context):
-    name = context.get('name')
-    if name is None:
-        logger.error("No '.name' provided")
-        exit(1)
-
-    path = Path(f"tests/{name}")
-    if not Path.is_dir(path):
-        logger.error(f"Test path '{path}' does not exist")
-        exit(1)
-
-    if 'repository' not in context:
-        context['repository'] = {}
-
-    with path.joinpath('config.toml').open('rb') as meta_:
-        meta = tomllib.load(meta_)
-
-    meta = reformat_named_lists(meta)
-    context = deep_merge(meta, context)
-
-    logger.info(f"invoking '{path}' with context:\n{context}")
-
-    test_script = path / "test.py"
-    spec = importlib.util.spec_from_file_location("dynamic_test_mod", test_script)
-    module = importlib.util.module_from_spec(spec)
-    modules["dynamic_test_mod"] = module
-    spec.loader.exec_module(module)
-    module.main(context)
-
-    return
+def parse_set_env():
+    """Parse the `set` env var into a list of override dicts."""
+    set_val = environ.get("set", "").strip()
+    if not set_val:
+        return []
+    parsed = json.loads(set_val)
+    if isinstance(parsed, dict):
+        return [parsed]
+    return parsed
 
 
-def main():
-    set_logging()
+def test_name(test_dir: Path) -> str:
+    """Derive the test name from its directory relative to tests/."""
+    return str(test_dir.resolve().relative_to(Path(__file__).resolve().parent.parent / "tests"))
 
-    set_val = environ.get('set', '')
-    context = json.loads(set_val) if set_val else {}
-    logger.info(f"test: {json.dumps(context, indent=2)}")
 
-    run_test(context)
+def build_context(test_dir: Path, overrides: list[dict]) -> dict:
+    name = test_name(test_dir)
 
-if __name__ == '__main__':
-    main()
+    config_path = test_dir / "config.toml"
+    if config_path.exists():
+        with config_path.open("rb") as f:
+            meta = reformat_named_lists(tomllib.load(f))
+    else:
+        meta = {}
+
+    context = {"name": name}
+    context = deep_merge(context, meta)
+
+    override = {}
+    for o in overrides:
+        if o.get("name", name) == name:
+            override = o
+            break
+
+    context = deep_merge(context, override)
+    return context
