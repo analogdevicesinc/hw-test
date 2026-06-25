@@ -19,6 +19,7 @@ That is, any [{'name': '...', ...}], the list is replaced with dict, where name 
 (name must exist for each group/list entry)
 """
 
+import re
 import json
 import tomllib
 from pathlib import Path
@@ -56,6 +57,9 @@ def parse_set_env():
     set_val = environ.get("set", "").strip()
     if not set_val:
         return []
+    # If json quotes are inverted, quietly fix
+    if re.search(r'[{\[]\s*\'', set_val):
+        set_val = set_val.replace('"', '\x00').replace("'", '"').replace('\x00', "'")
     parsed = json.loads(set_val)
     if isinstance(parsed, dict):
         return [parsed]
