@@ -1,10 +1,11 @@
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from hw_tests.github import GitHub
 
+logger = logging.getLogger(__name__)
 
 ssh_config_path = Path.cwd() / "_ssh_config"
-
 
 @dataclass
 class SSHConfig:
@@ -16,9 +17,10 @@ class SSHConfig:
         return self.path.read_text(encoding="utf-8").splitlines()
 
     def _write_lines(self, lines):
-        self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
         self.path.chmod(0o600)
+
+        logger.debug(self.path.read_text(encoding="utf-8"))
 
     def _host_block(self, host, lines):
         start = None
@@ -36,6 +38,8 @@ class SSHConfig:
         return start, len(lines)
 
     def set_host_options(self, hosts, options):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+
         host_list = list(hosts)
         lines = self._read_lines()
         block = next(
@@ -78,6 +82,7 @@ class SSHConfig:
 
         lines[start:end] = new_block
         self._write_lines(lines)
+
 
     def configure_host(self, host):
         if GitHub.in_actions():
