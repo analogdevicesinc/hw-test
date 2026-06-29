@@ -82,7 +82,7 @@ class SSHConfig:
     def configure_host(self, host):
         if GitHub.in_actions():
             options = {
-                "User": "ci",
+                "User": "labgrid-client",
                 "IdentityFile": "~/.ssh/id_ecdsa",
                 "CertificateFile": "~/.ssh/id_ecdsa-cert.pub",
                 "IdentitiesOnly": "yes",
@@ -90,7 +90,6 @@ class SSHConfig:
             }
         else:
             options = {
-                "User": "ci",
                 "StrictHostKeyChecking": "accept-new",
             }
         self.set_host_options([host], options)
