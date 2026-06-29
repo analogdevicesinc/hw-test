@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from argparse import Namespace
 from os import environ
 from pathlib import Path
+import logging
 import shlex
 
 from labgrid import Environment
@@ -11,6 +12,8 @@ from labgrid.util.ssh import sshmanager
 from hw_tests.github import GitHub
 from hw_tests.opkssh import OPKSSH
 from hw_tests.ssh_config import SSHConfig
+
+logger = logging.getLogger(__name__)
 
 
 class LabgridClient:
@@ -25,6 +28,8 @@ class LabgridClient:
         self.ssh_config = SSHConfig()
         self._opkssh = None
 
+        logger.info("Labgrid place: %s", self.place)
+
     def _resolve_coordinator(self):
         coordinator = self.context.get("labgrid_coordinator") or environ.get(
             "LG_COORDINATOR"
@@ -35,9 +40,30 @@ class LabgridClient:
         return coordinator
 
     def _resolve_place(self):
-        place = self.context.get("labgrid_place") or environ.get("LG_PLACE")
-        assert place, "missing labgrid_place in context or LG_PLACE in environment"
-        return place
+        needs = self.context.get("needs")
+        assert needs, "missing needs in test config"
+
+        session = start_session(self.coordinator)
+        try:
+            owner = f"{session.gethostname()}/{session.getuser()}"
+            candidates = []
+            for place in session.places.values():
+                tags = set(place.tags)
+                tags.update(str(value) for value in place.tags.values())
+                if (
+                    all(need in tags for need in needs)
+                    and place.acquired in (None, owner)
+                    and (Path("envs") / f"{place.name}.yaml").is_file()
+                ):
+                    candidates.append(place)
+
+            assert candidates, f"no available place found for needs: {needs}"
+            return sorted(candidates, key=lambda place: place.name)[0].name
+        finally:
+            try:
+                session.loop.run_until_complete(session.stop())
+            finally:
+                session.loop.run_until_complete(session.close())
 
     def _configure_ssh(self, session, place):
         resources = session.get_target_resources(place)
