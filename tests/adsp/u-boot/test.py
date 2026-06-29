@@ -28,7 +28,7 @@ def test_uboot_version(context):
         uboot_driver = target.get_driver("UBootDriver", name="uboot", activate=False)
         console = uboot_driver.console
 
-        spi_boot.set(True)
+        spi_boot.set(False)
         power.cycle()
 
         ssh.put(str(spl), "u-boot-spl")

@@ -29,7 +29,7 @@ targets:
       - SerialPortDigitalOutputDriver:
           name: spi_boot
           signal: dtr
-          invert: false
+          invert: true
           bindings:
             serial: boot_mode_serial
 
