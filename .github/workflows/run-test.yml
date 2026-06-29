@@ -20,10 +20,13 @@ on:
 jobs:
   run-test:
     runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    env:
+      LG_COORDINATOR: ${{ secrets.LG_COORDINATOR }}
     permissions:
       id-token: write
       contents: read
       actions: read
+
     steps:
     - uses: actions/checkout@v6
       with:
