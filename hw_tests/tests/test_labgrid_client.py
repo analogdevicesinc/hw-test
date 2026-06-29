@@ -137,9 +137,9 @@ def test_resolve_place_hosts_configures_ssh(tmp_path):
 
     text = ssh_config_path.read_text()
     assert "Host 10.44.3.61" in text
-    assert "User ci" in text
     assert "StrictHostKeyChecking accept-new" in text
     if GitHub.in_actions():
+        assert "User labgrid-client" in text
         assert "IdentityFile ~/.ssh/id_ecdsa" in text
         assert "CertificateFile ~/.ssh/id_ecdsa-cert.pub" in text
         assert "IdentitiesOnly yes" in text
