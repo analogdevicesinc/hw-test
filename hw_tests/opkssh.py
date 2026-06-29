@@ -44,9 +44,12 @@ class OPKSSH():
             token = output_string.split()[-1]
             GitHub.mask(token)
 
+        self.check_ssh_auth(client)
         self._authorized = True
 
     def check_ssh_auth(self, client):
+        """Check ssh config, since 'accept-new' is set, adds to known-hosts.
+        Useful to call before any 'StrictHostKeyChecking=no'"""
         if client is None:
             self._authorized = True
             return
