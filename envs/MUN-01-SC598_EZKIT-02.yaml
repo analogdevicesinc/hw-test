@@ -4,7 +4,7 @@ targets:
       RemotePlace:
         name: "MUN-01-SC598_EZKIT-02"
       NetworkService:
-        username: "ci"
+        username: "labgrid-client"
         address: "10.44.3.61"
     drivers:
       - SerialDriver:
