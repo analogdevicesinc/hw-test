@@ -1,4 +1,4 @@
-labgrid_place = "MUN-01-SC598_EZKIT-01"
+needs = ["sc598", "ezkit"]
 
 [[repository]]
 name = "u-boot"
