@@ -1,0 +1,57 @@
+name: Build docs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-doc:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: analogdevicesinc/doctools/checkout@action
+    - name: Install pip packages
+      run: |
+        python3 -m venv venv
+        source ./venv/bin/activate
+        python3 -m ensurepip
+        pip3 install -r docs/requirements.txt --upgrade
+
+    - name: Build doc
+      run: |
+        source ./venv/bin/activate
+        cd docs
+        sphinx-build -M html "." "_build" -j auto -W --keep-going
+        rm -rf _build/html/_sources
+
+    - name: Store the generated doc
+      uses: actions/upload-artifact@v7
+      with:
+        name: html
+        path: docs/_build/html
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-doc]
+    concurrency:
+      group: gh-pages
+    permissions:
+      contents: write
+    if: >
+      github.ref == 'refs/heads/main' ||
+      github.event_name == 'pull_request' ||
+      github.ref_type == 'tag'
+
+    steps:
+    - uses: analogdevicesinc/doctools/gh-pages-deploy@action
+      with:
+        new_tag: ${{ github.ref_type == 'tag' }}
+        tag: ${{ github.ref_name }}
+        name: html
