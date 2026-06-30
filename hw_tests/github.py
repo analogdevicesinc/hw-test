@@ -165,7 +165,7 @@ class GitHub:
         )
         if artifact is None:
             raise LookupError(
-                f"GitHub artifact '{owner_repository}/{run_id}/{name!r}' not found"
+                f"GitHub artifact '{name}' at '{owner_repository}/{run_id}' not found"
             )
 
         dest_dir = (
