@@ -140,9 +140,8 @@ Content on this topic
             
   <section id="continuous-integration">
 <span id="ci"></span><h1>Continuous integration<a class="headerlink" href="#continuous-integration" title="Link to this heading"></a></h1>
-<p>Hardware tests continuous integrations is focused on modularity and test selection.
-In the next section, it is explained different configuration that it needs to be
-used.</p>
+<p>Hardware tests continuous integration is focused on modularity and test selection.
+In the next section, the different configuration options are explained.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Every repository that invokes <code class="docutils literal notranslate"><span class="pre">labgrid</span></code> tests must set the <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>
@@ -150,7 +149,7 @@ secret and expose as an environment variable.</p>
 </div>
 <section id="workflow-jobs">
 <h2>Workflow jobs<a class="headerlink" href="#workflow-jobs" title="Link to this heading"></a></h2>
-<p>You can tune how the tests are spawn.</p>
+<p>You can tune how the tests are spawned.</p>
 <p>To run multiple tests in <code class="docutils literal notranslate"><span class="pre">pytest</span></code> under the same job, use:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jobs</span><span class="p">:</span>
 <span class="w"> </span><span class="nt">hardware-tests</span><span class="p">:</span>
@@ -192,7 +191,7 @@ in different containers.</p>
 <section id="workflow-run">
 <h3>Workflow run<a class="headerlink" href="#workflow-run" title="Link to this heading"></a></h3>
 <p>Tests that use GitHub Artifacts need to know the <code class="docutils literal notranslate"><span class="pre">workflow_run_id</span></code>.</p>
-<p>If the <strong>Build</strong> and <strong>Test</strong> jobs <strong>don’t</strong> the same workflow id, you
+<p>If the <strong>Build</strong> and <strong>Test</strong> jobs <strong>don’t share</strong> the same workflow id, you
 <span class="red">must</span> add the <code class="docutils literal notranslate"><span class="pre">workflow_run.url</span></code> to the test set context.</p>
 <p>For a workflow run triggered by the ‘workflow_run’ event, use:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">on</span><span class="p">:</span>
@@ -237,7 +236,6 @@ in different containers.</p>
 
 <span class="nt">jobs</span><span class="p">:</span>
 <span class="w"> </span><span class="nt">hardware-test</span><span class="p">:</span>
-<span class="w">   </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.event.workflow_run.conclusion == &#39;success&#39;</span>
 <span class="w">   </span><span class="nt">permissions</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">id-token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
 <span class="w">     </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
@@ -251,7 +249,7 @@ in different containers.</p>
 <span class="w">       </span><span class="no">}</span>
 </pre></div>
 </div>
-<p>You can also use <a class="icon git reference external" href="https://github.com/analogdevicesinc/doctools/tree/action/workflow-run-to-context" target="_blank">workflow-run-to-context</a> to futher enrich the context
+<p>You can also use <a class="icon git reference external" href="https://github.com/analogdevicesinc/doctools/tree/action/workflow-run-to-context" target="_blank">workflow-run-to-context</a> to further enrich the context
 with changed files and shas. See <a class="icon git reference external" href="https://github.com/analogdevicesinc/hw-test/tree/main/.github/workflows/run-tests.yml" target="_blank">.github/workflows/run-tests.yml</a> for a full
 implementation.</p>
 </section>
