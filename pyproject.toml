@@ -45,6 +45,8 @@ addopts = [
     "--strict-markers",
     "--import-mode=importlib"
 ]
+log_format = "%(levelname)-7.7s %(name)s: %(message)s"
+log_cli_format = "%(levelname)-7.7s %(name)s: %(message)s"
 
 python_files = ["test.py", "test_*.py"]
 
