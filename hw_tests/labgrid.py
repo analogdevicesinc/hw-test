@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from argparse import Namespace
 from os import environ
 from pathlib import Path
+from time import monotonic, sleep
 import logging
 import shlex
 
@@ -50,27 +51,51 @@ class LabgridClient:
         needs = self.context.get("needs")
         assert needs, "missing needs in test config"
 
-        session = start_session(self.coordinator)
-        try:
-            owner = f"{session.gethostname()}/{session.getuser()}"
-            candidates = []
-            for place in session.places.values():
-                tags = set(place.tags)
-                tags.update(str(value) for value in place.tags.values())
-                if (
-                    all(need in tags for need in needs)
-                    and place.acquired in (None, owner)
-                    and (Path("envs") / f"{place.name}.yaml").is_file()
-                ):
-                    candidates.append(place)
-
-            assert candidates, f"no available place found for needs: {needs}"
-            return sorted(candidates, key=lambda place: place.name)[0].name
-        finally:
+        # Wait for a place that matches the needs and is not acquired by another user for 1 hour
+        deadline = monotonic() + 60 * 60
+        while True:
+            session = start_session(self.coordinator)
             try:
-                session.loop.run_until_complete(session.stop())
+                owner = f"{session.gethostname()}/{session.getuser()}"
+                matches = []
+                candidates = []
+                for place in session.places.values():
+                    tags = set(place.tags)
+                    tags.update(str(value) for value in place.tags.values())
+                    if not (
+                        all(need in tags for need in needs)
+                        and (Path("envs") / f"{place.name}.yaml").is_file()
+                    ):
+                        continue
+
+                    matches.append(place)
+                    if place.acquired in (None, owner):
+                        candidates.append(place)
+
+                assert matches, f"no place found for needs: {needs}"
+                if candidates:
+                    return sorted(candidates, key=lambda place: place.name)[0].name
+
+                if monotonic() >= deadline:
+                    acquired_by = ", ".join(
+                        f"{place.name} by {place.acquired}" for place in matches
+                    )
+                    raise AssertionError(
+                        f"no available place found for needs after "
+                        f"1 hour: {needs} ({acquired_by})"
+                    )
+
+                logger.info(
+                    "Waiting for labgrid place with needs %s; all matches are acquired",
+                    needs,
+                )
             finally:
-                session.loop.run_until_complete(session.close())
+                try:
+                    session.loop.run_until_complete(session.stop())
+                finally:
+                    session.loop.run_until_complete(session.close())
+            # Check for available place every 30 seconds
+            sleep(30)
 
     def _configure_ssh(self, session, place):
         resources = session.get_target_resources(place)
