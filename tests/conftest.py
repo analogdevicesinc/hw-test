@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pytest
-
 from hw_tests.context import parse_set_env, build_context, test_name
 from hw_tests.ssh_config import ssh_config_path
 
@@ -51,10 +49,26 @@ def pytest_collection_modifyitems(config, items):
     items[:] = selected
 
 
-@pytest.fixture
-def context(request):
-    test_dir = Path(request.fspath).parent
-    return build_context(test_dir, parse_set_env())
+def pytest_generate_tests(metafunc):
+    if "context" not in metafunc.fixturenames:
+        return
+
+    test_dir = Path(metafunc.definition.fspath).parent
+    context = build_context(test_dir, parse_set_env())
+
+    needs = context.get("needs")
+    if not needs:
+        contexts = [context]
+    elif all(isinstance(need, str) for need in needs):
+        contexts = [{**context, "needs": needs}]
+    else:
+        contexts = [{**context, "needs": need} for need in needs]
+
+    ids = [
+        "+".join(context["needs"]) if "needs" in context else context["name"]
+        for context in contexts
+    ]
+    metafunc.parametrize("context", contexts, ids=ids)
 
 
 def _addoption_once(group, *args, **kwargs):
@@ -63,4 +77,3 @@ def _addoption_once(group, *args, **kwargs):
     except ValueError as exc:
         if "already added" not in str(exc):
             raise
-

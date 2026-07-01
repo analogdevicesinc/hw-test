@@ -91,4 +91,6 @@ def build_context(test_dir: Path, overrides: list[dict]) -> dict:
             break
 
     context = deep_merge(context, override)
+    if isinstance(context.get("needs"), str):
+        context["needs"] = [context["needs"]]
     return context
