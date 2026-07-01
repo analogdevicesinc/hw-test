@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 class LabgridClient:
     def __init__(self, context):
         self.context = context
+        self._configure_identity()
         self.coordinator = self._resolve_coordinator()
         self.place = self._resolve_place()
         self.config = Path("envs") / f"{self.place}.yaml"
@@ -29,6 +30,12 @@ class LabgridClient:
         self._opkssh = None
 
         logger.info("Labgrid place: %s", self.place)
+
+    def _configure_identity(self):
+        if "LG_USERNAME" in environ or "GITHUB_RUN_ID" not in environ:
+            return
+
+        environ["LG_USERNAME"] = f"labgrid-client-{environ['GITHUB_RUN_ID']}"
 
     def _resolve_coordinator(self):
         coordinator = self.context.get("labgrid_coordinator") or environ.get(
