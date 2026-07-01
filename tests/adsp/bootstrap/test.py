@@ -52,9 +52,14 @@ def test_bootstrap(context):
         console.expect("U-Boot", timeout=30)
         console.expect(uboot_driver.prompt, timeout=30)
 
-        with exporter_http_server(ssh, kernel, devicetree):
+        with exporter_http_server(ssh, kernel, devicetree) as port:
             console.sendline("dhcp")
             console.expect(uboot_driver.prompt, timeout=120)
+
+            # This is not the part of real bootstrapp flow in documentation,
+            # but it is needed to avoid collisions on exporter.
+            console.sendline(f"setenv httpdstp {port}")
+            console.expect(uboot_driver.prompt, timeout=30)
 
             console.sendline(
                 f"wget ${{kernel_addr_r}} {openocd.interface.host}:/{kernel.name}"
