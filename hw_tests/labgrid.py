@@ -5,6 +5,8 @@ from pathlib import Path
 from time import monotonic, sleep
 import logging
 import shlex
+import shutil
+import subprocess
 
 from labgrid import Environment
 from labgrid.remote.client import start_session
@@ -16,15 +18,16 @@ from hw_tests.ssh_config import SSHConfig
 
 logger = logging.getLogger(__name__)
 
+ENVIRONMENT_TAG = "environment"
+EXPORTER_USERNAME_ENV = "LG_EXP_USERNAME"
+
 
 class LabgridClient:
     def __init__(self, context):
         self.context = context
         self._configure_identity()
         self.coordinator = self._resolve_coordinator()
-        self.place = self._resolve_place()
-        self.config = Path("envs") / f"{self.place}.yaml"
-        assert self.config.is_file(), f"missing labgrid config: {self.config}"
+        self.place, self.environment = self._resolve_place()
 
         self.hosts = set()
         self.ssh_config = SSHConfig()
@@ -58,27 +61,46 @@ class LabgridClient:
             try:
                 owner = f"{session.gethostname()}/{session.getuser()}"
                 matches = []
+                configured = []
                 candidates = []
+                invalid_environments = []
                 for place in session.places.values():
                     tags = set(place.tags)
-                    tags.update(str(value) for value in place.tags.values())
-                    if not (
-                        all(need in tags for need in needs)
-                        and (Path("envs") / f"{place.name}.yaml").is_file()
-                    ):
+                    tags.update(
+                        str(value)
+                        for key, value in place.tags.items()
+                        if key != ENVIRONMENT_TAG
+                    )
+                    if not all(need in tags for need in needs):
                         continue
 
                     matches.append(place)
+                    environment = place.tags.get(ENVIRONMENT_TAG)
+                    if not environment:
+                        invalid_environments.append(
+                            f"{place.name}: missing or empty {ENVIRONMENT_TAG!r} tag"
+                        )
+                        continue
+
+                    configured.append(place)
                     if place.acquired in (None, owner):
-                        candidates.append(place)
+                        candidates.append((place, environment))
 
                 assert matches, f"no place found for needs: {needs}"
+                assert configured, (
+                    f"no place with a usable {ENVIRONMENT_TAG!r} tag found for "
+                    f"needs: {needs} ({'; '.join(invalid_environments)})"
+                )
                 if candidates:
-                    return sorted(candidates, key=lambda place: place.name)[0].name
+                    place, environment = sorted(
+                        candidates, key=lambda candidate: candidate[0].name
+                    )[0]
+                    return place.name, environment
 
                 if monotonic() >= deadline:
                     acquired_by = ", ".join(
-                        f"{place.name} by {place.acquired}" for place in matches
+                        f"{place.name} by {place.acquired}"
+                        for place in configured
                     )
                     raise AssertionError(
                         f"no available place found for needs after "
@@ -114,55 +136,97 @@ class LabgridClient:
 
         self._opkssh = OPKSSH(self)
 
+    def _set_ssh_user(self, env):
+        username = environ.get(EXPORTER_USERNAME_ENV)
+        if not username:
+            return
+
+        target = env.config.get_targets().get(self.place, {})
+        resources = target.get("resources", {})
+        network_service = resources.get("NetworkService")
+        if network_service is not None:
+            network_service["username"] = username
+
     @contextmanager
     def acquire(self):
         """Acquire the selected labgrid place and yield its target."""
-        env = Environment(str(self.config))
-        env.config.set_option("coordinator_address", self.coordinator)
-
-        session = start_session(
-            self.coordinator,
-            extra={
-                "args": Namespace(
-                    allow_unmatched=False,
-                    initial_state=None,
-                    kick=False,
-                    place=self.place,
-                    state=None,
-                ),
-                "env": env,
-                "role": self.place,
-            },
+        directory = subprocess.run(
+            ["mktemp", "-d", "/tmp/hw-test-labgrid.XXXXXX"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        assert directory.startswith("/tmp/hw-test-labgrid."), (
+            f"unexpected dir: {directory}"
         )
-        acquired = False
 
         try:
-            place = session.get_place(self.place)
-            owner = f"{session.gethostname()}/{session.getuser()}"
-            if place.acquired == owner:
-                session.check_matches(place)
-            else:
-                session.loop.run_until_complete(session.acquire())
-                acquired = True
+            config = Path(directory) / "environment.yaml"
+            config.write_text(self.environment, encoding="utf-8")
 
-            place = session.get_acquired_place(self.place)
-            self._configure_ssh(session, place)
-
-            target = session._get_target(place)
-            yield target
-        finally:
             try:
-                env.cleanup()
+                env = Environment(str(config))
+            except Exception as exc:
+                raise AssertionError(
+                    f"invalid {ENVIRONMENT_TAG!r} tag for place {self.place}: {exc}"
+                ) from exc
+
+            session = None
+            acquired = False
+
+            try:
+                targets = env.config.get_targets()
+                assert self.place in targets, (
+                    f"{ENVIRONMENT_TAG!r} tag for place {self.place} does not "
+                    f"define target {self.place!r}"
+                )
+                self._set_ssh_user(env)
+                env.config.set_option("coordinator_address", self.coordinator)
+
+                session = start_session(
+                    self.coordinator,
+                    extra={
+                        "args": Namespace(
+                            allow_unmatched=False,
+                            initial_state=None,
+                            kick=False,
+                            place=self.place,
+                            state=None,
+                        ),
+                        "env": env,
+                        "role": self.place,
+                    },
+                )
+
+                place = session.get_place(self.place)
+                owner = f"{session.gethostname()}/{session.getuser()}"
+                if place.acquired == owner:
+                    session.check_matches(place)
+                else:
+                    session.loop.run_until_complete(session.acquire())
+                    acquired = True
+
+                place = session.get_acquired_place(self.place)
+                self._configure_ssh(session, place)
+
+                target = session._get_target(place)
+                yield target
             finally:
                 try:
-                    if acquired:
-                        session.loop.run_until_complete(session.release())
+                    env.cleanup()
                 finally:
-                    try:
-                        session.loop.run_until_complete(session.stop())
-                    finally:
-                        session.loop.run_until_complete(session.close())
-                        sshmanager.close_all()
+                    if session is not None:
+                        try:
+                            if acquired:
+                                session.loop.run_until_complete(session.release())
+                        finally:
+                            try:
+                                session.loop.run_until_complete(session.stop())
+                            finally:
+                                session.loop.run_until_complete(session.close())
+                                sshmanager.close_all()
+        finally:
+            shutil.rmtree(directory, ignore_errors=True)
 
 
 @contextmanager
