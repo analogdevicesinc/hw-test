@@ -59,7 +59,6 @@ For testing the `hw_library` library:
 $ pytest hw_tests
 ```
 
-
 ## OPKSSH
 
 `opkssh` enables ssh to be used with OpenID Connect allowing SSH access to be managed via identities instead of long-lived SSH keys.
@@ -77,3 +76,29 @@ opkssh = OPKSSH(host=host)
 
 - `coordinator`: Through `grpc`, acquires hardware and provide a exporter.
 - `exporter`: Through `ssh`, manipulates hardware. Authenticated with `opkssh`.
+
+## Documentation
+
+Install the documentation tools:
+
+```{bash}
+$ python3 -m venv ./venv
+$ source ./venv/bin/activate
+$ python3 -m ensurepip
+$ python3 -m pip install --upgrade pip
+$ (cd docs ; python3 -m pip install -r requirements.txt --upgrade)
+```
+
+Launch the live server:
+
+```{bash}
+$ adoc serve
+```
+
+Or build the documentation with Sphinx:
+
+```{bash}
+$ (cd docs ; make html)
+```
+
+The generated documentation will be available at `docs/_build/html`.
