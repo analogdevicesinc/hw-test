@@ -19,7 +19,7 @@ def find_one(path, pattern):
 @pytest.mark.bootstrap
 def test_bootstrap(context):
     github = GitHub(context)
-    images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
+    images = github.download("adi_sc598_ezkit_defconfig-bootstrap")
 
     spl = images / "u-boot-spl"
     uboot = images / "u-boot"
