@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.uboot
 def test_uboot_version(context):
     github = GitHub(context)
-    images = github.download("images-bootstrap-adi_sc598_ezkit_defconfig")
+    images = github.download("adi_sc598_ezkit_defconfig-bootstrap")
 
     spl = images / "u-boot-spl"
     uboot_image = images / "u-boot"
