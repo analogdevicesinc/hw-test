@@ -28,7 +28,7 @@ def test_bootstrap(context):
 
     client = LabgridClient(context)
     with client.acquire() as target:
-        spi_boot = target.get_driver("SerialPortDigitalOutputDriver", name="spi_boot")
+        spi_boot = target.get_driver("DigitalOutputProtocol", name="spi_boot")
         power = target.get_driver("PowerProtocol")
         ssh = target.get_driver("SSHDriver")
         openocd = target.get_driver("OpenOCDDriver", activate=False)
