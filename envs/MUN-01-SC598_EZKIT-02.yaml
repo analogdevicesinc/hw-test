@@ -21,6 +21,11 @@ targets:
       - SSHDriver:
           name: ssh
 
+      - FTDIGPIODriver:
+          name: spi_boot
+          bindings:
+            gpio: pin-d1
+
       - OpenOCDDriver:
           name: openocd
           load_commands:

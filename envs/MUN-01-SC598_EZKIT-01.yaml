@@ -21,17 +21,10 @@ targets:
       - SSHDriver:
           name: ssh
 
-      - SerialDriver:
-          name: boot_mode_serial
-          bindings:
-            port: boot-mode
-
-      - SerialPortDigitalOutputDriver:
+      - FTDIGPIODriver:
           name: spi_boot
-          signal: dtr
-          invert: true
           bindings:
-            serial: boot_mode_serial
+            gpio: pin-d0
 
       - OpenOCDDriver:
           name: openocd
