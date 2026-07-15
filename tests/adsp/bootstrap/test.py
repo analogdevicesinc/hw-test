@@ -19,12 +19,14 @@ def find_one(path, pattern):
 @pytest.mark.bootstrap
 def test_bootstrap(context):
     github = GitHub(context)
-    images = github.download("adi_sc598_ezkit_defconfig-bootstrap")
+    bootstrap = github.download("adi_sc598_ezkit_defconfig-bootstrap")
+    debug = github.download("adi_sc598_ezkit_defconfig-debug")
 
-    spl = images / "u-boot-spl"
-    uboot = images / "u-boot"
-    kernel = images / "Image"
-    devicetree = find_one(images, "*.dtb")
+    spl = bootstrap / "u-boot-spl"
+    uboot = bootstrap / "u-boot"
+    kernel = bootstrap / "Image"
+    devicetree = find_one(bootstrap, "*.dtb")
+    emmc_image = debug / "emmc.img.gz"
 
     client = LabgridClient(context)
     with client.acquire() as target:
@@ -52,11 +54,11 @@ def test_bootstrap(context):
         console.expect("U-Boot", timeout=30)
         console.expect(uboot_driver.prompt, timeout=30)
 
-        with exporter_http_server(ssh, kernel, devicetree) as port:
+        with exporter_http_server(ssh, kernel, devicetree, emmc_image) as port:
             console.sendline("dhcp")
             console.expect(uboot_driver.prompt, timeout=120)
 
-            # This is not the part of real bootstrapp flow in documentation,
+            # This is not part of the manual bootstrap flow in documentation,
             # but it is needed to avoid collisions on exporter.
             console.sendline(f"setenv httpdstp {port}")
             console.expect(uboot_driver.prompt, timeout=30)
@@ -81,6 +83,11 @@ def test_bootstrap(context):
             console.expect(re.escape("SPI install complete"), timeout=600)
             logger.info("SPI install complete")
 
+            console.expect(re.escape("Enter your PC's IP address:"), timeout=240)
+            console.sendline(f"{openocd.interface.host}:{port}")
+            console.expect(re.escape("eMMC install complete."), timeout=1800)
+            logger.info("eMMC install complete")
+
             console.expect(re.escape("Waiting for switch"), timeout=120)
 
             spi_boot.set(True)
@@ -91,3 +98,8 @@ def test_bootstrap(context):
             console.expect("U-Boot", timeout=30)
             console.expect(uboot_driver.prompt, timeout=30)
             logger.info("SPI U-Boot verified")
+
+            console.sendline("run emmcboot")
+            uboot_driver.await_boot()
+            console.expect("login:", timeout=240)
+            logger.info("eMMC Linux boot verified")
