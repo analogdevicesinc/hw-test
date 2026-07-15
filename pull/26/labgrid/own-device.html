@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="How to register a board and use it with hw-test." name="description" />
+
+    <title>Register Your Device &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=d3f78147" />
+    <script async="async" src="../_static/app.umd.js?v=26d0298f"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client Usage" href="client-repo.html" />
+    <link rel="prev" title="Hardware Model" href="hardware-place.html" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://analog.com" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Docs</label>
+        
+        <a id="logo" href="../index.html">
+          <div>Hardware Test</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root/>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Register Your Device</a><ul>
+<li><a class="reference internal" href="#identify-hardware">Identify Hardware</a></li>
+<li><a class="reference internal" href="#write-exporter-resources">Write Exporter Resources</a></li>
+<li><a class="reference internal" href="#create-the-place">Create The Place</a></li>
+<li><a class="reference internal" href="#add-the-env-file">Add The Env File</a></li>
+<li><a class="reference internal" href="#try-the-device-from-cli">Try The Device From CLI</a></li>
+<li><a class="reference internal" href="#run-a-test">Run A Test</a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../index.html">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root/>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="index.html">Labgrid Backend</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exporter-setup.html">Exporter Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware-place.html">Hardware Model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Register Your Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-repo.html">Client Usage</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="index.html">Labgrid Backend</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="register-your-device">
+<span id="labgrid-own-device"></span><h1>Register Your Device<a class="headerlink" href="#register-your-device" title="Link to this heading"></a></h1>
+<p>Use this page when you have a new board or fixture and want to use it with
+<code class="docutils literal notranslate"><span class="pre">hw-test</span></code>. The exporter host should already be prepared. If it is not, start
+with <a class="reference internal" href="exporter-setup.html#labgrid-exporter-setup"><span class="std std-ref">Exporter Setup</span></a>.</p>
+<p>The flow is:</p>
+<ol class="arabic simple">
+<li><p>identify stable hardware IDs on the exporter,</p></li>
+<li><p>add resources to <code class="docutils literal notranslate"><span class="pre">exporter.yaml</span></code>,</p></li>
+<li><p>restart and check the exporter,</p></li>
+<li><p>create a labgrid place,</p></li>
+<li><p>add an <code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> file,</p></li>
+<li><p>try the device from the CLI,</p></li>
+<li><p>run the matching pytest test.</p></li>
+</ol>
+<section id="identify-hardware">
+<h2>Identify Hardware<a class="headerlink" href="#identify-hardware" title="Link to this heading"></a></h2>
+<p>Run these commands on the exporter while the board is connected:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w"> </span>-l<span class="w"> </span>/dev/serial/by-id
+lsusb
+udevadm<span class="w"> </span>info<span class="w"> </span>--query<span class="o">=</span>property<span class="w"> </span>--name<span class="o">=</span>/dev/ttyUSB0
+labgrid-suggest
+</pre></div>
+</div>
+<p>Prefer stable matches:</p>
+<ul class="simple">
+<li><p>use <code class="docutils literal notranslate"><span class="pre">ID_SERIAL</span></code> when the adapter has a unique serial number,</p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">ID_PATH</span></code> when the physical USB port is the stable part of the setup,</p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">ID_VENDOR_ID</span></code> and <code class="docutils literal notranslate"><span class="pre">ID_MODEL_ID</span></code> for USB probes.</p></li>
+</ul>
+</section>
+<section id="write-exporter-resources">
+<h2>Write Exporter Resources<a class="headerlink" href="#write-exporter-resources" title="Link to this heading"></a></h2>
+<p>Edit the exporter config:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/labgrid/.config/labgrid/exporter.yaml
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">MUN-01-SC598_EZKIT-02</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">console</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USBSerialPort</span>
+<span class="w">    </span><span class="nt">match</span><span class="p">:</span>
+<span class="w">      </span><span class="s">&quot;@ID_SERIAL&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;Example_UART_1234&quot;</span>
+<span class="w">  </span><span class="nt">debugger</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USBDebugger</span>
+<span class="w">    </span><span class="nt">match</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ID_PATH</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;pci-0000:00:14.0-usb-0:12.2.1&quot;</span>
+<span class="w">  </span><span class="nt">power</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPowerPort</span>
+<span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;http://power-controller.example&quot;</span>
+<span class="w">    </span><span class="nt">index</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">shared-ftdi</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pin-d3</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkSysfsGPIO</span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lab-exporter-01&quot;</span>
+<span class="w">    </span><span class="nt">index</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123</span>
+</pre></div>
+</div>
+<p>Restart and check the exporter:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>env<span class="w"> </span><span class="nv">XDG_RUNTIME_DIR</span><span class="o">=</span><span class="s2">&quot;/run/user/</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>runuser<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>--<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>restart<span class="w"> </span>labgrid-exporter.service
+sudo<span class="w"> </span>env<span class="w"> </span><span class="nv">XDG_RUNTIME_DIR</span><span class="o">=</span><span class="s2">&quot;/run/user/</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>runuser<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>--<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
+</pre></div>
+</div>
+<p>If the service fails, fix that first. A client cannot see resources from an
+exporter that did not start.</p>
+</section>
+<section id="create-the-place">
+<h2>Create The Place<a class="headerlink" href="#create-the-place" title="Link to this heading"></a></h2>
+<p>Run these commands from a client with <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> set:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator-hostname&gt;
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>create
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/MUN-01-SC598_EZKIT-02/*&#39;</span>
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/shared-ftdi/*&#39;</span>
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>set-tags<span class="w"> </span><span class="nv">family</span><span class="o">=</span>adsp<span class="w"> </span><span class="nv">board</span><span class="o">=</span>sc598<span class="w"> </span><span class="nv">kind</span><span class="o">=</span>ezkit
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>show
+</pre></div>
+</div>
+<p>The tags must match the <code class="docutils literal notranslate"><span class="pre">needs</span></code> list of the tests that should run on this
+board.</p>
+</section>
+<section id="add-the-env-file">
+<h2>Add The Env File<a class="headerlink" href="#add-the-env-file" title="Link to this heading"></a></h2>
+<p>Create an env file in this repository:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>envs/MUN-01-SC598_EZKIT-02.yaml
+</pre></div>
+</div>
+<p>The filename must match the place name. A simple ADSP-style env looks like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">targets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">MUN-01-SC598_EZKIT-02</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">RemotePlace</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MUN-01-SC598_EZKIT-02&quot;</span>
+<span class="w">      </span><span class="nt">NetworkService</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;labgrid-client&quot;</span>
+<span class="w">        </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.44.3.61&quot;</span>
+
+<span class="w">    </span><span class="nt">drivers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
+<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">console</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">NetworkPowerDriver</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
+<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SSHDriver</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">FTDIGPIODriver</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spi_boot</span>
+<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">gpio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pin-d3</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">OpenOCDDriver</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openocd</span>
+<span class="w">          </span><span class="nt">load_commands</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;init&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;autoboot_elf&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;shutdown&quot;</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">UBootDriver</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uboot</span>
+<span class="w">          </span><span class="nt">prompt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;=&gt;</span><span class="nv"> </span><span class="s">&quot;</span>
+<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">console</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
+</pre></div>
+</div>
+</section>
+<section id="try-the-device-from-cli">
+<h2>Try The Device From CLI<a class="headerlink" href="#try-the-device-from-cli" title="Link to this heading"></a></h2>
+<p>Acquire the place:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>acquire
+</pre></div>
+</div>
+<p>Then test one operation at a time:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>io<span class="w"> </span>low<span class="w"> </span>pin-d3
+labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>power<span class="w"> </span>cycle
+labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot-spl<span class="w"> </span>:u-boot-spl
+labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot<span class="w"> </span>:u-boot
+labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>bootstrap<span class="w"> </span>dummy
+labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>console
+</pre></div>
+</div>
+<p>Release when done:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>release
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">bootstrap</span> <span class="pre">dummy</span></code> is used here because the ADSP OpenOCD <code class="docutils literal notranslate"><span class="pre">load_commands</span></code> load
+<code class="docutils literal notranslate"><span class="pre">u-boot-spl</span></code> and <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> from the exporter. The filename argument is not
+used by that command sequence.</p>
+</section>
+<section id="run-a-test">
+<h2>Run A Test<a class="headerlink" href="#run-a-test" title="Link to this heading"></a></h2>
+<p>After the CLI flow works, run one pytest test:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvs
+</pre></div>
+</div>
+<p>Start with one test and one place. Do not begin with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while
+bringing up a new setup.</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="hardware-place.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Hardware Model</a>
+    <a href="client-repo.html" title="Next document (Alt+Shift+RightArrow)" class="next">Client Usage</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>

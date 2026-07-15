@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="How to run one hw-test hardware test locally." name="description" />
+
+    <title>Getting started &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=d3f78147" />
+    <script async="async" src="../_static/app.umd.js?v=26d0298f"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Exporter Setup" href="exporter-setup.html" />
+    <link rel="prev" title="Labgrid Backend" href="index.html" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://analog.com" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Docs</label>
+        
+        <a id="logo" href="../index.html">
+          <div>Hardware Test</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root/>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Getting started</a></li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../index.html">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root/>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="index.html">Labgrid Backend</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exporter-setup.html">Exporter Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hardware-place.html">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="own-device.html">Register Your Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-repo.html">Client Usage</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="index.html">Labgrid Backend</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="getting-started">
+<span id="labgrid-getting-started"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<p>This page shows the smallest useful local workflow.</p>
+<p>The goal is simple. Run one hardware test from your shell and see that
+<code class="docutils literal notranslate"><span class="pre">hw-test</span></code> can acquire a board through labgrid.</p>
+<p>Before starting, you need:</p>
+<ul class="simple">
+<li><p>a labgrid coordinator address,</p></li>
+<li><p>at least one exporter connected to that coordinator,</p></li>
+<li><p>a labgrid place with tags matching the test you want to run,</p></li>
+<li><p>an <code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> file for that place,</p></li>
+<li><p>SSH access to the exporter user used by the env file.</p></li>
+</ul>
+<p>Start from a checkout of <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[test]&#39;</span>
+</pre></div>
+</div>
+<p>This creates a Python environment and installs <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> in editable mode.</p>
+<p>Next, tell labgrid where the coordinator is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator&gt;
+</pre></div>
+</div>
+<p>Run one small test first:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/smoke&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/smoke/test.py<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">set</span></code> variable is the test context override. The most important field is
+<code class="docutils literal notranslate"><span class="pre">name</span></code>. It should match the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>.</p>
+<p>For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<p>This tells <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> to build the context for <code class="docutils literal notranslate"><span class="pre">tests/adsp/u-boot</span></code> and run
+that test.</p>
+<p>Some tests have their own Python requirements. Install them before running the
+test:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/u-boot/requirements.txt
+<span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<p>If a test downloads artifacts from GitHub Actions, set <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
+pass the workflow run URL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>&lt;token&gt;
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;, &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-vvs
+</pre></div>
+</div>
+<p>When you are still bringing up a setup, avoid this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests
+</pre></div>
+</div>
+<p>That can run many hardware tests and acquire every matching board. Start with
+one test, one place, and one board.</p>
+<p>If the local run fails, check these first:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> points to the right coordinator.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">places</span></code> shows the expected place.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;place&gt;</span> <span class="pre">show</span></code> shows the expected matches and tags.</p></li>
+<li><p>The test’s <code class="docutils literal notranslate"><span class="pre">needs</span></code> list matches the place tags.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> exists.</p></li>
+<li><p>SSH to the exporter works for the <code class="docutils literal notranslate"><span class="pre">NetworkService</span></code> user.</p></li>
+</ul>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="index.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Labgrid Backend</a>
+    <a href="exporter-setup.html" title="Next document (Alt+Shift+RightArrow)" class="next">Exporter Setup</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>
