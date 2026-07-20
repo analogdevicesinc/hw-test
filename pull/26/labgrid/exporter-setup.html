@@ -4,9 +4,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="How to prepare a labgrid exporter host for hw-test." name="description" />
+<meta content="How to prepare a labgrid exporter host for hardware tests." name="description" />
 
-    <title>Exporter Setup &#8212; Hardware Test  documentation</title>
+    <title>Exporter setup &#8212; Hardware Test  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
     <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=d3f78147" />
     <script async="async" src="../_static/app.umd.js?v=26d0298f"></script>
@@ -92,12 +92,12 @@
         </div>
         <nav>
           <ul>
-<li><a class="reference internal" href="#">Exporter Setup</a><ul>
-<li><a class="reference internal" href="#install-packages">Install Packages</a></li>
-<li><a class="reference internal" href="#users-and-permissions">Users And Permissions</a></li>
+<li><a class="reference internal" href="#">Exporter setup</a><ul>
+<li><a class="reference internal" href="#install-packages">Install packages</a></li>
+<li><a class="reference internal" href="#users-and-permissions">Users and permissions</a></li>
 <li><a class="reference internal" href="#directories">Directories</a></li>
-<li><a class="reference internal" href="#install-labgrid">Install Labgrid</a></li>
-<li><a class="reference internal" href="#ssh-and-opkssh">SSH And OPKSSH</a></li>
+<li><a class="reference internal" href="#install-labgrid">Install labgrid</a></li>
+<li><a class="reference internal" href="#ssh-and-opkssh">SSH and OPKSSH</a></li>
 <li><a class="reference internal" href="#exporter-service">Exporter Service</a></li>
 </ul>
 </li>
@@ -125,15 +125,15 @@ Content on this topic
 </div>
 <div class="toc-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
 <li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="index.html">Labgrid Backend</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting started</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Exporter Setup</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Exporter setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hardware-place.html">Hardware Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="own-device.html">Register Your Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="client-repo.html">Client Usage</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
 </ul>
 
 
@@ -150,7 +150,7 @@ Content on this topic
           <div class="body" role="main">
             
   <section id="exporter-setup">
-<span id="labgrid-exporter-setup"></span><h1>Exporter Setup<a class="headerlink" href="#exporter-setup" title="Link to this heading"></a></h1>
+<span id="labgrid-exporter-setup"></span><h1>Exporter setup<a class="headerlink" href="#exporter-setup" title="Link to this heading"></a></h1>
 <p>An exporter is the machine connected to the hardware. It owns the USB serial
 adapters, debug probes, power controllers, GPIO lines, and files staged for
 OpenOCD or U-Boot. The coordinator tracks those resources, but the exporter is
@@ -160,7 +160,7 @@ running, see <a class="reference internal" href="own-device.html#labgrid-own-dev
 <p>For the complete labgrid exporter syntax, use the upstream
 <a class="icon link reference external" href="https://labgrid.readthedocs.io/en/latest/configuration.html#exporter-configuration" target="_blank" title="(in labgrid v0.1)"><span>Exporter Configuration</span></a> reference.</p>
 <section id="install-packages">
-<h2>Install Packages<a class="headerlink" href="#install-packages" title="Link to this heading"></a></h2>
+<h2>Install packages<a class="headerlink" href="#install-packages" title="Link to this heading"></a></h2>
 <p>Install Python, SSH, serial tools, udev, and the tools needed by your debug
 stack. Use the OpenOCD package from the system if it supports the board. Build a
 custom OpenOCD only when the board support is not available in the package.</p>
@@ -203,13 +203,12 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w
 </div>
 </div></div></section>
 <section id="users-and-permissions">
-<h2>Users And Permissions<a class="headerlink" href="#users-and-permissions" title="Link to this heading"></a></h2>
+<h2>Users and permissions<a class="headerlink" href="#users-and-permissions" title="Link to this heading"></a></h2>
 <p>Use two Unix users:</p>
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">labgrid</span></code></dt><dd><p>Runs <code class="docutils literal notranslate"><span class="pre">labgrid-exporter</span></code> as a systemd user service.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">labgrid</span></code></dt><dd><p>Owns <code class="docutils literal notranslate"><span class="pre">labgrid-exporter</span></code> as a systemd user service.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">labgrid-client</span></code></dt><dd><p>Is used by clients and tests for SSH, <code class="docutils literal notranslate"><span class="pre">scp</span></code>, <code class="docutils literal notranslate"><span class="pre">rsync</span></code>, and remote helper
-commands.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">labgrid-client</span></code></dt><dd><p>Acts like an “SSH jump host”, is used by clients and tests to reach the target.</p>
 </dd>
 </dl>
 <p>Both users need access to serial ports, GPIO devices, USB debug probes, and the
@@ -231,10 +230,10 @@ sudo<span class="w"> </span>useradd<span class="w"> </span>--create-home<span cl
 sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid-client
 </pre></div>
 </div>
-<p>Start a new login session after changing group membership. For the exporter
-service, restart the user service manager:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">uid</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="k">)</span><span class="s2">&quot;</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span><span class="s2">&quot;user@</span><span class="si">${</span><span class="nv">uid</span><span class="si">}</span><span class="s2">.service&quot;</span>
+<p>Terminate the <code class="docutils literal notranslate"><span class="pre">labgrid</span></code> user to refresh group memberships, and enable
+linger so the exporter service can start at boot.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>loginctl<span class="w"> </span>terminate-user<span class="w"> </span>labgrid
+sudo<span class="w"> </span>loginctl<span class="w"> </span>enable-linger<span class="w"> </span>labgrid
 </pre></div>
 </div>
 <p>Check real device permissions before debugging labgrid:</p>
@@ -259,11 +258,12 @@ sudo<span class="w"> </span>udevadm<span class="w"> </span>trigger
 <section id="directories">
 <h2>Directories<a class="headerlink" href="#directories" title="Link to this heading"></a></h2>
 <p>Create the directories used by labgrid and by file staging:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>labgrid<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">0755</span><span class="w"> </span>/home/labgrid
-sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>labgrid<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">0755</span><span class="w"> </span>/home/labgrid/.config/labgrid
-sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>labgrid<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">0755</span><span class="w"> </span>/home/labgrid/.config/systemd/user
-sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>labgrid<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">0755</span><span class="w"> </span>/home/labgrid/.local/bin
-sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>labgrid<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">0755</span><span class="w"> </span>/home/labgrid/.local/share/venvs
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
+mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/labgrid
+mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/systemd/user
+mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/bin
+mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/venvs
+<span class="nb">exit</span>
 sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>root<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">2775</span><span class="w"> </span>/var/cache/labgrid
 </pre></div>
 </div>
@@ -272,36 +272,37 @@ OpenOCD, <code class="docutils literal notranslate"><span class="pre">scp</span>
 strict.</p>
 </section>
 <section id="install-labgrid">
-<h2>Install Labgrid<a class="headerlink" href="#install-labgrid" title="Link to this heading"></a></h2>
+<h2>Install labgrid<a class="headerlink" href="#install-labgrid" title="Link to this heading"></a></h2>
 <p>Install labgrid in a venv owned by the <code class="docutils literal notranslate"><span class="pre">labgrid</span></code> user:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/labgrid-project/labgrid.git<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/home/labgrid/labgrid
-sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/home/labgrid/.local/share/venvs/labgrid
-sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>/home/labgrid/.local/share/venvs/labgrid/bin/python<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
-sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>/home/labgrid/.local/share/venvs/labgrid/bin/python<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>/home/labgrid/labgrid
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/labgrid-project/labgrid.git<span class="w"> </span>~/labgrid
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>~/.local/share/venvs/labgrid
+~/.local/share/venvs/labgrid/bin/pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+~/.local/share/venvs/labgrid/bin/pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>~/labgrid
+<span class="nb">exit</span>
 </pre></div>
 </div>
 <p>Expose the commands:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>ln<span class="w"> </span>-sfn<span class="w"> </span>/home/labgrid/.local/share/venvs/labgrid/bin/labgrid-client<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/usr/local/bin/labgrid-client
-sudo<span class="w"> </span>ln<span class="w"> </span>-sfn<span class="w"> </span>/home/labgrid/.local/share/venvs/labgrid/bin/labgrid-exporter<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/usr/local/bin/labgrid-exporter
-labgrid-client<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
-labgrid-exporter<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
+ln<span class="w"> </span>-sfn<span class="w"> </span>~/.local/share/venvs/labgrid/bin/labgrid-client<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>~/.local/bin/labgrid-client
+ln<span class="w"> </span>-sfn<span class="w"> </span>~/.local/share/venvs/labgrid/bin/labgrid-exporter<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>~/.local/bin/labgrid-exporter
+~/.local/bin/labgrid-client<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
+~/.local/bin/labgrid-exporter<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
+<span class="nb">exit</span>
 </pre></div>
 </div>
 </section>
 <section id="ssh-and-opkssh">
-<h2>SSH And OPKSSH<a class="headerlink" href="#ssh-and-opkssh" title="Link to this heading"></a></h2>
+<h2>SSH and OPKSSH<a class="headerlink" href="#ssh-and-opkssh" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">hw-test</span></code> needs SSH to the exporter because tests copy files and run commands
 on the exporter. For local development, normal SSH keys are enough:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-copy-id<span class="w"> </span>labgrid-client@lab-exporter-01
 ssh<span class="w"> </span>labgrid-client@lab-exporter-01<span class="w"> </span><span class="nb">true</span>
 </pre></div>
 </div>
-<p>In GitHub Actions, <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> can use OPKSSH. The test helper downloads
+<p>In GitHub Actions, <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> uses OPKSSH. The test helper downloads
 <code class="docutils literal notranslate"><span class="pre">opkssh</span></code> if needed, runs <code class="docutils literal notranslate"><span class="pre">opkssh</span> <span class="pre">login</span> <span class="pre">github</span></code>, writes an <code class="docutils literal notranslate"><span class="pre">_ssh_config</span></code>
 file, and checks SSH access before running the test. The workflow job must have:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">permissions</span><span class="p">:</span>
@@ -316,17 +317,18 @@ only performs the client login and SSH check.</p>
 </section>
 <section id="exporter-service">
 <h2>Exporter Service<a class="headerlink" href="#exporter-service" title="Link to this heading"></a></h2>
-<p>Create an empty exporter config file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>touch<span class="w"> </span>/home/labgrid/.config/labgrid/exporter.yaml
+<p>Create an empty exporter config file and
+use the service file shipped by labgrid as the base:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
+touch<span class="w"> </span>~/.config/labgrid/exporter.yaml
+install<span class="w"> </span>-m<span class="w"> </span><span class="m">0644</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>~/labgrid/contrib/systemd/labgrid-exporter.service<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>~/.config/systemd/user/labgrid-exporter.service
+<span class="nb">exit</span>
 </pre></div>
 </div>
-<p>Use the service file shipped by labgrid as the base:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>install<span class="w"> </span>-m<span class="w"> </span><span class="m">0644</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/home/labgrid/labgrid/contrib/systemd/labgrid-exporter.service<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/home/labgrid/.config/systemd/user/labgrid-exporter.service
-</pre></div>
-</div>
-<p>Edit the copied service file:</p>
+<p>Edit the copied service file. At least set <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> to your labgrid
+coordinator:</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">Labgrid Exporter</span>
 <span class="na">After</span><span class="o">=</span><span class="s">network-online.target</span>
@@ -336,7 +338,7 @@ only performs the client login and SSH check.</p>
 <span class="k">[Service]</span>
 <span class="na">Environment</span><span class="o">=</span><span class="s">&quot;LG_COORDINATOR=labgrid-coordinator.example.com&quot;</span>
 <span class="na">EnvironmentFile</span><span class="o">=</span><span class="s">-/etc/environment</span>
-<span class="na">ExecStart</span><span class="o">=</span><span class="s">/home/labgrid/.local/bin/labgrid-exporter -d --hostname lab-exporter-01 /home/labgrid/.config/labgrid/exporter.yaml</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">%h/.local/bin/labgrid-exporter -d --hostname lab-exporter-01 %h/.config/labgrid/exporter.yaml</span>
 <span class="na">Restart</span><span class="o">=</span><span class="s">always</span>
 <span class="na">RestartSec</span><span class="o">=</span><span class="s">30</span>
 <span class="na">User</span><span class="o">=</span><span class="s">labgrid</span>
@@ -348,16 +350,8 @@ only performs the client login and SSH check.</p>
 </pre></div>
 </div>
 <p>Enable the service:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>chown<span class="w"> </span>labgrid:labgrid<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/home/labgrid/.config/labgrid/exporter.yaml<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/home/labgrid/.config/systemd/user/labgrid-exporter.service
-sudo<span class="w"> </span>loginctl<span class="w"> </span>enable-linger<span class="w"> </span>labgrid
-<span class="nv">uid</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="k">)</span><span class="s2">&quot;</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span><span class="s2">&quot;user@</span><span class="si">${</span><span class="nv">uid</span><span class="si">}</span><span class="s2">.service&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-sudo<span class="w"> </span>env<span class="w"> </span><span class="nv">XDG_RUNTIME_DIR</span><span class="o">=</span><span class="s2">&quot;/run/user/</span><span class="si">${</span><span class="nv">uid</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>runuser<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>--<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>daemon-reload
-sudo<span class="w"> </span>env<span class="w"> </span><span class="nv">XDG_RUNTIME_DIR</span><span class="o">=</span><span class="s2">&quot;/run/user/</span><span class="si">${</span><span class="nv">uid</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>runuser<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>--<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>labgrid-exporter.service
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>labgrid-exporter.service
 </pre></div>
 </div>
 <p>Open the console proxy port range:</p>
@@ -367,8 +361,7 @@ sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--reload
 </pre></div>
 </div>
 <p>Check the service:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>env<span class="w"> </span><span class="nv">XDG_RUNTIME_DIR</span><span class="o">=</span><span class="s2">&quot;/run/user/</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>runuser<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>--<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
 </pre></div>
 </div>
 <p>If the service starts, the exporter host is ready. The next step is to register

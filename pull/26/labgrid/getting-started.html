@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="How to run one hw-test hardware test locally." name="description" />
+<meta content="How to run one hardware test locally." name="description" />
 
     <title>Getting started &#8212; Hardware Test  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
@@ -12,7 +12,7 @@
     <script async="async" src="../_static/app.umd.js?v=26d0298f"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Exporter Setup" href="exporter-setup.html" />
+    <link rel="next" title="Exporter setup" href="exporter-setup.html" />
     <link rel="prev" title="Labgrid Backend" href="index.html" />
    
   
@@ -117,15 +117,15 @@ Content on this topic
 </div>
 <div class="toc-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
 <li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="index.html">Labgrid Backend</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Getting started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exporter-setup.html">Exporter Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exporter-setup.html">Exporter setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hardware-place.html">Hardware Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="own-device.html">Register Your Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="client-repo.html">Client Usage</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
 </ul>
 
 
@@ -157,8 +157,8 @@ Content on this topic
 <p>Start from a checkout of <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
-python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[test]&#39;</span>
+pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+pip3<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[test]&#39;</span>
 </pre></div>
 </div>
 <p>This creates a Python environment and installs <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> in editable mode.</p>
@@ -171,7 +171,7 @@ python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </s
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">set</span></code> variable is the test context override. The most important field is
-<code class="docutils literal notranslate"><span class="pre">name</span></code>. It should match the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">name</span></code>. It must match the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>.</p>
 <p>For example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvv
 </pre></div>
@@ -180,25 +180,59 @@ python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </s
 that test.</p>
 <p>Some tests have their own Python requirements. Install them before running the
 test:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/u-boot/requirements.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/u-boot/requirements.txt
 <span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvv
 </pre></div>
 </div>
 <p>If a test downloads artifacts from GitHub Actions, set <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
 pass the workflow run URL:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>&lt;token&gt;
+<div class="code-shell"><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span>export GITHUB_TOKEN=&lt;token&gt;
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;, &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-vvs
+<div class="clear-left"></div></div></div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{</span>
+<span class="s1">  &quot;name&quot;: &quot;adsp/bootstrap&quot;,</span>
+<span class="s1">  &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;</span>
+<span class="s1">}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-vvs
 </pre></div>
 </div>
-<p>When you are still bringing up a setup, avoid this:</p>
+<p>Or provide local built artifacts at the expected path; the log guides you
+through the necessary setup:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-s
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> WARNING hw_tests.github:
+   Neither &#39;workflow_run_url&#39; in context or &#39;GITHUB_REPOSITORY&#39; in environment,
+   cannot download artifacts; assuming you have them at
+   &#39;/hw-test/_artifacts/adsp/bootstrap/0&#39;
+ FAILED tests/adsp/bootstrap/test.py::test_bootstrap[sc598+ezkit] -
+ AssertionError: missing /hw-test/_artifacts/adsp/bootstrap/0/*.dtb
+ = 1 failed in 0.06s =
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>/path/to/my.dtb<span class="w"> </span>/hw-test/_artifacts/adsp/bootstrap/0/my.dtb
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-s
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> [...] SUCCESS
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>When you are still bringing up a setup, avoid running all tests:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests
 </pre></div>
 </div>
-<p>That can run many hardware tests and acquire every matching board. Start with
-one test, one place, and one board.</p>
+<p>That <strong>will</strong> try to acquire every matching board and run all hardware tests.
+Start with one test, one place, and one board.</p>
 <p>If the local run fails, check these first:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> points to the right coordinator.</p></li>
@@ -215,7 +249,7 @@ one test, one place, and one board.</p>
               <div class="related">
                 &nbsp;
     <a href="index.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Labgrid Backend</a>
-    <a href="exporter-setup.html" title="Next document (Alt+Shift+RightArrow)" class="next">Exporter Setup</a>
+    <a href="exporter-setup.html" title="Next document (Alt+Shift+RightArrow)" class="next">Exporter setup</a>
               </div>
           
         </div>

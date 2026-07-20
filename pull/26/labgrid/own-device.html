@@ -125,15 +125,15 @@ Content on this topic
 </div>
 <div class="toc-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
 <li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="index.html">Labgrid Backend</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exporter-setup.html">Exporter Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exporter-setup.html">Exporter setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hardware-place.html">Hardware Model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Register Your Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="client-repo.html">Client Usage</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
 </ul>
 
 
@@ -153,7 +153,7 @@ Content on this topic
 <span id="labgrid-own-device"></span><h1>Register Your Device<a class="headerlink" href="#register-your-device" title="Link to this heading"></a></h1>
 <p>Use this page when you have a new board or fixture and want to use it with
 <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>. The exporter host should already be prepared. If it is not, start
-with <a class="reference internal" href="exporter-setup.html#labgrid-exporter-setup"><span class="std std-ref">Exporter Setup</span></a>.</p>
+with <a class="reference internal" href="exporter-setup.html#labgrid-exporter-setup"><span class="std std-ref">Exporter setup</span></a>.</p>
 <p>The flow is:</p>
 <ol class="arabic simple">
 <li><p>identify stable hardware IDs on the exporter,</p></li>
@@ -210,10 +210,8 @@ labgrid-suggest
 </pre></div>
 </div>
 <p>Restart and check the exporter:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>env<span class="w"> </span><span class="nv">XDG_RUNTIME_DIR</span><span class="o">=</span><span class="s2">&quot;/run/user/</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>runuser<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>--<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>restart<span class="w"> </span>labgrid-exporter.service
-sudo<span class="w"> </span>env<span class="w"> </span><span class="nv">XDG_RUNTIME_DIR</span><span class="o">=</span><span class="s2">&quot;/run/user/</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>runuser<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>--<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>restart<span class="w"> </span>labgrid-exporter.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
 </pre></div>
 </div>
 <p>If the service fails, fix that first. A client cannot see resources from an
