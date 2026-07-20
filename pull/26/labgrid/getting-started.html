@@ -186,10 +186,10 @@ test:</p>
 </div>
 <p>If a test downloads artifacts from GitHub Actions, set <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
 pass the workflow run URL:</p>
-<div class="code-shell"><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span>export GITHUB_TOKEN=&lt;token&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>&lt;token&gt;
 </pre></div>
 </div>
-<div class="clear-left"></div></div></div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{</span>
 <span class="s1">  &quot;name&quot;: &quot;adsp/bootstrap&quot;,</span>
 <span class="s1">  &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;</span>
 <span class="s1">}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-vvs
