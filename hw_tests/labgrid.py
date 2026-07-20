@@ -50,6 +50,7 @@ class LabgridClient:
     def _resolve_place(self):
         needs = self.context.get("needs")
         assert needs, "missing needs in test config"
+        requested = self.context.get("labgrid_target")
 
         # Wait for a place that matches the needs and is not acquired by another user for 1 hour
         deadline = monotonic() + 60 * 60
@@ -60,6 +61,10 @@ class LabgridClient:
                 matches = []
                 candidates = []
                 for place in session.places.values():
+                    if requested and place.name != requested:
+                        continue
+                    if requested:
+                        logger.debug("Explicit labgrid target found: %s", requested)
                     tags = set(place.tags)
                     tags.update(str(value) for value in place.tags.values())
                     if not (
