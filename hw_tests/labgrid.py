@@ -33,10 +33,26 @@ class LabgridClient:
         logger.info("Labgrid place: %s", self.place)
 
     def _configure_identity(self):
+        self._workflow_owner = None
         if "LG_USERNAME" in environ or "GITHUB_RUN_ID" not in environ:
             return
 
-        environ["LG_USERNAME"] = f"labgrid-client-{environ['GITHUB_RUN_ID']}"
+        self._workflow_owner = (
+            f"labgrid-client-{environ['GITHUB_RUN_ID']}-"
+            f"{environ.get('GITHUB_RUN_ATTEMPT', '1')}"
+        )
+        environ["LG_USERNAME"] = self._workflow_owner
+
+    def _is_previous_workflow_owner(self, acquired):
+        if self._workflow_owner is None or not acquired:
+            return False
+
+        acquired_user = acquired.rsplit("/", maxsplit=1)[-1]
+        prefix = self._workflow_owner.rsplit("-", maxsplit=1)[0]
+        return acquired_user == prefix or (
+            acquired_user.startswith(f"{prefix}-")
+            and acquired_user != self._workflow_owner
+        )
 
     def _resolve_coordinator(self):
         coordinator = self.context.get("labgrid_coordinator") or environ.get(
@@ -74,7 +90,9 @@ class LabgridClient:
                         continue
 
                     matches.append(place)
-                    if place.acquired in (None, owner):
+                    if place.acquired in (None, owner) or self._is_previous_workflow_owner(
+                        place.acquired
+                    ):
                         candidates.append(place)
 
                 assert matches, f"no place found for needs: {needs}"
@@ -131,7 +149,7 @@ class LabgridClient:
                 "args": Namespace(
                     allow_unmatched=False,
                     initial_state=None,
-                    kick=False,
+                    kick=True,
                     place=self.place,
                     state=None,
                 ),
@@ -147,6 +165,8 @@ class LabgridClient:
             if place.acquired == owner:
                 session.check_matches(place)
             else:
+                if self._is_previous_workflow_owner(place.acquired):
+                    session.loop.run_until_complete(session.release())
                 session.loop.run_until_complete(session.acquire())
                 acquired = True
 
