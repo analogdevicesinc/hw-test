@@ -167,13 +167,31 @@ with <a class="reference internal" href="exporter-setup.html#labgrid-exporter-se
 <section id="identify-hardware">
 <h2>Identify Hardware<a class="headerlink" href="#identify-hardware" title="Link to this heading"></a></h2>
 <p>Run these commands on the exporter while the board is connected:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w"> </span>-l<span class="w"> </span>/dev/serial/by-id
-lsusb
-udevadm<span class="w"> </span>info<span class="w"> </span>--query<span class="o">=</span>property<span class="w"> </span>--name<span class="o">=</span>/dev/ttyUSB0
-labgrid-suggest
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>Prefer stable matches:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w"> </span>-l<span class="w"> </span>/dev/serial/by-id
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>lsusb
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>udevadm<span class="w"> </span>info<span class="w"> </span>--query<span class="o">=</span>property<span class="w"> </span>--name<span class="o">=</span>/dev/ttyUSB0
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-suggest
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Prefer stable matches:</p>
 <ul class="simple">
 <li><p>use <code class="docutils literal notranslate"><span class="pre">ID_SERIAL</span></code> when the adapter has a unique serial number,</p></li>
 <li><p>use <code class="docutils literal notranslate"><span class="pre">ID_PATH</span></code> when the physical USB port is the stable part of the setup,</p></li>
@@ -210,25 +228,61 @@ labgrid-suggest
 </pre></div>
 </div>
 <p>Restart and check the exporter:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>restart<span class="w"> </span>labgrid-exporter.service
-sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>If the service fails, fix that first. A client cannot see resources from an
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>restart<span class="w"> </span>labgrid-exporter.service
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>If the service fails, fix that first. A client cannot see resources from an
 exporter that did not start.</p>
 </section>
 <section id="create-the-place">
 <h2>Create The Place<a class="headerlink" href="#create-the-place" title="Link to this heading"></a></h2>
 <p>Run these commands from a client with <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> set:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator-hostname&gt;
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>create
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/MUN-01-SC598_EZKIT-02/*&#39;</span>
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/shared-ftdi/*&#39;</span>
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>set-tags<span class="w"> </span><span class="nv">family</span><span class="o">=</span>adsp<span class="w"> </span><span class="nv">board</span><span class="o">=</span>sc598<span class="w"> </span><span class="nv">kind</span><span class="o">=</span>ezkit
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>show
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>The tags must match the <code class="docutils literal notranslate"><span class="pre">needs</span></code> list of the tests that should run on this
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator-hostname&gt;
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>create
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/MUN-01-SC598_EZKIT-02/*&#39;</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/shared-ftdi/*&#39;</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>set-tags<span class="w"> </span><span class="nv">family</span><span class="o">=</span>adsp<span class="w"> </span><span class="nv">board</span><span class="o">=</span>sc598<span class="w"> </span><span class="nv">kind</span><span class="o">=</span>ezkit
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>show
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>The tags must match the <code class="docutils literal notranslate"><span class="pre">needs</span></code> list of the tests that should run on this
 board.</p>
 </section>
 <section id="add-the-env-file">
@@ -287,33 +341,70 @@ board.</p>
 <section id="try-the-device-from-cli">
 <h2>Try The Device From CLI<a class="headerlink" href="#try-the-device-from-cli" title="Link to this heading"></a></h2>
 <p>Acquire the place:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>acquire
 </pre></div>
 </div>
-<p>Then test one operation at a time:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>io<span class="w"> </span>low<span class="w"> </span>pin-d3
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>power<span class="w"> </span>cycle
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot-spl<span class="w"> </span>:u-boot-spl
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot<span class="w"> </span>:u-boot
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>bootstrap<span class="w"> </span>dummy
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>console
+<div class="clear-left"></div></div></div><p>Then test one operation at a time:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>Release when done:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>io<span class="w"> </span>low<span class="w"> </span>pin-d3
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>power<span class="w"> </span>cycle
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot-spl<span class="w"> </span>:u-boot-spl
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot<span class="w"> </span>:u-boot
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>bootstrap<span class="w"> </span>dummy
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>console
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Release when done:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>release
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">bootstrap</span> <span class="pre">dummy</span></code> is used here because the ADSP OpenOCD <code class="docutils literal notranslate"><span class="pre">load_commands</span></code> load
+<div class="clear-left"></div></div></div><p><code class="docutils literal notranslate"><span class="pre">bootstrap</span> <span class="pre">dummy</span></code> is used here because the ADSP OpenOCD <code class="docutils literal notranslate"><span class="pre">load_commands</span></code> load
 <code class="docutils literal notranslate"><span class="pre">u-boot-spl</span></code> and <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> from the exporter. The filename argument is not
 used by that command sequence.</p>
 </section>
 <section id="trigger-a-test">
 <h2>Trigger a Test<a class="headerlink" href="#trigger-a-test" title="Link to this heading"></a></h2>
 <p>After the CLI flow works, trigger one pytest test:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvs
 </pre></div>
 </div>
-<p>Start with one test and one Labgrid Place. Do not begin with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while
+<div class="clear-left"></div></div></div><p>Start with one test and one Labgrid Place. Do not begin with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while
 bringing up a new setup.</p>
 </section>
 </section>

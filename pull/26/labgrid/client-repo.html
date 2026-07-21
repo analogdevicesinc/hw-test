@@ -157,13 +157,31 @@ covers reusable client code and CI integration.</p>
 <p>For labgrid command details, use the upstream
 <a class="icon link reference external" href="https://labgrid.readthedocs.io/en/latest/index.html" target="_blank" title="(in labgrid v0.1)"><span class="xref std std-doc">labgrid documentation</span></a>.</p>
 <p>Useful labgrid inspection commands:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>places
-labgrid-client<span class="w"> </span>resources
-labgrid-client<span class="w"> </span>who
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>&lt;place&gt;<span class="w"> </span>show
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<section id="write-tests">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>places
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>resources
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>who
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>&lt;place&gt;<span class="w"> </span>show
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><section id="write-tests">
 <h2>Write Tests<a class="headerlink" href="#write-tests" title="Link to this heading"></a></h2>
 <p>Tests should use <code class="docutils literal notranslate"><span class="pre">hw_tests.labgrid.LabgridClient</span></code> instead of open-coding
 labgrid session handling. It selects a matching Labgrid Place from <code class="docutils literal notranslate"><span class="pre">needs</span></code>,

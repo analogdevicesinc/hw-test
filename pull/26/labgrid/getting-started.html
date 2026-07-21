@@ -155,47 +155,82 @@ Content on this topic
 <li><p>SSH access to the exporter user used by the env file</p></li>
 </ul>
 <p>Start from a checkout of <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
-pip3<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[test]&#39;</span>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>This creates a Python environment and installs <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> in editable mode.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[test]&#39;</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>This creates a Python environment and installs <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> in editable mode.</p>
 <p>Next, tell labgrid where the coordinator is:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator&gt;
 </pre></div>
 </div>
-<p>Trigger one small test first:</p>
+<div class="clear-left"></div></div></div><p>Trigger one small test first:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests/adsp/smoke/test.py<span class="w"> </span>-vvv
 </pre></div>
 </div>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">set</span></code> variable when you need to override a test context. Its <code class="docutils literal notranslate"><span class="pre">name</span></code>
+<div class="clear-left"></div></div></div><p>Use the <code class="docutils literal notranslate"><span class="pre">set</span></code> variable when you need to override a test context. Its <code class="docutils literal notranslate"><span class="pre">name</span></code>
 field selects the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>; pytest then collects only
 that test, so a path is not needed as well.</p>
 <p>For example:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
 </pre></div>
 </div>
-<p>This tells <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> to build the context for <code class="docutils literal notranslate"><span class="pre">tests/adsp/u-boot</span></code> and
+<div class="clear-left"></div></div></div><p>This tells <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> to build the context for <code class="docutils literal notranslate"><span class="pre">tests/adsp/u-boot</span></code> and
 trigger that test.</p>
 <p>Some tests have their own Python requirements. Install them before running the
 test:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/u-boot/requirements.txt
-<span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>If a test downloads artifacts from GitHub Actions, export a personal access
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/u-boot/requirements.txt
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>If a test downloads artifacts from GitHub Actions, export a personal access
 token that can read the repository’s Actions artifacts
 (<code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">GITHUB_TOKEN=&lt;token&gt;</span></code>), then pass the workflow run URL. The token
 must have access to the repository.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{</span>
-<span class="s1">  &quot;name&quot;: &quot;adsp/bootstrap&quot;,</span>
-<span class="s1">  &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;</span>
-<span class="s1">}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-vvs
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>Or provide local built artifacts at the expected path; the log guides you
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;, &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/bootstrap/test.py<span class="w"> </span>-vvs
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Or provide local built artifacts at the expected path; the log guides you
 through the necessary setup:</p>
 <div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
@@ -228,10 +263,13 @@ through the necessary setup:</p>
 </pre></div>
 </div>
 <div class="clear-left"></div></div></div><p>When you are still bringing up a setup, avoid triggering all tests:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests
 </pre></div>
 </div>
-<p>That <strong>will</strong> try to acquire every matching board and trigger all hardware
+<div class="clear-left"></div></div></div><p>That <strong>will</strong> try to acquire every matching board and trigger all hardware
 tests. Start with one test, one Labgrid Place, and one board.</p>
 <p>If the local run fails, check these first:</p>
 <ul class="simple">

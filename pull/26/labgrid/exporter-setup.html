@@ -164,44 +164,67 @@ running, see <a class="reference internal" href="own-device.html#labgrid-own-dev
 <p>Install Python, SSH, serial tools, udev, and the tools needed by your debug
 stack. Use the OpenOCD package from the system if it supports the board. Build a
 custom OpenOCD only when the board support is not available in the package.</p>
-<div class="tab-set docutils"><input checked="checked" id="tab-item-70d6890192ab46e65f1001e984b17b311b6a9c86-0" name="tab-set-70d6890192ab46e65f1001e984b17b311b6a9c86" type="radio"></input><label class="tab-label" for="tab-item-70d6890192ab46e65f1001e984b17b311b6a9c86-0">Ubuntu</label><div class="tab-content docutils"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
-sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>git<span class="w"> </span>python3<span class="w"> </span>python3-venv<span class="w"> </span>python3-pip<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>firewalld<span class="w"> </span>microcom<span class="w"> </span>ser2net<span class="w"> </span>udev
+<div class="tab-set docutils"><input checked="checked" id="tab-item-a8ff9aedba029d15ad3814857a1b2e06e9ae9709-0" name="tab-set-a8ff9aedba029d15ad3814857a1b2e06e9ae9709" type="radio"></input><label class="tab-label" for="tab-item-a8ff9aedba029d15ad3814857a1b2e06e9ae9709-0">Ubuntu</label><div class="tab-content docutils"><div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>If OpenOCD must be built locally:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>pkg-config<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>libjim-dev<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>make<span class="w"> </span>texinfo<span class="w"> </span>gdb-multiarch<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>libusb-1.0-0-dev
+<span class="w"> </span>git<span class="w"> </span>python3<span class="w"> </span>python3-venv<span class="w"> </span>python3-pip<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>firewalld<span class="w"> </span>microcom<span class="w"> </span>ser2net<span class="w"> </span>udev
 </pre></div>
 </div>
-</div><input id="tab-item-70d6890192ab46e65f1001e984b17b311b6a9c86-1" name="tab-set-70d6890192ab46e65f1001e984b17b311b6a9c86" type="radio"></input><label class="tab-label" for="tab-item-70d6890192ab46e65f1001e984b17b311b6a9c86-1">Fedora</label><div class="tab-content docutils"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>git<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>firewalld<span class="w"> </span>minicom<span class="w"> </span>ser2net<span class="w"> </span>systemd-udev
+<div class="clear-left"></div></div></div><p>If OpenOCD must be built locally:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>If OpenOCD must be built locally:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>pkg-config<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>libjim-dev<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>make<span class="w"> </span>texinfo<span class="w"> </span>gdb-multiarch<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>libusb-1.0-0-dev
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div></div><input id="tab-item-a8ff9aedba029d15ad3814857a1b2e06e9ae9709-1" name="tab-set-a8ff9aedba029d15ad3814857a1b2e06e9ae9709" type="radio"></input><label class="tab-label" for="tab-item-a8ff9aedba029d15ad3814857a1b2e06e9ae9709-1">Fedora</label><div class="tab-content docutils"><div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>pkgconfig<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>jimtcl-devel<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>make<span class="w"> </span>texinfo<span class="w"> </span>gdb<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>libusb1-devel
+<span class="w"> </span>git<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>firewalld<span class="w"> </span>minicom<span class="w"> </span>ser2net<span class="w"> </span>systemd-udev
 </pre></div>
 </div>
-</div><input id="tab-item-70d6890192ab46e65f1001e984b17b311b6a9c86-2" name="tab-set-70d6890192ab46e65f1001e984b17b311b6a9c86" type="radio"></input><label class="tab-label" for="tab-item-70d6890192ab46e65f1001e984b17b311b6a9c86-2">openSUSE</label><div class="tab-content docutils"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>zypper<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>git<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>firewalld<span class="w"> </span>microcom<span class="w"> </span>ser2net<span class="w"> </span>udev
+<div class="clear-left"></div></div></div><p>If OpenOCD must be built locally:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>If OpenOCD must be built locally:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>pkgconfig<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>jimtcl-devel<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>make<span class="w"> </span>texinfo<span class="w"> </span>gdb<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>libusb1-devel
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div></div><input id="tab-item-a8ff9aedba029d15ad3814857a1b2e06e9ae9709-2" name="tab-set-a8ff9aedba029d15ad3814857a1b2e06e9ae9709" type="radio"></input><label class="tab-label" for="tab-item-a8ff9aedba029d15ad3814857a1b2e06e9ae9709-2">openSUSE</label><div class="tab-content docutils"><div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>zypper<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>pkg-config<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>jimtcl-devel<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>make<span class="w"> </span>texinfo<span class="w"> </span>gdb<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>libusb-1_0-devel
+<span class="w"> </span>git<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>firewalld<span class="w"> </span>microcom<span class="w"> </span>ser2net<span class="w"> </span>udev
 </pre></div>
 </div>
-</div></div></section>
+<div class="clear-left"></div></div></div><p>If OpenOCD must be built locally:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>zypper<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>pkg-config<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>jimtcl-devel<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>make<span class="w"> </span>texinfo<span class="w"> </span>gdb<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>libusb-1_0-devel
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div></div></div></section>
 <section id="users-and-permissions">
 <h2>Users and permissions<a class="headerlink" href="#users-and-permissions" title="Link to this heading"></a></h2>
 <p>Use two Unix users:</p>
@@ -213,96 +236,261 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w
 </dl>
 <p>Both users need access to serial ports, GPIO devices, USB debug probes, and the
 labgrid cache directory.</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>group<span class="w"> </span><span class="k">in</span><span class="w"> </span>users<span class="w"> </span>dialout<span class="w"> </span>uucp<span class="w"> </span>labgrid<span class="w"> </span>plugdev<span class="w"> </span>gpio<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span>getent<span class="w"> </span>group<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$group</span><span class="s2">&quot;</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span>sudo<span class="w"> </span>groupadd<span class="w"> </span>--system<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$group</span><span class="s2">&quot;</span>
-<span class="k">done</span>
-
-sudo<span class="w"> </span>useradd<span class="w"> </span>--create-home<span class="w"> </span>--home-dir<span class="w"> </span>/home/labgrid<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--shell<span class="w"> </span>/bin/bash<span class="w"> </span>--gid<span class="w"> </span>labgrid<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--groups<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid
-
-sudo<span class="w"> </span>useradd<span class="w"> </span>--create-home<span class="w"> </span>--user-group<span class="w"> </span>--shell<span class="w"> </span>/bin/bash<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--groups<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid-client
 </pre></div>
 </div>
-<p>If the users already exist, update their groups:</p>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> getent group &quot;$group&quot; &gt;/dev/null || sudo groupadd --system &quot;$group&quot;
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span>done
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>useradd<span class="w"> </span>--create-home<span class="w"> </span>--home-dir<span class="w"> </span>/home/labgrid<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--shell<span class="w"> </span>/bin/bash<span class="w"> </span>--gid<span class="w"> </span>labgrid<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--groups<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>useradd<span class="w"> </span>--create-home<span class="w"> </span>--user-group<span class="w"> </span>--shell<span class="w"> </span>/bin/bash<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--groups<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid-client
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>If the users already exist, update their groups:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid
-sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid-client
 </pre></div>
 </div>
-<p>Terminate the <code class="docutils literal notranslate"><span class="pre">labgrid</span></code> user to refresh group memberships, and enable
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>users,dialout,uucp,labgrid,plugdev,gpio<span class="w"> </span>labgrid-client
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Terminate the <code class="docutils literal notranslate"><span class="pre">labgrid</span></code> user to refresh group memberships, and enable
 linger so the exporter service can start at boot.</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>loginctl<span class="w"> </span>terminate-user<span class="w"> </span>labgrid
-sudo<span class="w"> </span>loginctl<span class="w"> </span>enable-linger<span class="w"> </span>labgrid
 </pre></div>
 </div>
-<p>Check real device permissions before debugging labgrid:</p>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>loginctl<span class="w"> </span>enable-linger<span class="w"> </span>labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Check real device permissions before debugging labgrid:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>readlink<span class="w"> </span>-f<span class="w"> </span>/dev/serial/by-id/&lt;your-device&gt;
-ls<span class="w"> </span>-l<span class="w"> </span>/dev/ttyUSB0
-id<span class="w"> </span>labgrid-client
-sudo<span class="w"> </span>-u<span class="w"> </span>labgrid-client<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-r<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>client-can-read
-sudo<span class="w"> </span>-u<span class="w"> </span>labgrid-client<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-w<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>client-can-write
 </pre></div>
 </div>
-<p>For USB debug probes, install udev rules from OpenOCD or add a local rule for
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w"> </span>-l<span class="w"> </span>/dev/ttyUSB0
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>id<span class="w"> </span>labgrid-client
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid-client<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-r<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>client-can-read
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid-client<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-w<span class="w"> </span>/dev/ttyUSB0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>client-can-write
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>For USB debug probes, install udev rules from OpenOCD or add a local rule for
 the probe vendor and product ID:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ATTRS{idVendor}==&quot;1234&quot;, ATTRS{idProduct}==&quot;5678&quot;, MODE=&quot;660&quot;, GROUP=&quot;plugdev&quot;, TAG+=&quot;uaccess&quot;
 </pre></div>
 </div>
 <p>Then reload udev:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules
-sudo<span class="w"> </span>udevadm<span class="w"> </span>trigger
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-</section>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>udevadm<span class="w"> </span>trigger
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div></section>
 <section id="directories">
 <h2>Directories<a class="headerlink" href="#directories" title="Link to this heading"></a></h2>
 <p>Create the directories used by labgrid and by file staging:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
-mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/labgrid
-mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/systemd/user
-mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/bin
-mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/venvs
-<span class="nb">exit</span>
-sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>root<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">2775</span><span class="w"> </span>/var/cache/labgrid
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">/var/cache/labgrid</span></code> must be writable by the labgrid group. File upload,
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/systemd/user
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/bin
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.local/share/venvs
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>install<span class="w"> </span>-d<span class="w"> </span>-o<span class="w"> </span>root<span class="w"> </span>-g<span class="w"> </span>labgrid<span class="w"> </span>-m<span class="w"> </span><span class="m">2775</span><span class="w"> </span>/var/cache/labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p><code class="docutils literal notranslate"><span class="pre">/var/cache/labgrid</span></code> must be writable by the labgrid group. File upload,
 OpenOCD, <code class="docutils literal notranslate"><span class="pre">scp</span></code>, and image staging can fail if this directory is missing or too
 strict.</p>
 </section>
 <section id="install-labgrid">
 <h2>Install labgrid<a class="headerlink" href="#install-labgrid" title="Link to this heading"></a></h2>
 <p>Install labgrid in a venv owned by the <code class="docutils literal notranslate"><span class="pre">labgrid</span></code> user:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/labgrid-project/labgrid.git<span class="w"> </span>~/labgrid
-python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>~/.local/share/venvs/labgrid
-~/.local/share/venvs/labgrid/bin/pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
-~/.local/share/venvs/labgrid/bin/pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>~/labgrid
-<span class="nb">exit</span>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>Expose the commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
-ln<span class="w"> </span>-sfn<span class="w"> </span>~/.local/share/venvs/labgrid/bin/labgrid-client<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>~/.local/bin/labgrid-client
-ln<span class="w"> </span>-sfn<span class="w"> </span>~/.local/share/venvs/labgrid/bin/labgrid-exporter<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>~/.local/bin/labgrid-exporter
-~/.local/bin/labgrid-client<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
-~/.local/bin/labgrid-exporter<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
-<span class="nb">exit</span>
 </pre></div>
 </div>
-</section>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/labgrid-project/labgrid.git<span class="w"> </span>~/labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>~/.local/share/venvs/labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>~/.local/share/venvs/labgrid/bin/pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>~/.local/share/venvs/labgrid/bin/pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>~/labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Expose the commands:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ln<span class="w"> </span>-sfn<span class="w"> </span>~/.local/share/venvs/labgrid/bin/labgrid-client<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>~/.local/bin/labgrid-client
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ln<span class="w"> </span>-sfn<span class="w"> </span>~/.local/share/venvs/labgrid/bin/labgrid-exporter<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>~/.local/bin/labgrid-exporter
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>~/.local/bin/labgrid-client<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>~/.local/bin/labgrid-exporter<span class="w"> </span>--help<span class="w"> </span>&gt;/dev/null
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div></section>
 <section id="ssh-and-opkssh">
 <h2>SSH and OPKSSH<a class="headerlink" href="#ssh-and-opkssh" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">hw-test</span></code> needs SSH to the exporter because tests copy files and run commands
 on the exporter. For local development, normal SSH keys are enough:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-copy-id<span class="w"> </span>labgrid-client@lab-exporter-01
-ssh<span class="w"> </span>labgrid-client@lab-exporter-01<span class="w"> </span><span class="nb">true</span>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>In GitHub Actions, <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> uses OPKSSH. The test helper downloads
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh-copy-id<span class="w"> </span>labgrid-client@lab-exporter-01
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>labgrid-client@lab-exporter-01<span class="w"> </span><span class="nb">true</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>In GitHub Actions, <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> uses OPKSSH. The test helper downloads
 <code class="docutils literal notranslate"><span class="pre">opkssh</span></code> if needed, runs <code class="docutils literal notranslate"><span class="pre">opkssh</span> <span class="pre">login</span> <span class="pre">github</span></code>, writes an <code class="docutils literal notranslate"><span class="pre">_ssh_config</span></code>
 file, and checks SSH access before running the test. The workflow job must have:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">permissions</span><span class="p">:</span>
@@ -319,15 +507,33 @@ only performs the client login and SSH check.</p>
 <h2>Exporter Service<a class="headerlink" href="#exporter-service" title="Link to this heading"></a></h2>
 <p>Create an empty exporter config file and
 use the service file shipped by labgrid as the base:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
-touch<span class="w"> </span>~/.config/labgrid/exporter.yaml
-install<span class="w"> </span>-m<span class="w"> </span><span class="m">0644</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>~/labgrid/contrib/systemd/labgrid-exporter.service<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>~/.config/systemd/user/labgrid-exporter.service
-<span class="nb">exit</span>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
 </pre></div>
 </div>
-<p>Edit the copied service file. At least set <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> to your labgrid
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-iu<span class="w"> </span>labgrid
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>touch<span class="w"> </span>~/.config/labgrid/exporter.yaml
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>install<span class="w"> </span>-m<span class="w"> </span><span class="m">0644</span><span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>~/labgrid/contrib/systemd/labgrid-exporter.service<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>~/.config/systemd/user/labgrid-exporter.service
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Edit the copied service file. At least set <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> to your labgrid
 coordinator:</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">Labgrid Exporter</span>
@@ -350,21 +556,45 @@ coordinator:</p>
 </pre></div>
 </div>
 <p>Enable the service:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>daemon-reload
-sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>labgrid-exporter.service
 </pre></div>
 </div>
-<p>Open the console proxy port range:</p>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>labgrid-exporter.service
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Open the console proxy port range:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>firewalld
-sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--permanent<span class="w"> </span>--add-port<span class="o">=</span><span class="m">30000</span>-59999/tcp
-sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--reload
 </pre></div>
 </div>
-<p>Check the service:</p>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--permanent<span class="w"> </span>--add-port<span class="o">=</span><span class="m">30000</span>-59999/tcp
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--reload
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>Check the service:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>$
+</pre></div>
+</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>--user<span class="w"> </span>--machine<span class="o">=</span>labgrid@.host<span class="w"> </span>status<span class="w"> </span>labgrid-exporter.service
 </pre></div>
 </div>
-<p>If the service starts, the exporter host is ready. The next step is to register
+<div class="clear-left"></div></div></div><p>If the service starts, the exporter host is ready. The next step is to register
 a board in <a class="reference internal" href="own-device.html#labgrid-own-device"><span class="std std-ref">Register Your Device</span></a>.</p>
 </section>
 </section>
