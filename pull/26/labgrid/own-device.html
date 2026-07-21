@@ -98,7 +98,7 @@
 <li><a class="reference internal" href="#create-the-place">Create The Place</a></li>
 <li><a class="reference internal" href="#add-the-env-file">Add The Env File</a></li>
 <li><a class="reference internal" href="#try-the-device-from-cli">Try The Device From CLI</a></li>
-<li><a class="reference internal" href="#run-a-test">Run A Test</a></li>
+<li><a class="reference internal" href="#trigger-a-test">Trigger a Test</a></li>
 </ul>
 </li>
 </ul>
@@ -307,13 +307,13 @@ labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC59
 <code class="docutils literal notranslate"><span class="pre">u-boot-spl</span></code> and <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> from the exporter. The filename argument is not
 used by that command sequence.</p>
 </section>
-<section id="run-a-test">
-<h2>Run A Test<a class="headerlink" href="#run-a-test" title="Link to this heading"></a></h2>
-<p>After the CLI flow works, run one pytest test:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvs
+<section id="trigger-a-test">
+<h2>Trigger a Test<a class="headerlink" href="#trigger-a-test" title="Link to this heading"></a></h2>
+<p>After the CLI flow works, trigger one pytest test:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvs
 </pre></div>
 </div>
-<p>Start with one test and one place. Do not begin with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while
+<p>Start with one test and one Labgrid Place. Do not begin with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while
 bringing up a new setup.</p>
 </section>
 </section>

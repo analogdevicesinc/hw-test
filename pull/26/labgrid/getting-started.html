@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="How to run one hardware test locally." name="description" />
+<meta content="How to trigger one hardware test locally." name="description" />
 
     <title>Getting started &#8212; Hardware Test  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
@@ -144,15 +144,15 @@ Content on this topic
   <section id="getting-started">
 <span id="labgrid-getting-started"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
 <p>This page shows the smallest useful local workflow.</p>
-<p>The goal is simple. Run one hardware test from your shell and see that
+<p>The goal is simple. Trigger one hardware test from your shell and see that
 <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> can acquire a board through labgrid.</p>
 <p>Before starting, you need:</p>
 <ul class="simple">
-<li><p>a labgrid coordinator address,</p></li>
-<li><p>at least one exporter connected to that coordinator,</p></li>
-<li><p>a labgrid place with tags matching the test you want to run,</p></li>
-<li><p>an <code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> file for that place,</p></li>
-<li><p>SSH access to the exporter user used by the env file.</p></li>
+<li><p>a labgrid coordinator address</p></li>
+<li><p>at least one exporter connected to that coordinator</p></li>
+<li><p>a Labgrid Place with tags matching the test you want to trigger</p></li>
+<li><p>an <code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> file for that Labgrid Place</p></li>
+<li><p>SSH access to the exporter user used by the env file</p></li>
 </ul>
 <p>Start from a checkout of <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
@@ -166,29 +166,29 @@ pip3<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator&gt;
 </pre></div>
 </div>
-<p>Run one small test first:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/smoke&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/smoke/test.py<span class="w"> </span>-vvv
+<p>Trigger one small test first:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests/adsp/smoke/test.py<span class="w"> </span>-vvv
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">set</span></code> variable is the test context override. The most important field is
-<code class="docutils literal notranslate"><span class="pre">name</span></code>. It must match the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>.</p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">set</span></code> variable when you need to override a test context. Its <code class="docutils literal notranslate"><span class="pre">name</span></code>
+field selects the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>; pytest then collects only
+that test, so a path is not needed as well.</p>
 <p>For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
 </pre></div>
 </div>
-<p>This tells <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> to build the context for <code class="docutils literal notranslate"><span class="pre">tests/adsp/u-boot</span></code> and run
-that test.</p>
+<p>This tells <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> to build the context for <code class="docutils literal notranslate"><span class="pre">tests/adsp/u-boot</span></code> and
+trigger that test.</p>
 <p>Some tests have their own Python requirements. Install them before running the
 test:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/u-boot/requirements.txt
-<span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>tests/adsp/u-boot/test.py<span class="w"> </span>-vvv
+<span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
 </pre></div>
 </div>
-<p>If a test downloads artifacts from GitHub Actions, set <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
-pass the workflow run URL:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>&lt;token&gt;
-</pre></div>
-</div>
+<p>If a test downloads artifacts from GitHub Actions, export a personal access
+token that can read the repository’s Actions artifacts
+(<code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">GITHUB_TOKEN=&lt;token&gt;</span></code>), then pass the workflow run URL. The token
+must have access to the repository.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{</span>
 <span class="s1">  &quot;name&quot;: &quot;adsp/bootstrap&quot;,</span>
 <span class="s1">  &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;</span>
@@ -227,20 +227,20 @@ through the necessary setup:</p>
 <div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> [...] SUCCESS
 </pre></div>
 </div>
-<div class="clear-left"></div></div></div><p>When you are still bringing up a setup, avoid running all tests:</p>
+<div class="clear-left"></div></div></div><p>When you are still bringing up a setup, avoid triggering all tests:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests
 </pre></div>
 </div>
-<p>That <strong>will</strong> try to acquire every matching board and run all hardware tests.
-Start with one test, one place, and one board.</p>
+<p>That <strong>will</strong> try to acquire every matching board and trigger all hardware
+tests. Start with one test, one Labgrid Place, and one board.</p>
 <p>If the local run fails, check these first:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> points to the right coordinator.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">places</span></code> shows the expected place.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;place&gt;</span> <span class="pre">show</span></code> shows the expected matches and tags.</p></li>
-<li><p>The test’s <code class="docutils literal notranslate"><span class="pre">needs</span></code> list matches the place tags.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> exists.</p></li>
-<li><p>SSH to the exporter works for the <code class="docutils literal notranslate"><span class="pre">NetworkService</span></code> user.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> points to the right coordinator</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">places</span></code> shows the expected Labgrid Place</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;place&gt;</span> <span class="pre">show</span></code> shows the expected matches and tags</p></li>
+<li><p>The test’s <code class="docutils literal notranslate"><span class="pre">needs</span></code> list matches the Labgrid Place tags</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> exists</p></li>
+<li><p>SSH to the exporter works for the <code class="docutils literal notranslate"><span class="pre">NetworkService</span></code> user</p></li>
 </ul>
 </section>
 
