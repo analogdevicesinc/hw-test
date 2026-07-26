@@ -24,12 +24,12 @@ Basic usage:
 
 import logging
 import tempfile
-import requests
 from os import environ
 from pathlib import Path
 from urllib.parse import quote
 from zipfile import ZipFile
 
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -185,8 +185,7 @@ class GitHub:
 
         dest_file = dest_dir / name
         with open(dest_file, "wb") as f:
-            for chunk in response.iter_content(chunk_size=1 << 20):
-                f.write(chunk)
+            f.writelines(response.iter_content(chunk_size=1 << 20))
 
         _extract_if_archive(dest_file)
 

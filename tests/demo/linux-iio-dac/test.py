@@ -1,6 +1,5 @@
 import logging
 
-
 from hw_tests.cloudsmith import Cloudsmith
 
 logger = logging.getLogger(__name__)

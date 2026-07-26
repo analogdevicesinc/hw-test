@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+
 from hw_tests.github import GitHub
 
 logger = logging.getLogger(__name__)

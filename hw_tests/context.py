@@ -19,11 +19,11 @@ That is, any [{'name': '...', ...}], the list is replaced with dict, where name 
 (name must exist for each group/list entry)
 """
 
-import re
 import json
+import re
 import tomllib
-from pathlib import Path
 from os import environ
+from pathlib import Path
 
 
 def reformat_named_lists(d):
