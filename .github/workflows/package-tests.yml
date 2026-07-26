@@ -18,7 +18,6 @@ jobs:
       run: |
         python3 -m venv venv
         source ./venv/bin/activate
-        python3 -m ensurepip
         pip3 install -e '.[test]' --upgrade
         pip3 install ruff --upgrade
 
