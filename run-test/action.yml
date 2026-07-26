@@ -12,21 +12,41 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install test dependencies
+    - name: Identify Python
+      id: python
+      shell: bash
+      run: echo "version=$(python3 -c 'import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")')" >> "$GITHUB_OUTPUT"
+
+    - name: Identify test
+      id: test
       shell: bash
       env:
         set: ${{ inputs.set }}
+      run: echo "name=$(jq -er '.name' <<< "$set")" >> "$GITHUB_OUTPUT"
+
+    - name: Restore test dependencies
+      id: dependencies
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: hw-test-${{ runner.os }}-${{ runner.arch }}-py${{ steps.python.outputs.version }}-${{ hashFiles('pyproject.toml', format('tests/{0}/requirements.txt', steps.test.outputs.name)) }}
+
+    - name: Install test dependencies
+      shell: bash
+      env:
+        name: ${{ steps.test.outputs.name }}
       run: |
-        # Install test dependencies
-        venv=$(mktemp -dt hw-test.XXX)
+        venv="$GITHUB_WORKSPACE/.venv"
         echo "venv=$venv" >> "$GITHUB_ENV"
 
-        python3 -m venv $venv
-        source "$venv/bin/activate"
-        python3 -m ensurepip
-        pip3 install -e '.[test]'
-        name=$(echo "$set" | jq -r '.name')
-        [ -f "tests/${name}/requirements.txt" ] && pip install -r "tests/${name}/requirements.txt" || :
+        if [[ "${{ steps.dependencies.outputs.cache-hit }}" != "true" ]]; then
+          # Static runners may retain this ignored directory between jobs. Clear
+          # it when the dependency key changed before recreating the environment.
+          python3 -m venv --clear "$venv"
+          requirements=()
+          [[ -f "tests/${name}/requirements.txt" ]] && requirements=(-r "tests/${name}/requirements.txt")
+          "$venv/bin/python" -m pip install --disable-pip-version-check -e . "${requirements[@]}"
+        fi
 
     - name: Run test
       shell: bash
@@ -38,10 +58,3 @@ runs:
         source "$venv/bin/activate"
         [[ "${{ runner.debug }}" == "1" ]] && v="-v"
         pytest $v
-
-    - name: Clean-up
-      shell: bash
-      if: always()
-      run: |
-        # Clean-up
-        rm -rf "$venv"
