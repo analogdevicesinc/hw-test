@@ -1,10 +1,10 @@
-from contextlib import contextmanager
+import logging
+import shlex
 from argparse import Namespace
+from contextlib import contextmanager
 from os import environ
 from pathlib import Path
 from time import monotonic, sleep
-import logging
-import shlex
 
 from labgrid import Environment
 from labgrid.remote.client import start_session
@@ -97,7 +97,7 @@ class LabgridClient:
 
                 assert matches, f"no place found for needs: {needs}"
                 if candidates:
-                    return sorted(candidates, key=lambda place: place.name)[0].name
+                    return min(candidates, key=lambda place: place.name).name
 
                 if monotonic() >= deadline:
                     acquired_by = ", ".join(

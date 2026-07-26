@@ -33,7 +33,7 @@ from hw_tests.github import GitHub, _extract_if_archive
 logger = logging.getLogger(__name__)
 
 
-class Cloudsmith():
+class Cloudsmith:
     _token = None
 
     def __init__(self):
@@ -125,7 +125,7 @@ class Cloudsmith():
         if version is not None:
             if len(version) == 40 and all(c in "0123456789abcdefABCDEF" for c in version):
                 parts.append(f"version:^{version}$")
-            elif version.startswith("refs/heads/") or version.startswith("refs/tags/"):
+            elif version.startswith(("refs/heads/", "refs/tags/")):
                 parts += ["tag:on/push", f"tag:{version}"]
             elif version.startswith("refs/pull/"):
                 parts += ["tag:on/pull_request", f"tag:{version}"]
@@ -201,8 +201,7 @@ class Cloudsmith():
         )
         response.raise_for_status()
         with open(dest_file, "wb") as f:
-            for chunk in response.iter_content(chunk_size=1 << 20):
-                f.write(chunk)
+            f.writelines(response.iter_content(chunk_size=1 << 20))
 
         _extract_if_archive(dest_file)
 

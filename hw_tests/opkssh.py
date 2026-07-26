@@ -1,10 +1,10 @@
+import logging
 import platform
 import subprocess
-import logging
 import urllib.request
-from shutil import which
 from os import environ
 from pathlib import Path
+from shutil import which
 
 from hw_tests.github import GitHub
 
@@ -14,7 +14,7 @@ OPKSSH_VERSION = "v0.14.0"
 OPKSSH_BASE_URL = f"https://github.com/openpubkey/opkssh/releases/download/{OPKSSH_VERSION}"
 OPKSSH_BIN = Path.home() / ".local" / "bin" / "opkssh"
 
-class OPKSSH():
+class OPKSSH:
     _strict = None
     _authorized = False
 
@@ -62,9 +62,10 @@ class OPKSSH():
                  "-o", "BatchMode=yes",
                  "-o", "ConnectTimeout=10",
                  "-o", "StrictHostKeyChecking=accept-new",
-                 host, "true"],
+                host, "true"],
                 capture_output=True,
                 text=True,
+                check=False,
             )
             if result.returncode != 0:
                 raise PermissionError(

@@ -25,7 +25,6 @@ import glob
 import json
 import logging
 import tomllib
-
 from os import environ
 
 from .logging import set_logging

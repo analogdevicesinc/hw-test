@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hw_tests.context import parse_set_env, build_context, test_name
+from hw_tests.context import build_context, parse_set_env, test_name
 from hw_tests.ssh_config import ssh_config_path
 
 
