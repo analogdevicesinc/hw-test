@@ -18,8 +18,7 @@ jobs:
       run: |
         python3 -m venv venv
         source ./venv/bin/activate
-        pip3 install -e '.[test]' --upgrade
-        pip3 install ruff --upgrade
+        pip3 install -e '.[test]'
 
     - name: Run test
       shell: bash

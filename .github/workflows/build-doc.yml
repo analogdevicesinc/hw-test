@@ -21,7 +21,7 @@ jobs:
       run: |
         python3 -m venv venv
         source ./venv/bin/activate
-        pip3 install -r docs/requirements.txt --upgrade
+        pip3 install -r docs/requirements.txt
 
     - name: Build doc
       run: |
