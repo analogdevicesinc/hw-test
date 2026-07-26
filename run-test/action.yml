@@ -12,32 +12,21 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Identify Python
-      id: python
-      shell: bash
-      run: echo "version=$(python3 -c 'import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")')" >> "$GITHUB_OUTPUT"
-
-    - name: Identify test
-      id: test
-      shell: bash
-      env:
-        set: ${{ inputs.set }}
-      run: echo "name=$(jq -er '.name' <<< "$set")" >> "$GITHUB_OUTPUT"
-
     - name: Restore test dependencies
       id: dependencies
       uses: actions/cache@v4
       with:
         path: .venv
-        key: hw-test-${{ runner.os }}-${{ runner.arch }}-py${{ steps.python.outputs.version }}-${{ hashFiles('pyproject.toml', format('tests/{0}/requirements.txt', steps.test.outputs.name)) }}
+        key: hw-test-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pyproject.toml', 'tests/**/requirements.txt') }}
 
     - name: Install test dependencies
       shell: bash
       env:
-        name: ${{ steps.test.outputs.name }}
+        set: ${{ inputs.set }}
       run: |
         venv="$GITHUB_WORKSPACE/.venv"
         echo "venv=$venv" >> "$GITHUB_ENV"
+        name=$(jq -er '.name' <<< "$set")
 
         if [[ "${{ steps.dependencies.outputs.cache-hit }}" != "true" ]]; then
           # Static runners may retain this ignored directory between jobs. Clear
