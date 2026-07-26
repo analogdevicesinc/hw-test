@@ -23,7 +23,6 @@ runs:
 
         python3 -m venv $venv
         source "$venv/bin/activate"
-        python3 -m ensurepip
         pip3 install -e '.[test]'
         name=$(echo "$set" | jq -r '.name')
         [ -f "tests/${name}/requirements.txt" ] && pip install -r "tests/${name}/requirements.txt" || :
