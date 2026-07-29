@@ -1,27 +1,45 @@
 .. description::
 
-   Continuous deployment pipeline and instructions to set up a self-hosted
-   hardware tests.
+   Run hw-test from a GitHub Actions workflow.
 
-.. _ci:
+.. _run-tests-in-ci:
 
-Continuous integration
-======================
+Run tests in CI
+===============
 
-Hardware tests continuous integration is focused on modularity and test selection.
-In the next section, the different configuration options are explained.
+Use ``hw-test`` from GitHub Actions when a build needs to be validated on a
+real hardware. Your workflow selects a test; ``hw-test`` finds a compatible free
+board, runs the test, and releases it when the job finishes.
+
+If you are adding a test for the first time, write and run it locally first:
+:ref:`write-a-test`.
 
 .. note::
 
-   Every repository that invokes ``labgrid`` tests must set the ``LG_COORDINATOR``
-   secret and expose as an environment variable.
+   Every repository that invokes hardware tests must set the ``LG_COORDINATOR``
+   secret and expose it as an environment variable.
 
-Workflow jobs
-+++++++++++++
+Run tests from a workflow
++++++++++++++++++++++++++
 
-You can tune how the tests are spawned.
+Call the reusable workflow with one test context:
 
-To run multiple tests in ``pytest`` under the same job, use:
+.. code:: yaml
+
+   jobs:
+     hardware-test:
+       permissions:
+         id-token: write
+         contents: read
+         actions: read
+       uses: analogdevicesinc/hw-test/.github/workflows/run-test.yml@main
+       with:
+         set: '{"name": "adsp/smoke"}'
+
+Run more than one test
+----------------------
+
+To run multiple tests in one job, pass an array of test contexts:
 
 .. code:: yaml
 
@@ -31,7 +49,7 @@ To run multiple tests in ``pytest`` under the same job, use:
         id-token: write
         contents: read
         actions: read
-      uses: ./.github/workflows/run-test.yml
+      uses: analogdevicesinc/hw-test/.github/workflows/run-test.yml@main
       with:
         set: >
           [
@@ -40,7 +58,7 @@ To run multiple tests in ``pytest`` under the same job, use:
            {"name": "something/test"}
           ]
 
-Or spawn one job per test by using a matrix strategy:
+To isolate tests in separate jobs, use a matrix:
 
 .. code:: yaml
 
@@ -57,20 +75,19 @@ Or spawn one job per test by using a matrix strategy:
           - name: "demo/basic"
           - name: "feature/new"
           - name: "something/test"
-      uses: ./.github/workflows/run-test.yml
+      uses: analogdevicesinc/hw-test/.github/workflows/run-test.yml@main
       with:
         set: ${{ toJson(matrix.test) }}
 
-Both methods are run in parallel, but the matrix completely isolates the tests
-in different containers.
+The matrix runs one test per job, so failures and logs are isolated.
 
 Workflow run
 ------------
 
-Tests that use GitHub Artifacts need to know the ``workflow_run_id``.
+Tests that use GitHub Artifacts need the source workflow run URL.
 
-If the **Build** and **Test** jobs **don't share** the same workflow id, you
-:red:`must` add the ``workflow_run.url`` to the test set context.
+If the **Build** and **Test** jobs do not share the same workflow run, add
+``workflow_run_url`` to the test context.
 
 For a workflow run triggered by the 'workflow_run' event, use:
 
@@ -93,7 +110,7 @@ For a workflow run triggered by the 'workflow_run' event, use:
         id-token: write
         contents: read
         actions: read
-      uses: ./.github/workflows/run-test.yml
+      uses: analogdevicesinc/hw-test/.github/workflows/run-test.yml@main
       with:
         set: >
           {
@@ -101,7 +118,7 @@ For a workflow run triggered by the 'workflow_run' event, use:
             "workflow_run_url": "${{ github.event.workflow_run.url }}"
           }
 
-If using workflow dispatch event, ensure ``workflow_run.url`` is propagated as an input:
+If using a workflow-dispatch event, pass ``workflow_run_url`` as an input:
 
 .. code:: yaml
 
@@ -124,7 +141,7 @@ If using workflow dispatch event, ensure ``workflow_run.url`` is propagated as a
         id-token: write
         contents: read
         actions: read
-      uses: ./.github/workflows/run-test.yml
+      uses: analogdevicesinc/hw-test/.github/workflows/run-test.yml@main
       with:
         set: >
           {
