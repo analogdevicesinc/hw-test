@@ -4,16 +4,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="Labgrid setup and usage with the hardware tests." name="description" />
+<meta content="Reference material for hw-test hardware connections and APIs." name="description" />
 
-    <title>Labgrid Backend &#8212; Hardware Test  documentation</title>
+    <title>Reference &#8212; Hardware Test  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
     <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=d3f78147" />
     <script async="async" src="../_static/app.umd.js?v=26d0298f"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Getting started" href="getting-started.html" />
-    <link rel="prev" title="Analog Devices Hardware Tests" href="../index.html" />
+    <link rel="next" title="Hardware Model" href="hardware-model.html" />
+    <link rel="prev" title="Set up a hardware host" href="../set-up-a-hardware-host.html" />
    
   
   
@@ -92,7 +92,7 @@
         </div>
         <nav>
           <ul>
-<li><a class="reference internal" href="#">Labgrid Backend</a></li>
+<li><a class="reference internal" href="#">Reference</a></li>
 </ul>
 
         </nav>
@@ -117,15 +117,20 @@ Content on this topic
 </div>
 <div class="toc-tree">
   <ul class="current">
-<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="current reference internal" href="#">Labgrid Backend</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting-started.html">Getting started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exporter-setup.html">Exporter setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hardware-place.html">Hardware Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="own-device.html">Register Your Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="client-repo.html">Client Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-a-test.html">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../write-a-test.html">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrate-hardware.html">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../register-a-board.html">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-tests-in-ci.html">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../set-up-a-hardware-host.html">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="current reference internal" href="#">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="hardware-model.html">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-api.html">Test API and client reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../ci.html">Continuous integration</a></li>
 </ul>
 
 
@@ -141,47 +146,35 @@ Content on this topic
 </div>
           <div class="body" role="main">
             
-  <section id="labgrid-backend">
-<span id="labgrid"></span><h1>Labgrid Backend<a class="headerlink" href="#labgrid-backend" title="Link to this heading"></a></h1>
-<p>These pages explain how <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> uses labgrid.</p>
-<p>They are practical notes for this repository. When you need the full syntax for resources, drivers, places, or
-command-line options, use the <a class="icon link reference external" href="https://labgrid.readthedocs.io/en/latest/index.html" target="_blank" title="(in labgrid v0.1)"><span class="xref std std-doc">labgrid documentation</span></a>.</p>
-<p>The short version is:</p>
-<ul class="simple">
-<li><p>an exporter is connected to the physical board,</p></li>
-<li><p>the coordinator knows which resources belong to each place,</p></li>
-<li><p>an <code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> file tells <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> how to use that place,</p></li>
-<li><p>a client shell or CI job acquires the place before it drives power, GPIO,
-OpenOCD, SSH, or the console.</p></li>
-</ul>
-<p>Start with the page for the side you are working on.</p>
+  <section id="reference">
+<span id="hw-test-reference"></span><h1>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h1>
+<p>Consult these pages when a task guide needs more detail.</p>
 <div class="toctree-wrapper compound">
 <ul class="toctree-preview">
-<li><p><a class="reference internal" href="getting-started.html">Getting started</a></p>
-<p>How to trigger one hardware test locally.</p>
-</li>
-<li><p><a class="reference internal" href="exporter-setup.html">Exporter setup</a></p>
-<p>How to prepare a labgrid exporter host for hardware tests.</p>
-</li>
-<li><p><a class="reference internal" href="hardware-place.html">Hardware Model</a></p>
+<li><p><a class="reference internal" href="hardware-model.html">Hardware Model</a></p>
 <p>How hw-test maps labgrid resources, places, and env files.</p>
 </li>
-<li><p><a class="reference internal" href="own-device.html">Register Your Device</a></p>
-<p>How to register a board and use it with hw-test.</p>
+<li><p><a class="reference internal" href="client-api.html">Test API and client reference</a></p>
+<p>Test API and client reference for hw-test.</p>
 </li>
-<li><p><a class="reference internal" href="client-repo.html">Client Usage</a></p>
-<p>How to use hw-test from a client shell, pytest, or CI.</p>
+<li><p><a class="reference internal" href="glossary.html">Glossary</a></p>
+<p>Mapping of hw-test terms to the Labgrid terms they correspond to.</p>
+</li>
+<li><p><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></p>
+<p>What to check when a hardware test or setup step fails.</p>
 </li>
 </ul>
 </div>
+<p>For full resource, driver, place, and command-line syntax, use the
+<a class="icon link reference external" href="https://labgrid.readthedocs.io/en/latest/index.html" target="_blank" title="(in labgrid v0.1)"><span class="xref std std-doc">Labgrid documentation</span></a>.</p>
 </section>
 
 
           </div>
               <div class="related">
                 &nbsp;
-    <a href="../index.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Analog Devices Hardware Tests</a>
-    <a href="getting-started.html" title="Next document (Alt+Shift+RightArrow)" class="next">Getting started</a>
+    <a href="../set-up-a-hardware-host.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Set up a hardware host</a>
+    <a href="hardware-model.html" title="Next document (Alt+Shift+RightArrow)" class="next">Hardware Model</a>
               </div>
           
         </div>

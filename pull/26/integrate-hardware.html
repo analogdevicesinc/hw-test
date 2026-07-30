@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Bring a board or test fixture into the shared hw-test infrastructure." name="description" />
+
+    <title>Integrate hardware &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="_static/app.min.css?v=d3f78147" />
+    <script async="async" src="_static/app.umd.js?v=26d0298f"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Register a board" href="register-a-board.html" />
+    <link rel="prev" title="Write a test" href="write-a-test.html" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://analog.com" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Docs</label>
+        
+        <a id="logo" href="index.html">
+          <div>Hardware Test</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root/>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Integrate hardware</a><ul>
+<li><a class="reference internal" href="#before-you-begin">Before you begin</a></li>
+<li><a class="reference internal" href="#the-integration-path">The integration path</a></li>
+<li><a class="reference internal" href="#detailed-implementation-guide">Detailed implementation guide</a></li>
+<li><a class="reference internal" href="#choosing-good-capabilities">Choosing good capabilities</a></li>
+<li><a class="reference internal" href="#when-to-ask-for-help">When to ask for help</a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="index.html">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root/>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run-a-test.html">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="write-a-test.html">Write a test</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="register-a-board.html">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run-tests-in-ci.html">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="set-up-a-hardware-host.html">Set up a hardware host</a></li>
+<li class="toctree-l1"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1"/><div class="collapse"><a class="reference internal" href="reference/index.html">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/hardware-model.html">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/client-api.html">Test API and client reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/glossary.html">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb empty"><ol></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="integrate-hardware">
+<span id="id1"></span><h1>Integrate hardware<a class="headerlink" href="#integrate-hardware" title="Link to this heading"></a></h1>
+<p>Use this guide when you want your Device Under Test (DUT) to be
+available to <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>. By the end, a test can request its capabilities and
+run against it without knowing where it is physically connected.</p>
+<p>The integration work has two parts. First, you need to describe what is
+physically connected to the hardware host. Then, describe what a test is
+allowed to do with it.</p>
+<section id="before-you-begin">
+<h2>Before you begin<a class="headerlink" href="#before-you-begin" title="Link to this heading"></a></h2>
+<p>Have these details ready:</p>
+<ul class="simple">
+<li><p>the board or fixture name and the platform it supports;</p></li>
+<li><p>the operations a test needs: console, power cycle, reset, boot-mode GPIO,
+debug probe, SSH, or another interface;</p></li>
+<li><p>stable identifiers for the attached equipment, such as USB serial numbers or
+fixed USB paths; and</p></li>
+<li><p>a hardware host connected to the shared test service.</p></li>
+</ul>
+<p>If there is no prepared hardware host, work through
+<a class="reference internal" href="set-up-a-hardware-host.html#set-up-a-hardware-host"><span class="std std-ref">Set up a hardware host</span></a> first. If a similar board is already integrated,
+use its environment file under <code class="docutils literal notranslate"><span class="pre">envs/</span></code> as the starting point for the new one.</p>
+</section>
+<section id="the-integration-path">
+<h2>The integration path<a class="headerlink" href="#the-integration-path" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Decide what a test should be able to do</p>
+<p>Start from the test intent, not the physical wiring. A smoke test may only
+need SSH. A boot test may need a console, power control, a boot-mode GPIO,
+and a debugger. This becomes the small, stable interface test authors use.</p>
+</li>
+<li><p>Identify the connected equipment</p>
+<p>On the hardware host, find stable IDs for serial adapters, debug probes,
+power controllers, and GPIO. Do not base the setup on a changing device name
+such as <code class="docutils literal notranslate"><span class="pre">/dev/ttyUSB0</span></code>.</p>
+</li>
+<li><p>Publish the equipment to the shared pool.</p>
+<p>Add the resources to the hardware-host configuration and confirm the host
+can see them. A resource is one controllable thing, for example the board’s
+serial console or its power outlet.</p>
+</li>
+<li><p>Create one reservable <a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a></p>
+<p>Associate the board’s resources with a named slot and give the slot useful
+capability tags such as <code class="docutils literal notranslate"><span class="pre">sc598</span></code> and <code class="docutils literal notranslate"><span class="pre">ezkit</span></code>. Tests use these tags to
+find compatible hardware; they should not be tied to a lab location or a
+single board serial number.</p>
+</li>
+<li><p>Add the board environment to this repository</p>
+<p>Create <code class="docutils literal notranslate"><span class="pre">envs/&lt;board-slot&gt;.yaml</span></code>. It maps the published equipment to the
+capabilities exposed to a test, such as a serial console, power switch, or
+OpenOCD driver.</p>
+</li>
+<li><p>Prove each operation before writing a test</p>
+<p>Reserve the board and try power, console, GPIO, image upload, and debug
+operations one at a time. This separates fixture setup problems from test
+code problems.</p>
+</li>
+<li><p>Run a small test</p>
+<p>Add or select a test whose <code class="docutils literal notranslate"><span class="pre">needs</span></code> tags match the board slot, then run it
+locally. <a class="reference internal" href="write-a-test.html#write-a-test"><span class="std std-ref">Write a test</span></a> shows the test side.</p>
+</li>
+</ol>
+</section>
+<section id="detailed-implementation-guide">
+<h2>Detailed implementation guide<a class="headerlink" href="#detailed-implementation-guide" title="Link to this heading"></a></h2>
+<p>The steps above are the integration checklist. Follow
+<a class="reference internal" href="register-a-board.html#register-a-board"><span class="std std-ref">Register a board</span></a> for the exact commands
+and configuration examples, including exporter resources, board tags, and
+the environment file shape.</p>
+</section>
+<section id="choosing-good-capabilities">
+<h2>Choosing good capabilities<a class="headerlink" href="#choosing-good-capabilities" title="Link to this heading"></a></h2>
+<p>Make the board interface useful to the next team:</p>
+<ul class="simple">
+<li><p>Use tags for what board the test requires, for example processor family,
+board model, or fixture type.</p></li>
+<li><p>Use driver names for distinct controls on the same board, for example
+<code class="docutils literal notranslate"><span class="pre">spi_boot</span></code> for the boot-mode switch.</p></li>
+<li><p>Use stable hardware identifiers for physical equipment, so reconnecting
+a USB device does not silently change the fixture.</p></li>
+<li><p>Keep shared equipment explicit. If several boards share a debug probe or GPIO
+controller, model that relationship so it is reserved safely.</p></li>
+</ul>
+</section>
+<section id="when-to-ask-for-help">
+<h2>When to ask for help<a class="headerlink" href="#when-to-ask-for-help" title="Link to this heading"></a></h2>
+<p>Ask the team that owns the test infrastructure when the hardware host needs
+network access, new system packages, credential setup, a new power-controller
+type, or a custom debug tool. These are host-level changes that should be
+reviewed before a board is made available to other teams.</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="write-a-test.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Write a test</a>
+    <a href="register-a-board.html" title="Next document (Alt+Shift+RightArrow)" class="next">Register a board</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>

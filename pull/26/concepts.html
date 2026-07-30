@@ -3,22 +3,25 @@
 <html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search &#8212; Hardware Test  documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="The mental model behind hw-test in a few minutes." name="description" />
+
+    <title>How hw-test works &#8212; Hardware Test  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8e8a900e" />
     <link rel="stylesheet" type="text/css" href="_static/app.min.css?v=d3f78147" />
-    
     <script async="async" src="_static/app.umd.js?v=26d0298f"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
-    <meta name="robots" content="noindex" />
-    
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Run a test" href="run-a-test.html" />
+    <link rel="prev" title="Hardware tests" href="index.html" />
    
   
   
   
   <meta name="repository" content="hw-test">
   <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
   
   
   
@@ -39,7 +42,6 @@
     }
   }
 </style>
-
   </head>
   
     <body>
@@ -89,7 +91,14 @@
           <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
         </div>
         <nav>
-          
+          <ul>
+<li><a class="reference internal" href="#">How hw-test works</a><ul>
+<li><a class="reference internal" href="#the-pieces">The pieces</a></li>
+<li><a class="reference internal" href="#where-to-go-next">Where to go next</a></li>
+</ul>
+</li>
+</ul>
+
         </nav>
       </div>
     </div>
@@ -111,8 +120,8 @@ Content on this topic
 
 </div>
 <div class="toc-tree">
-  <ul>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">How hw-test works</a></li>
+  <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How hw-test works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run-a-test.html">Run a test</a></li>
 <li class="toctree-l1"><a class="reference internal" href="write-a-test.html">Write a test</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integrate-hardware.html">Integrate hardware</a></li>
@@ -141,12 +150,52 @@ Content on this topic
 </div>
           <div class="body" role="main">
             
+  <section id="how-hw-test-works">
+<span id="hw-test-concepts"></span><h1>How hw-test works<a class="headerlink" href="#how-hw-test-works" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">hw-test</span></code> runs tests against hardware and shares a pool of
+boards safely between teams. You can run it from a developer shell or from CI.</p>
+<p>You do not operate the hardware directly. A test asks for a board by its
+capabilities (for example <code class="docutils literal notranslate"><span class="pre">sc598</span></code> and <code class="docutils literal notranslate"><span class="pre">ezkit</span></code>); <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> finds a
+compatible free board, reserves it, runs the test, and releases it afterwards.</p>
+<section id="the-pieces">
+<h2>The pieces<a class="headerlink" href="#the-pieces" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>Shared coordinator</dt><dd><p>The booking service. It keeps the inventory of hardware and records who has
+reserved each board. You connect to it by setting <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>; your
+team/organization owns and runs it, so you join it rather than set one up.</p>
+</dd>
+<dt>Hardware host</dt><dd><p>The machine physically wired to a board and its equipment: serial console,
+power switch, debug probe, GPIO. (Labgrid calls this an <em>exporter</em>.)</p>
+</dd>
+<dt>Board slot</dt><dd><p>A reservable board in the shared pool is described by capability tags rather
+than by location or serial number. A test selects one by tags. (Labgrid calls
+this a <em>place</em>.)</p>
+</dd>
+<dt>Driver</dt><dd><p>A single control on the board. Power, console, GPIO, SSH, OpenOCD, etc. A
+test asks for a driver by its protocol.</p>
+</dd>
+</dl>
+<p>You rarely touch these directly. Each term maps to a Labgrid word. See
+<a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">glossary</span></a>.</p>
+</section>
+<section id="where-to-go-next">
+<h2>Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Run an existing test on a board that sis already set up: <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p></li>
+<li><p>Write a new test for a supported platform: <a class="reference internal" href="write-a-test.html#write-a-test"><span class="std std-ref">Write a test</span></a>.</p></li>
+<li><p>Add your board or fixture to the shared pool: <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p></li>
+<li><p>Run hardware tests from CI: <a class="reference internal" href="run-tests-in-ci.html#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a>.</p></li>
+<li><p>Set up a new hardware host for your team: <a class="reference internal" href="set-up-a-hardware-host.html#set-up-a-hardware-host"><span class="std std-ref">Set up a hardware host</span></a>.</p></li>
+</ul>
+</section>
+</section>
+
 
           </div>
               <div class="related">
                 &nbsp;
-    <div></div>
-    <div></div>
+    <a href="index.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Hardware tests</a>
+    <a href="run-a-test.html" title="Next document (Alt+Shift+RightArrow)" class="next">Run a test</a>
               </div>
           
         </div>
