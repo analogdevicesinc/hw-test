@@ -31,6 +31,8 @@ from zipfile import ZipFile
 
 import requests
 
+from hw_tests.logging import gha_escape
+
 logger = logging.getLogger(__name__)
 
 _ZIP_MAGIC = b"PK\x03\x04"
@@ -88,7 +90,7 @@ class GitHub:
     @staticmethod
     def mask(value):
         if GitHub.in_actions():
-            print(f"::add-mask::{value}", flush=True)
+            print(f"::add-mask::{gha_escape(str(value))}", flush=True)
 
     @staticmethod
     def get_id_token():
