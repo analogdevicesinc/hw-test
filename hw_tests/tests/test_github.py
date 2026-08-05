@@ -17,6 +17,14 @@ def test_owner_repository_from_context(monkeypatch):
     assert gh.owner_repository == "analogdevicesinc/u-boot"
 
 
+def test_mask_escapes_workflow_command_data(monkeypatch, capsys):
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+
+    GitHub.mask("coordinator%name\r\nnext")
+
+    assert capsys.readouterr().out == "::add-mask::coordinator%25name%0D%0Anext\n"
+
+
 def test_list_artifacts_filters_expired(monkeypatch):
     monkeypatch.setenv("GITHUB_TOKEN", "x")
     gh = _gh()

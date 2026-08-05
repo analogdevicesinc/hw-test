@@ -1,6 +1,5 @@
 import logging
 import logging.config
-from os import environ
 
 NC = "\033[0m"
 BLUE = "\033[94m"
@@ -23,6 +22,14 @@ class ColorFormatter(logging.Formatter):
         return super().format(record)
 
 
+def gha_escape(value, *, prop=False):
+    """Escape a string for a GitHub Actions workflow command."""
+    value = value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+    if prop:
+        value = value.replace(":", "%3A").replace(",", "%2C")
+    return value
+
+
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -34,7 +41,7 @@ LOGGING_CONFIG = {
     },
     "handlers": {
         "default": {
-            "level": "DEBUG",
+            "level": "INFO",
             "formatter": "colored",
             "class": "logging.StreamHandler",
         },
@@ -45,7 +52,7 @@ LOGGING_CONFIG = {
     },
     "loggers": {
         "hw_tests": {
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
     },
@@ -53,6 +60,4 @@ LOGGING_CONFIG = {
 
 
 def set_logging():
-    if environ.get('RUNNER_DEBUG') == '1':
-        LOGGING_CONFIG['root']['level'] = 'DEBUG'
     logging.config.dictConfig(LOGGING_CONFIG)

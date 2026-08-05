@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from os import environ
 from pathlib import Path
 from time import monotonic, sleep
+from urllib.parse import urlsplit
 
 from labgrid import Environment
 from labgrid.remote.client import start_session
@@ -61,6 +62,10 @@ class LabgridClient:
         assert coordinator, (
             "missing labgrid_coordinator in context or LG_COORDINATOR in environment"
         )
+        GitHub.mask(coordinator)
+        coordinator_host = urlsplit(f"//{coordinator}").hostname
+        if coordinator_host:
+            GitHub.mask(coordinator_host)
         return coordinator
 
     def _resolve_place(self):
