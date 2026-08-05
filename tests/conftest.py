@@ -1,7 +1,31 @@
+from os import environ
 from pathlib import Path
 
 from hw_tests.context import build_context, parse_set_env, test_name
+from hw_tests.logging import gha_escape
 from hw_tests.ssh_config import ssh_config_path
+
+
+def pytest_exception_interact(node, call, report):
+    """Surface a test failure as a GitHub Actions error annotation."""
+    if environ.get("GITHUB_ACTIONS") != "true" or not report.failed:
+        return
+
+    crash = getattr(report.longrepr, "reprcrash", None)
+    if crash is not None:
+        path, lineno = crash.path, crash.lineno
+    else:
+        path, lineno, _ = node.location
+        lineno = lineno + 1 if lineno is not None else None
+    exc = call.excinfo
+    title = f"Test failure: {exc.type.__name__}"
+
+    command = f"::error file={gha_escape(path, prop=True)}"
+    if lineno is not None:
+        command += f",line={lineno}"
+    command += f",title={gha_escape(title, prop=True)}"
+    command += "::Test failed; see the job log for details."
+    print(command, flush=True)
 
 
 def pytest_configure(config):
