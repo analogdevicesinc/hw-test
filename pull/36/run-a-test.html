@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Run one existing hardware test from your shell." name="description" />
+
+    <title>Run a test &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="_static/app.min.css?v=cae2157c" />
+    <script async="async" src="_static/app.umd.js?v=26d0298f"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Write a test" href="write-a-test.html" />
+    <link rel="prev" title="How hw-test works" href="concepts.html" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="index.html">
+          <div>Hardware Test</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root/>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Run a test</a><ul>
+<li><a class="reference internal" href="#set-up-your-environment">Set up your environment</a></li>
+<li><a class="reference internal" href="#run-one-test">Run one test</a></li>
+<li><a class="reference internal" href="#choose-a-specific-board">Choose a specific board</a></li>
+<li><a class="reference internal" href="#run-against-local-build-files">Run against local build files</a></li>
+<li><a class="reference internal" href="#do-not-run-the-whole-suite-while-bringing-up-a-setup">Do not run the whole suite while bringing up a setup</a></li>
+<li><a class="reference internal" href="#if-the-run-fails">If the run fails</a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="index.html">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root/>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">How hw-test works</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="write-a-test.html">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integrate-hardware.html">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="register-a-board.html">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run-tests-in-ci.html">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="set-up-a-hardware-host.html">Set up a hardware host</a></li>
+<li class="toctree-l1"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1"/><div class="collapse"><a class="reference internal" href="reference/index.html">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/hardware-model.html">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/client-api.html">Test API and client reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/glossary.html">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb empty"><ol></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="run-a-test">
+<span id="id1"></span><h1>Run a test<a class="headerlink" href="#run-a-test" title="Link to this heading"></a></h1>
+<p>Use this guide when there is already a supported board in the shared pool and
+you want to run one existing test against it. This is the smallest useful local
+workflow.</p>
+<p>Before you start, you need:</p>
+<ul class="simple">
+<li><p>the address of the shared hardware service (the coordinator),</p></li>
+<li><p>a supported board available through that service, and</p></li>
+<li><p>the name of a test that can run on that board.</p></li>
+</ul>
+<section id="set-up-your-environment">
+<h2>Set up your environment<a class="headerlink" href="#set-up-your-environment" title="Link to this heading"></a></h2>
+<p>From a checkout of <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[test]&#39;</span>
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>This creates a Python environment and installs <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> in editable mode.</p>
+<p>Point <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> at the shared hardware service (the
+<a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">shared coordinator</span></a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator&gt;
+</pre></div>
+</div>
+</section>
+<section id="run-one-test">
+<h2>Run one test<a class="headerlink" href="#run-one-test" title="Link to this heading"></a></h2>
+<p>Run a single small test first:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/smoke&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>The <code class="docutils literal notranslate"><span class="pre">set</span></code> variable is the test context override. Its most important field is
+<code class="docutils literal notranslate"><span class="pre">name</span></code>, which matches the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>. It is JSON so a
+test can carry nested, test-specific configuration.
+See
+<a class="reference internal" href="run-tests-in-ci.html#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a> for how the same object is passed in CI.</p>
+<p>Some tests have extra Python requirements. Install them before running:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/u-boot/requirements.txt
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div></section>
+<section id="choose-a-specific-board">
+<h2>Choose a specific board<a class="headerlink" href="#choose-a-specific-board" title="Link to this heading"></a></h2>
+<p>By default <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> runs the test on the first free
+<a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a> whose tags match the test’s <code class="docutils literal notranslate"><span class="pre">needs</span></code>. When
+several boards match and you want a particular one, name it with
+<code class="docutils literal notranslate"><span class="pre">labgrid_target</span></code>:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;, &quot;labgrid_target&quot;: &quot;MUN-01-SC598_EZKIT-02&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>pytest<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>The value is the board slot name shown by <code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">places</span></code>.</p>
+</section>
+<section id="run-against-local-build-files">
+<h2>Run against local build files<a class="headerlink" href="#run-against-local-build-files" title="Link to this heading"></a></h2>
+<p>Some tests download build artifacts from a GitHub Actions run. To use files you
+built locally instead, place them where the test expects and run without a
+token. <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> looks under <code class="docutils literal notranslate"><span class="pre">_artifacts/&lt;test-name&gt;/0/</span></code> and tells you the
+exact path it expects:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-s
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> WARNING hw_tests.github:
+   Neither &#39;workflow_run_url&#39; in context or &#39;GITHUB_REPOSITORY&#39; in
+   environment, cannot download artifacts; assuming you have them at
+   &#39;&lt;cwd&gt;/_artifacts/adsp/bootstrap/0&#39;
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>/path/to/my.dtb<span class="w"> </span>_artifacts/adsp/bootstrap/0/my.dtb
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-s
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> ... test uses the local file ...
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>To download artifacts from a GitHub Actions run instead, set <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code>
+and pass <code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>&lt;token&gt;
+</pre></div>
+</div>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;, &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>pytest<span class="w"> </span>-vvs
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p><code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> is a GitHub personal access token. You can create one from any
+GitHub account under <strong>Settings → Developer settings → Personal access tokens</strong>;
+a token with read access to the repository is enough.</p>
+<p>For the public <code class="docutils literal notranslate"><span class="pre">analogdevicesinc</span></code> repositories you do <strong>not</strong> need to belong
+to the Analog Devices organization to download artifacts, so any valid token
+works. You do, however, need to be a signed-in GitHub user.</p>
+</section>
+<section id="do-not-run-the-whole-suite-while-bringing-up-a-setup">
+<h2>Do not run the whole suite while bringing up a setup<a class="headerlink" href="#do-not-run-the-whole-suite-while-bringing-up-a-setup" title="Link to this heading"></a></h2>
+<p>Avoid this while you are still getting one test working:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests
+</pre></div>
+</div>
+<p>It can run many hardware tests and reserve every matching board. Start with one
+test, one board slot, and one board.</p>
+</section>
+<section id="if-the-run-fails">
+<h2>If the run fails<a class="headerlink" href="#if-the-run-fails" title="Link to this heading"></a></h2>
+<p>See <a class="reference internal" href="reference/troubleshooting.html#hw-test-troubleshooting"><span class="std std-ref">Troubleshooting</span></a> for the local-run checklist
+(<code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>, matching tags, env file, SSH reachability).</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="concepts.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">How hw-test works</a>
+    <a href="write-a-test.html" title="Next document (Alt+Shift+RightArrow)" class="next">Write a test</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>
