@@ -1,4 +1,4 @@
-labgrid @ git+https://github.com/ozan956/labgrid.git@driver/ftdi-bit-bang
+labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next
 pexpect
 pytest
 pytest-timeout
