@@ -3,6 +3,7 @@ import logging
 import pytest
 
 from hw_tests.github import GitHub
+from hw_tests.images import Images
 from hw_tests.labgrid import LabgridClient
 
 logger = logging.getLogger(__name__)
@@ -11,10 +12,9 @@ logger = logging.getLogger(__name__)
 @pytest.mark.uboot
 def test_uboot_version(context):
     github = GitHub(context)
-    images = github.download("adi_sc598_ezkit_defconfig-bootstrap")
-
-    spl = images / "u-boot-spl"
-    uboot_image = images / "u-boot"
+    images = Images(context, github)
+    spl = images.get("spl")
+    uboot_image = images.get("uboot")
 
     assert spl.is_file(), f"missing SPL image: {spl}"
     assert uboot_image.is_file(), f"missing U-Boot image: {uboot_image}"
