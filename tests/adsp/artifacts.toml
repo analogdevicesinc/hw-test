@@ -1,0 +1,31 @@
+# flavor -> role -> {artifact glob over run artifact names, file glob inside zip}
+
+[br2.spl]
+artifact = "*-bootstrap"
+file = "u-boot-spl"
+[br2.uboot]
+artifact = "*-bootstrap"
+file = "u-boot"
+[br2.kernel]
+artifact = "*-bootstrap"
+file = "Image"
+[br2.dtb]
+artifact = "*-bootstrap"
+file = "*.dtb"
+[br2.emmc]
+artifact = "*-debug"
+file = "emmc.img.gz"
+
+[uboot.spl]
+artifact = "*"
+file = "u-boot-spl"
+[uboot.uboot]
+artifact = "*"
+file = "u-boot"
+
+[yocto.spl]
+artifact = "*"
+file = "u-boot-spl-*.elf"
+[yocto.uboot]
+artifact = "*"
+file = "u-boot-proper-*.elf"
