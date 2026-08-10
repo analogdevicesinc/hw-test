@@ -12,7 +12,7 @@ def test_descriptor_parses_and_has_expected_roles():
     with ADSP_DESCRIPTOR.open("rb") as f:
         data = tomllib.load(f)
     assert set(data) == {"br2", "uboot", "yocto"}
-    assert set(data["br2"]) >= {"spl", "uboot", "kernel", "dtb"}
+    assert set(data["br2"]) >= {"spl", "uboot", "kernel", "dtb", "emmc"}
     assert set(data["uboot"]) == {"spl", "uboot"}
     assert set(data["yocto"]) == {"spl", "uboot"}
     for flavor in data.values():
