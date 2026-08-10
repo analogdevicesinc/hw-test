@@ -18,8 +18,6 @@ REPO_FLAVOR = {
 
 def find_one(items, pattern, kind):
     """Return the single fnmatch match, else assert."""
-    from fnmatch import fnmatch
-
     matches = [i for i in items if fnmatch(_name(i), pattern)]
     assert matches, f"no {kind} matches {pattern!r}"
     assert len(matches) == 1, f"multiple {kind} match {pattern!r}: {matches}"

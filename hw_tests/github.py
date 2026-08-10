@@ -132,15 +132,27 @@ class GitHub:
         if owner_repository is None or run_id is None or self._token is None:
             return []
 
-        response = requests.get(
-            f"https://api.github.com/repos/{owner_repository}/actions/runs/{run_id}/artifacts",
-            headers=self._headers(),
-            params={"per_page": 100},
-        )
-        response.raise_for_status()
+        all_artifacts = []
+        page = 1
+        total_count = None
+        while total_count is None or len(all_artifacts) < total_count:
+            response = requests.get(
+                f"https://api.github.com/repos/{owner_repository}/actions/runs/{run_id}/artifacts",
+                headers=self._headers(),
+                params={"per_page": 100, "page": page},
+            )
+            response.raise_for_status()
+            data = response.json()
+            total_count = data.get("total_count", 0)
+            artifacts = data.get("artifacts", [])
+            if not artifacts:
+                break
+            all_artifacts.extend(artifacts)
+            page += 1
+
         return [
             item
-            for item in response.json().get("artifacts", [])
+            for item in all_artifacts
             if not item.get("expired")
         ]
 
