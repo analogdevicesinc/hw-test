@@ -4,29 +4,22 @@ import re
 import pytest
 
 from hw_tests.github import GitHub
+from hw_tests.images import Images
 from hw_tests.labgrid import LabgridClient, exporter_http_server
 
 logger = logging.getLogger(__name__)
 
 
-def find_one(path, pattern):
-    matches = sorted(path.glob(pattern))
-    assert matches, f"missing {path / pattern}"
-    assert len(matches) == 1, f"multiple files match {path / pattern}"
-    return matches[0]
-
-
 @pytest.mark.bootstrap
 def test_bootstrap(context):
     github = GitHub(context)
-    bootstrap = github.download("adi_sc598_ezkit_defconfig-bootstrap")
-    debug = github.download("adi_sc598_ezkit_defconfig-debug")
+    images = Images(context, github)
 
-    spl = bootstrap / "u-boot-spl"
-    uboot = bootstrap / "u-boot"
-    kernel = bootstrap / "Image"
-    devicetree = find_one(bootstrap, "*.dtb")
-    emmc_image = debug / "emmc.img.gz"
+    spl = images.get("spl")
+    uboot = images.get("uboot")
+    kernel = images.get("kernel")
+    devicetree = images.get("dtb")
+    emmc_image = images.get("emmc")
 
     client = LabgridClient(context)
     with client.acquire() as target:
