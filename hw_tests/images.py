@@ -1,5 +1,6 @@
 import logging
 import tomllib
+from fnmatch import fnmatch
 from pathlib import Path
 
 import pytest
@@ -48,6 +49,7 @@ class Images:
             pytest.skip(f"unknown flavor for repo {repo!r}")
         return flavor
 
+<<<<<<< HEAD
     def _descriptor_path(self):
         """Resolve the descriptor from the test's category."""
         name = self.context.get("name", "")
@@ -60,6 +62,11 @@ class Images:
             path = self._descriptor_path()
             assert path.is_file(), f"missing artifacts descriptor: {path}"
             with path.open("rb") as f:
+=======
+    def _load(self):
+        if self._descriptor is None:
+            with DESCRIPTOR.open("rb") as f:
+>>>>>>> 8270a42 (hw_tests/images: resolve role to file via needs + flavor descriptor)
                 self._descriptor = tomllib.load(f)
         return self._descriptor
 
@@ -79,7 +86,10 @@ class Images:
         candidates = [
             a["name"] for a in artifacts
             if all(tok in a["name"].lower() for tok in needs)
+<<<<<<< HEAD
             and not a["name"].lower().endswith(_SIDECAR_SUFFIXES)
+=======
+>>>>>>> 8270a42 (hw_tests/images: resolve role to file via needs + flavor descriptor)
         ]
         assert candidates, f"no artifact matches needs {needs}"
         matches = [n for n in candidates if fnmatch(n, artifact_glob)]
