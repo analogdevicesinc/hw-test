@@ -119,6 +119,31 @@ class GitHub:
             headers["Authorization"] = f"Bearer {self._token}"
         return headers
 
+    @property
+    def owner_repository(self):
+        return self._owner_repository
+
+    def list_artifacts(self, owner_repository=None, run_id=None):
+        """Return non-expired artifact dicts for a run, or [] when unavailable."""
+        if owner_repository is None:
+            owner_repository = self._owner_repository
+        if run_id is None:
+            run_id = self._run_id
+        if owner_repository is None or run_id is None or self._token is None:
+            return []
+
+        response = requests.get(
+            f"https://api.github.com/repos/{owner_repository}/actions/runs/{run_id}/artifacts",
+            headers=self._headers(),
+            params={"per_page": 100},
+        )
+        response.raise_for_status()
+        return [
+            item
+            for item in response.json().get("artifacts", [])
+            if not item.get("expired")
+        ]
+
     def download(
         self,
         name: str,
@@ -149,17 +174,10 @@ class GitHub:
             logger.warning(f"No 'GITHUB_TOKEN' in environment, {msg__}")
             return local_
 
-        response = requests.get(
-            f"https://api.github.com/repos/{owner_repository}/actions/runs/{run_id}/artifacts",
-            headers=self._headers(),
-            params={"name": name, "per_page": 100}
-        )
-        response.raise_for_status()
-
         artifact = next(
             (
-                item for item in response.json().get("artifacts", [])
-                if item.get("name") == name and not item.get("expired")
+                item for item in self.list_artifacts(owner_repository, run_id)
+                if item.get("name") == name
             ),
             None,
         )
