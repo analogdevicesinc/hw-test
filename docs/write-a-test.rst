@@ -106,8 +106,8 @@ Use build artifacts when needed
 -------------------------------
 
 Tests can retrieve artifacts from the GitHub workflow that produced them. The
-test context contains the workflow run information, and ``GitHub`` uses it to
-download an artifact:
+test context contains the workflow run information. For a single, known
+artifact, ``GitHub`` downloads it by name:
 
 .. code:: python
 
@@ -117,10 +117,66 @@ download an artifact:
    artifacts = GitHub(context).download("my-build-artifact")
    image = artifacts / "my-image.bin"
 
-For a local run that needs artifacts, provide ``GITHUB_TOKEN`` and
-``workflow_run_url`` as shown in :ref:`run-a-test`.
+Resolve artifacts by role with ``Images``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To run against files you built locally instead, see :ref:`run-a-test`.
+Different build systems publish the same board under different artifact names
+and internal layouts (Buildroot, standalone U-Boot, Yocto). A single workflow
+run also publishes one artifact per board. Hardcoding an artifact name and its
+inner filenames ties a test to one build system and one board.
+
+``Images`` removes that coupling: a test asks for a *role* (``spl``, ``uboot``,
+``kernel``, ``dtb``, ...) and ``Images`` resolves the right file for whatever
+was built.
+
+.. code:: python
+
+   from hw_tests.github import GitHub
+   from hw_tests.images import Images
+
+
+   images = Images(context, GitHub(context))
+   spl = images.get("spl")
+   uboot = images.get("uboot")
+
+``Images.get`` resolves in three steps:
+
+#. The build system, detected from the repository under test
+   (``br2-external`` → ``br2``, ``u-boot`` → ``uboot``, ``lnxdsp-adi-meta`` →
+   ``yocto``). Set ``flavor`` in the context to override detection for a local
+   run. An unknown repository skips the test.
+#. The artifact is selected from the run by matching every
+   ``needs`` token as a case-insensitive substring of the artifact name, so
+   ``needs = ["sc598", "ezkit"]`` picks the sc598 ezkit build and rejects
+   ``ezlite`` or ``sc589``.
+#. Role descriptor maps each role, per flavor, to an artifact and an inner-file pattern.
+
+If a role is not defined for the detected flavor, the test is skipped rather
+than failed (that image source does not support it).
+
+The descriptor lives at ``tests/<category>/artifacts.toml``, next to the tests
+that use it — ``category`` is the first path segment of the test name, so
+``adsp/u-boot`` reads ``tests/adsp/artifacts.toml``. Each entry names an
+artifact glob (matched against the run's artifact names) and a file glob
+(matched against files inside it):
+
+.. code:: toml
+
+   [br2.spl]
+   artifact = "*-bootstrap"
+   file = "u-boot-spl"
+   [br2.kernel]
+   artifact = "*-bootstrap"
+   file = "Image"
+
+   [yocto.spl]
+   artifact = "*"
+   file = "u-boot-spl-*.elf"
+
+For a local run that needs artifacts, provide ``GITHUB_TOKEN`` and
+``workflow_run_url`` as shown in :ref:`run-a-test`. Without a token, ``Images``
+falls back to files placed locally by ``GitHub.download``; see
+:ref:`run-a-test`.
 
 Try it locally
 --------------

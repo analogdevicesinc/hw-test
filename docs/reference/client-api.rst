@@ -49,18 +49,23 @@ Small smoke test:
 
 U-Boot style test:
 
+The images are resolved by role with ``Images``, so the same test runs against
+Buildroot, standalone U-Boot, and Yocto builds. See
+:ref:`write-a-test` for how flavor detection, ``needs``-based target selection,
+and the ``tests/<category>/artifacts.toml`` descriptor work.
+
 .. code:: python
 
    from hw_tests.github import GitHub
+   from hw_tests.images import Images
    from hw_tests.labgrid import LabgridClient
 
 
    def test_uboot_version(context):
-       github = GitHub(context)
-       images = github.download("adi_sc598_ezkit_defconfig-bootstrap")
+       images = Images(context, GitHub(context))
 
-       spl = images / "u-boot-spl"
-       uboot_image = images / "u-boot"
+       spl = images.get("spl")
+       uboot_image = images.get("uboot")
 
        client = LabgridClient(context)
        with client.acquire() as target:
