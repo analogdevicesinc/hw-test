@@ -270,16 +270,15 @@ was built.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Images.get</span></code> resolves in three steps:</p>
 <ol class="arabic simple">
-<li><p><strong>Flavor</strong> — the build system, detected from the repository under test
+<li><p>The build system, detected from the repository under test
 (<code class="docutils literal notranslate"><span class="pre">br2-external</span></code> → <code class="docutils literal notranslate"><span class="pre">br2</span></code>, <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> → <code class="docutils literal notranslate"><span class="pre">uboot</span></code>, <code class="docutils literal notranslate"><span class="pre">lnxdsp-adi-meta</span></code> →
 <code class="docutils literal notranslate"><span class="pre">yocto</span></code>). Set <code class="docutils literal notranslate"><span class="pre">flavor</span></code> in the context to override detection for a local
 run. An unknown repository skips the test.</p></li>
-<li><p><strong>Target</strong> — the artifact is selected from the run by matching every
+<li><p>The artifact is selected from the run by matching every
 <code class="docutils literal notranslate"><span class="pre">needs</span></code> token as a case-insensitive substring of the artifact name, so
 <code class="docutils literal notranslate"><span class="pre">needs</span> <span class="pre">=</span> <span class="pre">[&quot;sc598&quot;,</span> <span class="pre">&quot;ezkit&quot;]</span></code> picks the sc598 ezkit build and rejects
 <code class="docutils literal notranslate"><span class="pre">ezlite</span></code> or <code class="docutils literal notranslate"><span class="pre">sc589</span></code>.</p></li>
-<li><p><strong>Role → file</strong> — a descriptor maps each role, per flavor, to an artifact
-and an inner-file pattern.</p></li>
+<li><p>Role descriptor maps each role, per flavor, to an artifact and an inner-file pattern.</p></li>
 </ol>
 <p>If a role is not defined for the detected flavor, the test is skipped rather
 than failed (that image source does not support it).</p>
