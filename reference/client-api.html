@@ -184,16 +184,20 @@ it, configures SSH, and releases it at the end.</p>
 </pre></div>
 </div>
 <p>U-Boot style test:</p>
+<p>The images are resolved by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code>, so the same test runs against
+Buildroot, standalone U-Boot, and Yocto builds. See
+<a class="reference internal" href="../write-a-test.html#write-a-test"><span class="std std-ref">Write a test</span></a> for how flavor detection, <code class="docutils literal notranslate"><span class="pre">needs</span></code>-based target selection,
+and the <code class="docutils literal notranslate"><span class="pre">tests/&lt;category&gt;/artifacts.toml</span></code> descriptor work.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.images</span><span class="w"> </span><span class="kn">import</span> <span class="n">Images</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.labgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabgridClient</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_uboot_version</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
-    <span class="n">github</span> <span class="o">=</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
-    <span class="n">images</span> <span class="o">=</span> <span class="n">github</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;adi_sc598_ezkit_defconfig-bootstrap&quot;</span><span class="p">)</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="n">Images</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
 
-    <span class="n">spl</span> <span class="o">=</span> <span class="n">images</span> <span class="o">/</span> <span class="s2">&quot;u-boot-spl&quot;</span>
-    <span class="n">uboot_image</span> <span class="o">=</span> <span class="n">images</span> <span class="o">/</span> <span class="s2">&quot;u-boot&quot;</span>
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spl&quot;</span><span class="p">)</span>
+    <span class="n">uboot_image</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uboot&quot;</span><span class="p">)</span>
 
     <span class="n">client</span> <span class="o">=</span> <span class="n">LabgridClient</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
