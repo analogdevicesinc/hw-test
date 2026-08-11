@@ -97,7 +97,10 @@
 <li><a class="reference internal" href="#create-the-test-directory">Create the test directory</a></li>
 <li><a class="reference internal" href="#describe-the-hardware-you-need">Describe the hardware you need</a></li>
 <li><a class="reference internal" href="#write-the-test">Write the test</a></li>
-<li><a class="reference internal" href="#use-build-artifacts-when-needed">Use build artifacts when needed</a></li>
+<li><a class="reference internal" href="#use-build-artifacts-when-needed">Use build artifacts when needed</a><ul>
+<li><a class="reference internal" href="#resolve-artifacts-by-role-with-images">Resolve artifacts by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#try-it-locally">Try it locally</a></li>
 <li><a class="reference internal" href="#next-steps">Next steps</a></li>
 </ul>
@@ -238,8 +241,8 @@ is explained in <a class="reference internal" href="reference/hardware-model.htm
 <section id="use-build-artifacts-when-needed">
 <h2>Use build artifacts when needed<a class="headerlink" href="#use-build-artifacts-when-needed" title="Link to this heading"></a></h2>
 <p>Tests can retrieve artifacts from the GitHub workflow that produced them. The
-test context contains the workflow run information, and <code class="docutils literal notranslate"><span class="pre">GitHub</span></code> uses it to
-download an artifact:</p>
+test context contains the workflow run information. For a single, known
+artifact, <code class="docutils literal notranslate"><span class="pre">GitHub</span></code> downloads it by name:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
 
 
@@ -247,9 +250,61 @@ download an artifact:</p>
 <span class="n">image</span> <span class="o">=</span> <span class="n">artifacts</span> <span class="o">/</span> <span class="s2">&quot;my-image.bin&quot;</span>
 </pre></div>
 </div>
+<section id="resolve-artifacts-by-role-with-images">
+<h3>Resolve artifacts by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code><a class="headerlink" href="#resolve-artifacts-by-role-with-images" title="Link to this heading"></a></h3>
+<p>Different build systems publish the same board under different artifact names
+and internal layouts (Buildroot, standalone U-Boot, Yocto). A single workflow
+run also publishes one artifact per board. Hardcoding an artifact name and its
+inner filenames ties a test to one build system and one board.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Images</span></code> removes that coupling: a test asks for a <em>role</em> (<code class="docutils literal notranslate"><span class="pre">spl</span></code>, <code class="docutils literal notranslate"><span class="pre">uboot</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kernel</span></code>, <code class="docutils literal notranslate"><span class="pre">dtb</span></code>, …) and <code class="docutils literal notranslate"><span class="pre">Images</span></code> resolves the right file for whatever
+was built.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.images</span><span class="w"> </span><span class="kn">import</span> <span class="n">Images</span>
+
+
+<span class="n">images</span> <span class="o">=</span> <span class="n">Images</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+<span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spl&quot;</span><span class="p">)</span>
+<span class="n">uboot</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uboot&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Images.get</span></code> resolves in three steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Flavor</strong> — the build system, detected from the repository under test
+(<code class="docutils literal notranslate"><span class="pre">br2-external</span></code> → <code class="docutils literal notranslate"><span class="pre">br2</span></code>, <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> → <code class="docutils literal notranslate"><span class="pre">uboot</span></code>, <code class="docutils literal notranslate"><span class="pre">lnxdsp-adi-meta</span></code> →
+<code class="docutils literal notranslate"><span class="pre">yocto</span></code>). Set <code class="docutils literal notranslate"><span class="pre">flavor</span></code> in the context to override detection for a local
+run. An unknown repository skips the test.</p></li>
+<li><p><strong>Target</strong> — the artifact is selected from the run by matching every
+<code class="docutils literal notranslate"><span class="pre">needs</span></code> token as a case-insensitive substring of the artifact name, so
+<code class="docutils literal notranslate"><span class="pre">needs</span> <span class="pre">=</span> <span class="pre">[&quot;sc598&quot;,</span> <span class="pre">&quot;ezkit&quot;]</span></code> picks the sc598 ezkit build and rejects
+<code class="docutils literal notranslate"><span class="pre">ezlite</span></code> or <code class="docutils literal notranslate"><span class="pre">sc589</span></code>.</p></li>
+<li><p><strong>Role → file</strong> — a descriptor maps each role, per flavor, to an artifact
+and an inner-file pattern.</p></li>
+</ol>
+<p>If a role is not defined for the detected flavor, the test is skipped rather
+than failed (that image source does not support it).</p>
+<p>The descriptor lives at <code class="docutils literal notranslate"><span class="pre">tests/&lt;category&gt;/artifacts.toml</span></code>, next to the tests
+that use it — <code class="docutils literal notranslate"><span class="pre">category</span></code> is the first path segment of the test name, so
+<code class="docutils literal notranslate"><span class="pre">adsp/u-boot</span></code> reads <code class="docutils literal notranslate"><span class="pre">tests/adsp/artifacts.toml</span></code>. Each entry names an
+artifact glob (matched against the run’s artifact names) and a file glob
+(matched against files inside it):</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[br2.spl]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*-bootstrap&quot;</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;u-boot-spl&quot;</span>
+<span class="k">[br2.kernel]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*-bootstrap&quot;</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Image&quot;</span>
+
+<span class="k">[yocto.spl]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;u-boot-spl-*.elf&quot;</span>
+</pre></div>
+</div>
 <p>For a local run that needs artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
-<code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
-<p>To run against files you built locally instead, see <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
+falls back to files placed locally by <code class="docutils literal notranslate"><span class="pre">GitHub.download</span></code>; see
+<a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
+</section>
 </section>
 <section id="try-it-locally">
 <h2>Try it locally<a class="headerlink" href="#try-it-locally" title="Link to this heading"></a></h2>
