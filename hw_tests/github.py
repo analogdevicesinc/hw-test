@@ -159,6 +159,29 @@ class GitHub:
             if not item.get("expired")
         ]
 
+    def successful_run_ids(self, owner_repository=None, branch=None, limit=20):
+        """Return ids of recent successful workflow runs, newest first.
+
+        Used to resolve the latest green run of a source repository when a test
+        pins a source by repository/branch rather than an exact run_id. Returns
+        [] when unavailable (no token / no repository)."""
+        if owner_repository is None:
+            owner_repository = self._owner_repository
+        if owner_repository is None or self._token is None:
+            return []
+
+        params = {"status": "success", "per_page": min(limit, 100), "page": 1}
+        if branch:
+            params["branch"] = branch
+        response = requests.get(
+            f"https://api.github.com/repos/{owner_repository}/actions/runs",
+            headers=self._headers(),
+            params=params,
+        )
+        response.raise_for_status()
+        runs = response.json().get("workflow_runs", [])
+        return [run["id"] for run in runs[:limit]]
+
     def download(
         self,
         name: str,

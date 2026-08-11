@@ -29,3 +29,28 @@ file = "u-boot-spl-*.elf"
 [yocto.uboot]
 artifact = "*"
 file = "u-boot-proper-*.elf"
+
+# The linux flavor is the kernel-under-test. Its own run only ships the kernel
+# and device trees (build.yml builds the adi/ dtbs into boot/dtb/). The boot
+# chain around it comes from other repositories' runs (context['sources']):
+# SPL + U-Boot from the u-boot repo, the initramfs rootfs from br2-external.
+# Each source resolves the newest successful run carrying the artifact unless
+# its run_id is pinned in config.toml.
+[linux.kernel]
+artifact = "*_defconfig-gcc-arm64"
+file = "boot/Image"
+[linux.dtb]
+artifact = "*_defconfig-gcc-arm64"
+file = "boot/dtb/*.dtb"
+[linux.spl]
+artifact = "*"
+file = "u-boot-spl"
+source = "uboot"
+[linux.uboot]
+artifact = "*"
+file = "u-boot"
+source = "uboot"
+[linux.rootfs]
+artifact = "*-initramfs"
+file = "rootfs.cpio.uboot"
+source = "br2"

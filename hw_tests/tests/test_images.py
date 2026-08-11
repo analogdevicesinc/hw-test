@@ -11,13 +11,15 @@ ADSP_DESCRIPTOR = TESTS_DIR / "adsp" / "artifacts.toml"
 def test_descriptor_parses_and_has_expected_roles():
     with ADSP_DESCRIPTOR.open("rb") as f:
         data = tomllib.load(f)
-    assert set(data) == {"br2", "uboot", "yocto"}
+    assert set(data) == {"br2", "uboot", "yocto", "linux"}
     assert set(data["br2"]) >= {"spl", "uboot", "kernel", "dtb", "emmc"}
     assert set(data["uboot"]) == {"spl", "uboot"}
     assert set(data["yocto"]) == {"spl", "uboot"}
+    assert set(data["linux"]) >= {"kernel", "dtb", "spl", "uboot", "rootfs"}
     for flavor in data.values():
         for role in flavor.values():
-            assert set(role) == {"artifact", "file"}
+            # 'source' is optional: it pins a role to a second workflow run.
+            assert {"artifact", "file"} <= set(role) <= {"artifact", "file", "source"}
 
 
 def _gh(repo):
@@ -200,3 +202,116 @@ def test_shared_artifact_downloads_once(tmp_path):
     imgs.get("spl")
     imgs.get("uboot")
     assert gh.download.call_count == 1
+
+
+def test_linux_kernel_resolves_nested_boot_file(tmp_path):
+    # The linux run ships the kernel and dtbs under boot/; the file glob is a
+    # path (boot/Image), so nested layouts resolve where a bare pattern would
+    # only see the top level.
+    (tmp_path / "boot").mkdir()
+    (tmp_path / "boot" / "Image").write_text("x")
+    gh = _gh_run("analogdevicesinc/linux",
+                 ["sc598-som-ezkit_defconfig-gcc-arm64",
+                  "sc598-som-ezkit_defconfig-gcc-arm64-headers"], tmp_path)
+    imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
+    resolved = imgs.get("kernel")
+    assert resolved.name == "Image"
+    assert resolved.parent == tmp_path / "boot"
+    # '-headers' sibling is anchored out by the '*_defconfig-gcc-arm64' glob
+    gh.download.assert_called_with("sc598-som-ezkit_defconfig-gcc-arm64")
+
+
+def test_linux_dtb_narrowed_from_many_by_needs(tmp_path):
+    # The linux artifact ships every adi/ board dtb; the descriptor glob is a
+    # board-agnostic 'boot/dtb/*.dtb', so the right one is picked by the same
+    # needs tokens used for artifact selection — no board name in the toml.
+    dtb = tmp_path / "boot" / "dtb"
+    dtb.mkdir(parents=True)
+    for n in ["sc598-som-ezkit.dtb", "sc598-som-ezlite.dtb",
+              "sc594-som-ezkit.dtb", "sc584-ezkit.dtb"]:
+        (dtb / n).write_text("x")
+    gh = _gh_run("analogdevicesinc/linux",
+                 ["sc598-som-ezkit_defconfig-gcc-arm64"], tmp_path)
+    imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
+    assert imgs.get("dtb").name == "sc598-som-ezkit.dtb"
+
+
+def test_linux_pinned_source_downloads_from_second_run(tmp_path):
+    # spl/uboot/rootfs are pinned to a stable br2 run via context['sources'];
+    # the download must target that repo+run, not the linux run under test.
+    d = _make_files(tmp_path, ["rootfs.cpio.uboot"])
+    gh = _gh_run("analogdevicesinc/linux",
+                 ["adi_sc598_ezkit_defconfig-initramfs"], d)
+    context = {
+        "name": "adsp/test",
+        "needs": ["sc598", "ezkit"],
+        "sources": {"br2": {"repository": "analogdevicesinc/br2-external",
+                            "run_id": "999"}},
+    }
+    imgs = Images(context, gh)
+    assert imgs.get("rootfs").name == "rootfs.cpio.uboot"
+    gh.download.assert_called_with(
+        "adi_sc598_ezkit_defconfig-initramfs",
+        owner_repository="analogdevicesinc/br2-external",
+        run_id="999",
+    )
+
+
+def _br2_source(**over):
+    src = {"repository": "analogdevicesinc/br2-external", "branch": "main"}
+    src.update(over)
+    return {"name": "adsp/test", "needs": ["sc598", "ezkit"],
+            "sources": {"br2": src}}
+
+
+def test_linux_unpinned_source_resolves_latest_green(tmp_path):
+    # No run_id: resolve the newest successful br2 run that carries the
+    # artifact, on the configured branch.
+    d = _make_files(tmp_path, ["rootfs.cpio.uboot"])
+    gh = MagicMock()
+    gh.owner_repository = "analogdevicesinc/linux"
+    gh.successful_run_ids.return_value = [777, 776]
+    gh.list_artifacts.return_value = [{"name": "adi_sc598_ezkit_defconfig-initramfs"}]
+    gh.download.return_value = d
+    imgs = Images(_br2_source(), gh)
+    assert imgs.get("rootfs").name == "rootfs.cpio.uboot"
+    gh.successful_run_ids.assert_called_with("analogdevicesinc/br2-external", "main")
+    gh.download.assert_called_with(
+        "adi_sc598_ezkit_defconfig-initramfs",
+        owner_repository="analogdevicesinc/br2-external",
+        run_id="777",
+    )
+
+
+def test_linux_unpinned_source_skips_run_without_artifact(tmp_path):
+    # Newest success (800) has no matching artifact (e.g. a docs run); fall
+    # through to the next success (799) that does.
+    d = _make_files(tmp_path, ["rootfs.cpio.uboot"])
+    per_run = {
+        "800": [{"name": "docs-html"}],
+        "799": [{"name": "adi_sc598_ezkit_defconfig-initramfs"}],
+    }
+    gh = MagicMock()
+    gh.owner_repository = "analogdevicesinc/linux"
+    gh.successful_run_ids.return_value = [800, 799]
+    gh.list_artifacts.side_effect = lambda owner, run: per_run[str(run)]
+    gh.download.return_value = d
+    imgs = Images(_br2_source(), gh)
+    assert imgs.get("rootfs").name == "rootfs.cpio.uboot"
+    gh.download.assert_called_with(
+        "adi_sc598_ezkit_defconfig-initramfs",
+        owner_repository="analogdevicesinc/br2-external",
+        run_id="799",
+    )
+
+
+def test_linux_unpinned_source_no_green_run_asserts(tmp_path):
+    # Online (runs exist) but none carries the artifact within the window: fail
+    # loudly rather than silently reaching for the run under test.
+    gh = MagicMock()
+    gh.owner_repository = "analogdevicesinc/linux"
+    gh.successful_run_ids.return_value = [800]
+    gh.list_artifacts.return_value = [{"name": "docs-html"}]
+    imgs = Images(_br2_source(), gh)
+    with pytest.raises(AssertionError):
+        imgs.get("rootfs")
