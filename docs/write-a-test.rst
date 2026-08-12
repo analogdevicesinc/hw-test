@@ -178,6 +178,13 @@ The file glob may include directories when a workflow publishes a bundle;
 ``Images.artifact_path`` returns its resolved path inside that bundle for
 serving it at the same HTTP path.
 
+Artifact selection is glob-first: the ``artifact`` glob is matched against the
+run's artifact names, and ``needs`` tokens narrow the result only when the glob
+matches more than one (one artifact per board in a run). A board-agnostic
+artifact such as the combined ``dtb-gcc`` is therefore selected by its glob
+directly, and the specific board dtb is then chosen by the ``file`` glob
+narrowed by ``needs`` — no board name in the descriptor.
+
 Pull a role from another repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
