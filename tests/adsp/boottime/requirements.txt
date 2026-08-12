@@ -1,0 +1,2 @@
+labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next
+pytest
