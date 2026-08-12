@@ -26,6 +26,16 @@ targets:
           bindings:
             gpio: pin-d0
 
+      - FTDIGPIODriver:
+          name: power_sense
+          bindings:
+            gpio: pin-d6
+
+      - FTDIGPIODriver:
+          name: boot_done
+          bindings:
+            gpio: pin-d5
+
       - OpenOCDDriver:
           name: openocd
           load_commands:
