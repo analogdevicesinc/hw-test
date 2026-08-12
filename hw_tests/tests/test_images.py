@@ -221,19 +221,22 @@ def test_linux_kernel_resolves_nested_boot_file(tmp_path):
     gh.download.assert_called_with("sc598-som-ezkit_defconfig-gcc-arm64")
 
 
-def test_linux_dtb_narrowed_from_many_by_needs(tmp_path):
-    # The linux artifact ships every adi/ board dtb; the descriptor glob is a
-    # board-agnostic 'boot/dtb/*.dtb', so the right one is picked by the same
-    # needs tokens used for artifact selection — no board name in the toml.
-    dtb = tmp_path / "boot" / "dtb"
+def test_linux_dtb_from_dtb_gcc_narrowed_by_needs(tmp_path):
+    # The dtb comes from the same-run 'dtb-gcc' artifact (compile-devicetrees),
+    # whose layout preserves the full source path. The descriptor glob is
+    # board-agnostic 'dtb/arch/*/boot/dts/adi/*.dtb', narrowed to sc598-som-ezkit
+    # by needs tokens.
+    dtb = tmp_path / "dtb" / "arch" / "arm64" / "boot" / "dts" / "adi"
     dtb.mkdir(parents=True)
     for n in ["sc598-som-ezkit.dtb", "sc598-som-ezlite.dtb",
-              "sc594-som-ezkit.dtb", "sc584-ezkit.dtb"]:
+              "sc846-som-ezkit.dtb"]:
         (dtb / n).write_text("x")
     gh = _gh_run("analogdevicesinc/linux",
-                 ["sc598-som-ezkit_defconfig-gcc-arm64"], tmp_path)
+                 ["dtb-gcc", "sc598-som-ezkit_defconfig-gcc-arm64"], tmp_path)
     imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
-    assert imgs.get("dtb").name == "sc598-som-ezkit.dtb"
+    resolved = imgs.get("dtb")
+    assert resolved.name == "sc598-som-ezkit.dtb"
+    gh.download.assert_called_with("dtb-gcc")
 
 
 def test_linux_pinned_source_downloads_from_second_run(tmp_path):

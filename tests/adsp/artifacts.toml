@@ -40,8 +40,8 @@ file = "u-boot-proper-*.elf"
 artifact = "*_defconfig-gcc-arm64"
 file = "boot/Image"
 [linux.dtb]
-artifact = "*_defconfig-gcc-arm64"
-file = "boot/dtb/*.dtb"
+artifact = "dtb-gcc"
+file = "dtb/arch/*/boot/dts/adi/*.dtb"
 [linux.spl]
 artifact = "*"
 file = "u-boot-spl"
