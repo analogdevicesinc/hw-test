@@ -24,7 +24,7 @@ targets:
       - FTDIGPIODriver:
           name: spi_boot
           bindings:
-            gpio: pin-d0
+            gpio: pin-d1
 
       - OpenOCDDriver:
           name: openocd
