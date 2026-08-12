@@ -34,6 +34,7 @@ def test_uboot_version(context):
         ssh.put(str(spl), "u-boot-spl")
         ssh.put(str(uboot_image), "u-boot")
 
+        target.activate(console)
         target.activate(openocd)
         try:
             openocd.execute(openocd.load_commands)
