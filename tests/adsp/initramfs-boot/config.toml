@@ -8,19 +8,3 @@ arch/arm64/boot/dts/adi/sc598*
 arch/arm64/configs/*
 drivers/*
 '''
-
-# The kernel under test boots on a known-good boot chain built elsewhere rather
-# than a matching build of it: SPL + U-Boot from the u-boot repo, the initramfs
-# rootfs from br2-external (see the linux flavor in tests/adsp/artifacts.toml).
-# By default each source resolves the newest successful run on its branch that
-# carries the artifact, so nothing goes stale as artifacts expire. Set run_id to
-# pin an exact run instead (e.g. when bisecting a boot-chain regression).
-[sources.uboot]
-repository = "analogdevicesinc/u-boot"
-branch = "adi-u-boot-2025.10.y"
-# run_id = "1234567890"
-
-[sources.br2]
-repository = "analogdevicesinc/br2-external"
-branch = "main"
-# run_id = "1234567890"

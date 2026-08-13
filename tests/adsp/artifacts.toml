@@ -30,12 +30,6 @@ file = "u-boot-spl-*.elf"
 artifact = "*"
 file = "u-boot-proper-*.elf"
 
-# The linux flavor is the kernel-under-test. Its own run only ships the kernel
-# and device trees (build.yml builds the adi/ dtbs into boot/dtb/). The boot
-# chain around it comes from other repositories' runs (context['sources']):
-# SPL + U-Boot from the u-boot repo, the initramfs rootfs from br2-external.
-# Each source resolves the newest successful run carrying the artifact unless
-# its run_id is pinned in config.toml.
 [linux.kernel]
 artifact = "*_defconfig-gcc-arm64"
 file = "boot/Image"
@@ -43,14 +37,19 @@ file = "boot/Image"
 artifact = "dtb-gcc"
 file = "dtb/arch/*/boot/dts/adi/*.dtb"
 [linux.spl]
-artifact = "*"
+artifact = "*_defconfig*"
 file = "u-boot-spl"
-source = "uboot"
+source = "br2"
 [linux.uboot]
-artifact = "*"
+artifact = "*_defconfig*"
 file = "u-boot"
-source = "uboot"
+source = "br2"
 [linux.rootfs]
-artifact = "*-initramfs"
+artifact = "*_defconfig*"
 file = "rootfs.cpio.uboot"
 source = "br2"
+
+[sources.br2]
+repository = "analogdevicesinc/br2-external"
+backend = "release"
+tag = "2026.02-1.1.1"

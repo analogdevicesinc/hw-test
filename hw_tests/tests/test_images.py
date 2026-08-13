@@ -274,19 +274,23 @@ def test_linux_dtb_variant_selected_by_extra_need(tmp_path):
     assert imgs.get("dtb").name == "sc598-som-ezkit-sd.dtb"
 
 
-def test_release_role_downloads_asset_and_finds_nested_file(tmp_path):
-    # br2 rootfs: pick the *-initramfs-* asset, extract, rglob the nested file.
-    extracted = tmp_path / "buildroot" / "output" / "images"
-    extracted.mkdir(parents=True)
-    (extracted / "rootfs.cpio.uboot").write_bytes(b"uramdisk")
-    (extracted / "rootfs.cpio").write_bytes(b"bare")
+# The br2 release ships one bundle per defconfig; needs tokens pick the board.
+_REL_ASSETS = [
+    {"name": "adi_sc598_ezkit_defconfig-2026.02-1.1.1.tar.xz"},
+    {"name": "adi_sc598_ezlite_defconfig-2026.02-1.1.1.tar.xz"},
+    {"name": "adi_sc846_ezkit_defconfig-2026.02-1.1.1.tar.xz"},
+]
+_REL_BUNDLE = "adi_sc598_ezkit_defconfig-2026.02-1.1.1.tar.xz"
+
+
+def test_release_rootfs_comes_from_defconfig_bundle(tmp_path):
+    # rootfs (file='rootfs.cpio.uboot') picks the uImage ramdisk from the
+    # board's defconfig bundle, not the bare rootfs.cpio(.gz).
+    for n in ["rootfs.cpio.uboot", "rootfs.cpio", "rootfs.cpio.gz", "Image"]:
+        (tmp_path / n).write_bytes(b"x")
 
     gh = _gh("analogdevicesinc/linux")
-    gh.list_release_assets.return_value = [
-        {"name": "images-bootstrap-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz"},
-        {"name": "images-initramfs-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz"},
-        {"name": "images-debug-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz"},
-    ]
+    gh.list_release_assets.return_value = _REL_ASSETS
     gh.download_release_asset.return_value = tmp_path
 
     imgs = Images({"name": "adsp/initramfs-boot", "flavor": "linux",
@@ -294,31 +298,22 @@ def test_release_role_downloads_asset_and_finds_nested_file(tmp_path):
 
     got = imgs.get("rootfs")
     assert got.name == "rootfs.cpio.uboot"
-    gh.list_release_assets.assert_called_with("2026.02-0.2.0", "analogdevicesinc/br2-external")
+    gh.list_release_assets.assert_called_with("2026.02-1.1.1", "analogdevicesinc/br2-external")
     gh.download_release_asset.assert_called_with(
-        "images-initramfs-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz",
-        "2026.02-0.2.0",
-        "analogdevicesinc/br2-external",
+        _REL_BUNDLE, "2026.02-1.1.1", "analogdevicesinc/br2-external",
     )
 
 
-def test_release_spl_uboot_come_from_bootstrap_asset(tmp_path):
-    # spl/uboot use artifact='*-bootstrap-*', so among the release's tarballs
-    # they select the bootstrap image (not initramfs/debug) and rglob the flat
-    # u-boot-spl / u-boot out of buildroot/output/images/ — without matching the
-    # u-boot.ldr / u-boot.gdb / u-boot-spl.ldr siblings.
-    extracted = tmp_path / "buildroot" / "output" / "images"
-    extracted.mkdir(parents=True)
+def test_release_spl_uboot_come_from_defconfig_bundle(tmp_path):
+    # spl/uboot pick the flat u-boot-spl / u-boot from the bundle's extracted
+    # tree — without matching the u-boot.ldr / u-boot.gdb / u-boot-spl.ldr
+    # siblings — and the board is narrowed out of the three bundles by needs.
     for n in ["u-boot-spl", "u-boot-spl.ldr", "u-boot", "u-boot.ldr",
               "u-boot.gdb", "Image", "rootfs.cpio"]:
-        (extracted / n).write_bytes(b"x")
+        (tmp_path / n).write_bytes(b"x")
 
     gh = _gh("analogdevicesinc/linux")
-    gh.list_release_assets.return_value = [
-        {"name": "images-bootstrap-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz"},
-        {"name": "images-initramfs-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz"},
-        {"name": "images-debug-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz"},
-    ]
+    gh.list_release_assets.return_value = _REL_ASSETS
     gh.download_release_asset.return_value = tmp_path
 
     imgs = Images({"name": "adsp/initramfs-boot", "flavor": "linux",
@@ -327,18 +322,15 @@ def test_release_spl_uboot_come_from_bootstrap_asset(tmp_path):
     assert imgs.get("spl").name == "u-boot-spl"
     assert imgs.get("uboot").name == "u-boot"
     gh.download_release_asset.assert_called_with(
-        "images-bootstrap-adi_sc598_ezkit_defconfig-2026.02-0.2.0.tar.xz",
-        "2026.02-0.2.0",
-        "analogdevicesinc/br2-external",
+        _REL_BUNDLE, "2026.02-1.1.1", "analogdevicesinc/br2-external",
     )
 
 
-def test_release_role_missing_asset_asserts(tmp_path):
+def test_release_role_missing_file_asserts(tmp_path):
+    # Bundle resolves, but the requested file is absent -> loud assert.
     gh = _gh("analogdevicesinc/linux")
-    gh.list_release_assets.return_value = [
-        {"name": "images-bootstrap-x.tar.xz"},
-        {"name": "images-debug-x.tar.xz"},
-    ]
+    gh.list_release_assets.return_value = _REL_ASSETS
+    gh.download_release_asset.return_value = tmp_path
     imgs = Images({"name": "adsp/initramfs-boot", "flavor": "linux",
                    "needs": ["sc598", "ezkit"]}, gh)
     with pytest.raises(AssertionError):
