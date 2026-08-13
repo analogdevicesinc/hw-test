@@ -29,6 +29,9 @@ targets:
       - OpenOCDDriver:
           name: openocd
           load_commands:
+            - "gdb port disabled"
+            - "telnet port disabled"
+            - "tcl port disabled"
             - "source [find interface/adi-dbgagent.cfg]"
             - "source [find target/adspsc59x_a55.cfg]"
             - "source [find /tools/u-boot.tcl]"

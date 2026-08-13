@@ -29,6 +29,9 @@ targets:
       - OpenOCDDriver:
           name: openocd
           load_commands:
+            - "gdb port disabled"
+            - "telnet port disabled"
+            - "tcl port disabled"
             - "source [find interface/ice1000.cfg]"
             - "source [find target/adspsc84x_core0.cfg]"
             - "set _TARGETNAME adspsc84x_Proc0.a55_Core0"
