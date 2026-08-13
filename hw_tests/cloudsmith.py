@@ -21,14 +21,13 @@ Basic usage:
 """
 
 import logging
-import tempfile
 from os import environ
 from pathlib import Path
 from urllib.parse import quote
 
 import requests
 
-from hw_tests.github import GitHub, _extract_if_archive
+from hw_tests.github import GitHub, _download_to
 
 logger = logging.getLogger(__name__)
 
@@ -185,24 +184,6 @@ class Cloudsmith:
         cdn_url = package.get("cdn_url")
         if not cdn_url:
             raise ValueError(f"Package {name!r} has no cdn_url")
-        dest_dir = (
-            Path(path)
-            if path is not None
-            else Path(tempfile.mkdtemp(prefix="hw-test-cs-"))
-        )
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        dest_file = dest_dir / name
 
         logger.info(f"Downloading {name} from {cdn_url}")
-        response = requests.get(
-            cdn_url,
-            headers=self._headers(),
-            stream=True
-        )
-        response.raise_for_status()
-        with open(dest_file, "wb") as f:
-            f.writelines(response.iter_content(chunk_size=1 << 20))
-
-        _extract_if_archive(dest_file)
-
-        return dest_dir
+        return _download_to(cdn_url, name, self._headers(), path, "hw-test-cs-")
