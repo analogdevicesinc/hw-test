@@ -6,4 +6,4 @@ set -e
 LABEL="boot-trace"
 
 echo "boot-trace: marking boot-complete on '${LABEL}'"
-exec gpioset -C boot-trace --toggle 100ms,100ms "${LABEL}=0"
+exec gpioset -C boot-trace --toggle 500ms,500ms "${LABEL}=0"
