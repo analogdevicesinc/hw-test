@@ -76,7 +76,10 @@ def test_bootstrap(context):
             console.expect(re.escape("SPI install complete"), timeout=600)
             logger.info("SPI install complete")
 
-            console.expect(re.escape("Enter your PC's IP address:"), timeout=240)
+            # This test only serves the Buildroot eMMC image.
+            console.expect(re.escape("Choice [0/1/2]:"), timeout=240)
+            console.sendline("1")
+            console.expect(re.escape("PC IP address:"), timeout=240)
             console.sendline(f"{openocd.interface.host}:{port}")
             console.expect(re.escape("eMMC install complete."), timeout=1800)
             logger.info("eMMC install complete")
@@ -85,6 +88,8 @@ def test_bootstrap(context):
 
             spi_boot.set(True)
             target.deactivate(spi_boot)
+            console.expect(re.escape("SPI boot mode detected."), timeout=30)
+            console.expect(re.escape("Rebooting..."), timeout=30)
 
             target.activate(uboot_driver)
             console.sendline("version")
