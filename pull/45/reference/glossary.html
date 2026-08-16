@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Mapping of hw-test terms to the Labgrid terms they correspond to." name="description" />
+
+    <title>Glossary &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=cae2157c" />
+    <script async="async" src="../_static/app.umd.js?v=26d0298f"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="Test API and client reference" href="client-api.html" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../index.html">
+          <div>Hardware Test</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root/>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Glossary</a></li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../index.html">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root/>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-a-test.html">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../write-a-test.html">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrate-hardware.html">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../register-a-board.html">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-tests-in-ci.html">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../set-up-a-hardware-host.html">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="index.html">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hardware-model.html">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-api.html">Test API and client reference</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="index.html">Reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="glossary">
+<span id="hw-test-glossary"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">hw-test</span></code> uses <a class="icon link reference external" href="https://labgrid.readthedocs.io/" target="_blank">Labgrid</a> underneath to
+share real hardware safely. This table maps the words used in the task guides to the Labgrid words you
+may see in commands, configuration files, and the upstream Labgrid
+documentation.</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 22.0%" />
+<col style="width: 56.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>hw-test term</p></th>
+<th class="head"><p>Labgrid term</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Shared coordinator</p></td>
+<td><p>Coordinator</p></td>
+<td><p>The booking service that tracks all hardware and who has reserved each
+board. You connect to it by setting <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hardware host</p></td>
+<td><p>Exporter</p></td>
+<td><p>The machine physically wired to a board: its serial console, power
+switch, debug probe, and other equipment.</p></td>
+</tr>
+<tr class="row-even"><td><p>Board slot</p></td>
+<td><p>Place</p></td>
+<td><p>A reservable board in the shared pool. It carries capability tags (such
+as <code class="docutils literal notranslate"><span class="pre">sc598</span></code> and <code class="docutils literal notranslate"><span class="pre">ezkit</span></code>) so tests can select it without knowing where
+it is or which serial number it has.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Capability tag</p></td>
+<td><p>Tag</p></td>
+<td><p>A label on a board slot describing what it is (processor family, board
+model, fixture type). A test’s <code class="docutils literal notranslate"><span class="pre">needs</span></code> list is matched against these.</p></td>
+</tr>
+<tr class="row-even"><td><p>Driver</p></td>
+<td><p>Driver</p></td>
+<td><p>A single control on a board: power, serial console, GPIO, SSH, OpenOCD,
+or U-Boot. A test asks for a driver by its protocol.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Environment file</p></td>
+<td><p>Environment configuration</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">envs/&lt;board-slot&gt;.yaml</span></code> file that maps a board slot’s equipment to
+the drivers a test can use.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For full Labgrid syntax and options, see the
+<a class="icon link reference external" href="https://labgrid.readthedocs.io/en/latest/index.html" target="_blank" title="(in labgrid v0.1)"><span class="xref std std-doc">Labgrid documentation</span></a>.</p>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="client-api.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Test API and client reference</a>
+    <a href="troubleshooting.html" title="Next document (Alt+Shift+RightArrow)" class="next">Troubleshooting</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>
