@@ -88,6 +88,7 @@ def test_get_br2_dtb_narrowed_by_needs(tmp_path):
     d = _make_files(tmp_path, [
         "sc598-htol.dtb",
         "sc598-som-ezkit.dtb",
+        "sc598-som-ezkit-sd.dtb",
         "sc598-som-ezlite.dtb",
     ])
     gh = _gh_run("analogdevicesinc/br2-external", BR2_RUN, d)

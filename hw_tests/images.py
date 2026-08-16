@@ -26,6 +26,11 @@ def find_one(items, pattern, kind, needs=()):
         narrowed = [p for p in matches if all(token in _name(p).lower() for token in needs)]
         if narrowed:
             matches = narrowed
+    if len(matches) > 1:
+        stems = sorted(matches, key=lambda p: len(Path(_name(p)).stem))
+        base = stems[0]
+        if all(Path(_name(p)).stem.startswith(Path(_name(base)).stem) for p in stems):
+            matches = [base]
     assert matches, f"no {kind} matches {pattern!r}"
     assert len(matches) == 1, f"multiple {kind} match {pattern!r}: {matches}"
     return matches[0]
