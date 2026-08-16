@@ -19,9 +19,13 @@ REPO_FLAVOR = {
 _SIDECAR_SUFFIXES = (".sbom",)
 
 
-def find_one(items, pattern, kind):
-    """Return the single fnmatch match, else assert."""
+def find_one(items, pattern, kind, needs=()):
+    """Return the single fnmatch match, narrowed by needs when needed."""
     matches = [i for i in items if fnmatch(_name(i), pattern)]
+    if len(matches) > 1:
+        narrowed = [p for p in matches if all(token in _name(p).lower() for token in needs)]
+        if narrowed:
+            matches = narrowed
     assert matches, f"no {kind} matches {pattern!r}"
     assert len(matches) == 1, f"multiple {kind} match {pattern!r}: {matches}"
     return matches[0]
@@ -107,4 +111,4 @@ class Images:
         # Top-level only: artifacts may carry nested duplicates (e.g. yocto's
         # programming-images/) that would make a basename match ambiguous.
         files = sorted(p for p in Path(directory).glob("*") if p.is_file())
-        return find_one(files, spec["file"], "file")
+        return find_one(files, spec["file"], "file", self._needs())

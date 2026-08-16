@@ -84,6 +84,17 @@ def test_get_br2_selects_bootstrap_and_file(tmp_path):
     gh.download.assert_called_with("adi_sc598_ezkit_defconfig-bootstrap")
 
 
+def test_get_br2_dtb_narrowed_by_needs(tmp_path):
+    d = _make_files(tmp_path, [
+        "sc598-htol.dtb",
+        "sc598-som-ezkit.dtb",
+        "sc598-som-ezlite.dtb",
+    ])
+    gh = _gh_run("analogdevicesinc/br2-external", BR2_RUN, d)
+    imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
+    assert imgs.get("dtb").name == "sc598-som-ezkit.dtb"
+
+
 def test_get_br2_emmc_selects_debug_artifact(tmp_path):
     d = _make_files(tmp_path, ["emmc.img.gz"])
     gh = _gh_run("analogdevicesinc/br2-external", BR2_RUN, d)
