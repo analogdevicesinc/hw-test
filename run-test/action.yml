@@ -35,8 +35,7 @@ runs:
       run: |
         # Run test
         source "$venv/bin/activate"
-        [[ "${{ runner.debug }}" == "1" ]] && v="-v"
-        pytest $v
+        pytest --log-level=CONSOLE --log-cli-level=CONSOLE
 
     - name: Clean-up
       shell: bash
