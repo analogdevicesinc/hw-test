@@ -179,8 +179,8 @@ it, configures SSH, and releases it at the end.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_smoke</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">LabgridClient</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
-        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;SSHDriver&quot;</span><span class="p">)</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">run_check</span><span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">)</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"SSHDriver"</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">run_check</span><span class="p">(</span><span class="s2">"true"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>U-Boot style test:</p>
@@ -196,21 +196,21 @@ and the <code class="docutils literal notranslate"><span class="pre">tests/&lt;c
 <span class="k">def</span><span class="w"> </span><span class="nf">test_uboot_version</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
     <span class="n">images</span> <span class="o">=</span> <span class="n">Images</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
 
-    <span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spl&quot;</span><span class="p">)</span>
-    <span class="n">uboot_image</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uboot&quot;</span><span class="p">)</span>
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"spl"</span><span class="p">)</span>
+    <span class="n">uboot_image</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"uboot"</span><span class="p">)</span>
 
     <span class="n">client</span> <span class="o">=</span> <span class="n">LabgridClient</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
-        <span class="n">spi_boot</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;DigitalOutputProtocol&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;spi_boot&quot;</span><span class="p">)</span>
-        <span class="n">power</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;PowerProtocol&quot;</span><span class="p">)</span>
-        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;SSHDriver&quot;</span><span class="p">)</span>
-        <span class="n">openocd</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;OpenOCDDriver&quot;</span><span class="p">,</span> <span class="n">activate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">uboot</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;UBootDriver&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uboot&quot;</span><span class="p">,</span> <span class="n">activate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">spi_boot</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"DigitalOutputProtocol"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"spi_boot"</span><span class="p">)</span>
+        <span class="n">power</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"PowerProtocol"</span><span class="p">)</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"SSHDriver"</span><span class="p">)</span>
+        <span class="n">openocd</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"OpenOCDDriver"</span><span class="p">,</span> <span class="n">activate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">uboot</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"UBootDriver"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"uboot"</span><span class="p">,</span> <span class="n">activate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">spi_boot</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">power</span><span class="o">.</span><span class="n">cycle</span><span class="p">()</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">spl</span><span class="p">),</span> <span class="s2">&quot;u-boot-spl&quot;</span><span class="p">)</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uboot_image</span><span class="p">),</span> <span class="s2">&quot;u-boot&quot;</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">spl</span><span class="p">),</span> <span class="s2">"u-boot-spl"</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uboot_image</span><span class="p">),</span> <span class="s2">"u-boot"</span><span class="p">)</span>
         <span class="n">spi_boot</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">target</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
@@ -220,8 +220,8 @@ and the <code class="docutils literal notranslate"><span class="pre">tests/&lt;c
             <span class="n">target</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
 
         <span class="n">target</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">uboot</span><span class="p">)</span>
-        <span class="n">uboot</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
-        <span class="n">uboot</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">expect</span><span class="p">(</span><span class="s2">&quot;U-Boot&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">uboot</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="s2">"version"</span><span class="p">)</span>
+        <span class="n">uboot</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">expect</span><span class="p">(</span><span class="s2">"U-Boot"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -230,7 +230,7 @@ and the <code class="docutils literal notranslate"><span class="pre">tests/&lt;c
 <p>Each test has a <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> that contains default context values of a test
 set. For example, the <code class="docutils literal notranslate"><span class="pre">needs</span></code> list selects compatible
 <a class="reference internal" href="glossary.html#hw-test-glossary"><span class="std std-ref">board slots</span></a>:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">needs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;sc598&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ezkit&quot;</span><span class="p">]</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">needs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"sc598"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ezkit"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Any context value can be overridden when triggering a test; see

@@ -208,10 +208,10 @@ selects a place, then loads that file.</p>
 <span class="w">  </span><span class="nt">sample-target</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">RemotePlace</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sample-place&quot;</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"sample-place"</span>
 <span class="w">      </span><span class="nt">NetworkService</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;labgrid-client&quot;</span>
-<span class="w">        </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;exporter.example.com&quot;</span>
+<span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">"labgrid-client"</span>
+<span class="w">        </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">"exporter.example.com"</span>
 
 <span class="w">    </span><span class="nt">drivers</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
@@ -230,12 +230,12 @@ selects a place, then loads that file.</p>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">OpenOCDDriver</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openocd</span>
 <span class="w">          </span><span class="nt">load_commands</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;init&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;autoboot_elf&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;shutdown&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"init"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"autoboot_elf"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"shutdown"</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">RemotePlace</span></code> imports resources matched to the place. <code class="docutils literal notranslate"><span class="pre">NetworkService</span></code> is
@@ -247,12 +247,12 @@ names from the place.</p>
 <p>OpenOCD scripts installed on the exporter should be loaded from the exporter
 side:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">load_commands</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]&quot;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]&quot;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]&quot;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;init&quot;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;autoboot_elf&quot;</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;shutdown&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"init"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"autoboot_elf"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"shutdown"</span>
 </pre></div>
 </div>
 <p>Do not put exporter-only OpenOCD scripts under the labgrid <code class="docutils literal notranslate"><span class="pre">config:</span></code> key.

@@ -226,7 +226,7 @@ commands.</p>
 <code class="docutils literal notranslate"><span class="pre">labgrid</span></code> group is the exporter user’s primary group; the client does not need
 it.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>group<span class="w"> </span><span class="k">in</span><span class="w"> </span>users<span class="w"> </span>dialout<span class="w"> </span>uucp<span class="w"> </span>labgrid<span class="w"> </span>plugdev<span class="w"> </span>gpio<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span>getent<span class="w"> </span>group<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$group</span><span class="s2">&quot;</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span>sudo<span class="w"> </span>groupadd<span class="w"> </span>--system<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$group</span><span class="s2">&quot;</span>
+<span class="w">  </span>getent<span class="w"> </span>group<span class="w"> </span><span class="s2">"</span><span class="nv">$group</span><span class="s2">"</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span>sudo<span class="w"> </span>groupadd<span class="w"> </span>--system<span class="w"> </span><span class="s2">"</span><span class="nv">$group</span><span class="s2">"</span>
 <span class="k">done</span>
 
 sudo<span class="w"> </span>useradd<span class="w"> </span>--create-home<span class="w"> </span>--home-dir<span class="w"> </span>/home/labgrid<span class="w"> </span><span class="se">\</span>
@@ -256,7 +256,7 @@ sudo<span class="w"> </span>-u<span class="w"> </span>labgrid-client<span class=
 </div>
 <p>For USB debug probes, install udev rules from OpenOCD or add a local rule for
 the probe vendor and product ID:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ATTRS{idVendor}==&quot;1234&quot;, ATTRS{idProduct}==&quot;5678&quot;, MODE=&quot;660&quot;, GROUP=&quot;plugdev&quot;, TAG+=&quot;uaccess&quot;
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ATTRS{idVendor}=="1234", ATTRS{idProduct}=="5678", MODE="660", GROUP="plugdev", TAG+="uaccess"
 </pre></div>
 </div>
 <p>Then reload udev:</p>
@@ -320,22 +320,22 @@ this file contains at least one real resource definition (see
 small wrapper that resolves the host’s outbound IP address at start time and
 passes it as <code class="docutils literal notranslate"><span class="pre">--hostname</span></code>, so the exporter keeps working when the address
 changes:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>tee<span class="w"> </span>/home/labgrid/.local/bin/labgrid-exporter.sh<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>tee<span class="w"> </span>/home/labgrid/.local/bin/labgrid-exporter.sh<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="s">&lt;&lt;'EOF'</span>
 <span class="s">#!/bin/bash</span>
 <span class="s">set -eu</span>
 
-<span class="s">ip_=$(ip route get 8.8.8.8 | awk &#39;{for (i = 1; i &lt;= NF; i++) if ($i == &quot;src&quot;) {print $(i + 1); exit}}&#39;)</span>
-<span class="s">[ -n &quot;$ip_&quot; ] || { &gt;&amp;2 echo &quot;error: could not get an ip&quot;; exit 1; }</span>
+<span class="s">ip_=$(ip route get 8.8.8.8 | awk '{for (i = 1; i &lt;= NF; i++) if ($i == "src") {print $(i + 1); exit}}')</span>
+<span class="s">[ -n "$ip_" ] || { &gt;&amp;2 echo "error: could not get an ip"; exit 1; }</span>
 
-<span class="s">exec &quot;$HOME/.local/share/labgrid/venv/bin/labgrid-exporter&quot; \</span>
-<span class="s">    --hostname &quot;$ip_&quot; -d &quot;$HOME/.config/labgrid/exporter.yml&quot;</span>
+<span class="s">exec "$HOME/.local/share/labgrid/venv/bin/labgrid-exporter" \</span>
+<span class="s">    --hostname "$ip_" -d "$HOME/.config/labgrid/exporter.yml"</span>
 <span class="s">EOF</span>
 sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>chmod<span class="w"> </span><span class="m">0755</span><span class="w"> </span>/home/labgrid/.local/bin/labgrid-exporter.sh
 </pre></div>
 </div>
 <p>Create the exporter user service. Replace the coordinator with the one your
 team runs:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>tee<span class="w"> </span>/home/labgrid/.config/systemd/user/labgrid-exporter.service<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-u<span class="w"> </span>labgrid<span class="w"> </span>tee<span class="w"> </span>/home/labgrid/.config/systemd/user/labgrid-exporter.service<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="s">&lt;&lt;'EOF'</span>
 <span class="s">[Unit]</span>
 <span class="s">Description=Labgrid Exporter</span>
 <span class="s">After=network-online.target</span>
@@ -343,8 +343,8 @@ team runs:</p>
 <span class="s">StartLimitIntervalSec=0</span>
 
 <span class="s">[Service]</span>
-<span class="s">Environment=&quot;PYTHONUNBUFFERED=1&quot;</span>
-<span class="s">Environment=&quot;LG_COORDINATOR=labgrid-coordinator.example.com&quot;</span>
+<span class="s">Environment="PYTHONUNBUFFERED=1"</span>
+<span class="s">Environment="LG_COORDINATOR=labgrid-coordinator.example.com"</span>
 <span class="s">ExecStart=%h/.local/bin/labgrid-exporter.sh</span>
 <span class="s">Restart=always</span>
 <span class="s">RestartSec=30</span>

@@ -199,21 +199,21 @@ labgrid-suggest
 <span class="w">  </span><span class="nt">console</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USBSerialPort</span>
 <span class="w">    </span><span class="nt">match</span><span class="p">:</span>
-<span class="w">      </span><span class="s">&quot;@ID_SERIAL&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;Example_UART_1234&quot;</span>
+<span class="w">      </span><span class="s">"@ID_SERIAL"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">"Example_UART_1234"</span>
 <span class="w">  </span><span class="nt">debugger</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USBDebugger</span>
 <span class="w">    </span><span class="nt">match</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">ID_PATH</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;pci-0000:00:14.0-usb-0:12.2.1&quot;</span>
+<span class="w">      </span><span class="nt">ID_PATH</span><span class="p">:</span><span class="w"> </span><span class="s">"pci-0000:00:14.0-usb-0:12.2.1"</span>
 <span class="w">  </span><span class="nt">power</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkPowerPort</span>
 <span class="w">    </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
-<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;http://power-controller.example&quot;</span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">"http://power-controller.example"</span>
 <span class="w">    </span><span class="nt">index</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
 <span class="nt">shared-ftdi</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pin-d3</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">cls</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkSysfsGPIO</span>
-<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lab-exporter-01&quot;</span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">"lab-exporter-01"</span>
 <span class="w">    </span><span class="nt">index</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123</span>
 </pre></div>
 </div>
@@ -230,8 +230,8 @@ exporter that did not start.</p>
 <p>Run these commands from a client with <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code> set:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LG_COORDINATOR</span><span class="o">=</span>&lt;coordinator-hostname&gt;
 labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>create
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/MUN-01-SC598_EZKIT-02/*&#39;</span>
-labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">&#39;*/shared-ftdi/*&#39;</span>
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">'*/MUN-01-SC598_EZKIT-02/*'</span>
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>add-match<span class="w"> </span><span class="s1">'*/shared-ftdi/*'</span>
 labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>set-tags<span class="w"> </span><span class="nv">family</span><span class="o">=</span>adsp<span class="w"> </span><span class="nv">board</span><span class="o">=</span>sc598<span class="w"> </span><span class="nv">kind</span><span class="o">=</span>ezkit
 labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>show
 </pre></div>
@@ -250,10 +250,10 @@ board.</p>
 <span class="w">  </span><span class="nt">MUN-01-SC598_EZKIT-02</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">RemotePlace</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MUN-01-SC598_EZKIT-02&quot;</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"MUN-01-SC598_EZKIT-02"</span>
 <span class="w">      </span><span class="nt">NetworkService</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;labgrid-client&quot;</span>
-<span class="w">        </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.44.3.61&quot;</span>
+<span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">"labgrid-client"</span>
+<span class="w">        </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">"10.44.3.61"</span>
 
 <span class="w">    </span><span class="nt">drivers</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
@@ -277,16 +277,16 @@ board.</p>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">OpenOCDDriver</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openocd</span>
 <span class="w">          </span><span class="nt">load_commands</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;init&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;autoboot_elf&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;shutdown&quot;</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"init"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"autoboot_elf"</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"shutdown"</span>
 
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">UBootDriver</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uboot</span>
-<span class="w">          </span><span class="nt">prompt</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;=&gt;</span><span class="nv"> </span><span class="s">&quot;</span>
+<span class="w">          </span><span class="nt">prompt</span><span class="p">:</span><span class="w"> </span><span class="s">"=&gt;</span><span class="nv"> </span><span class="s">"</span>
 <span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">console</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
 </pre></div>
@@ -315,7 +315,7 @@ labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC59
 <section id="run-a-test">
 <h2>Run a test<a class="headerlink" href="#run-a-test" title="Link to this heading"></a></h2>
 <p>After the CLI flow works, run one pytest test:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvs
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/u-boot"}'</span><span class="w"> </span>pytest<span class="w"> </span>-vvs
 </pre></div>
 </div>
 <p>Start with one test and one place. Do not begin with <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while

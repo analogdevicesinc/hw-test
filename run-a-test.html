@@ -189,7 +189,7 @@ workflow.</p>
 <div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[test]&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">'.[test]'</span>
 </pre></div>
 </div>
 <div class="clear-left"></div></div></div><p>This creates a Python environment and installs <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> in editable mode.</p>
@@ -205,7 +205,7 @@ workflow.</p>
 <div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/smoke&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/smoke"}'</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
 </pre></div>
 </div>
 <div class="clear-left"></div></div></div><p>The <code class="docutils literal notranslate"><span class="pre">set</span></code> variable is the test context override. Its most important field is
@@ -223,7 +223,7 @@ See
 <div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/u-boot"}'</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
 </pre></div>
 </div>
 <div class="clear-left"></div></div></div></section>
@@ -236,7 +236,7 @@ several boards match and you want a particular one, name it with
 <div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/u-boot&quot;, &quot;labgrid_target&quot;: &quot;MUN-01-SC598_EZKIT-02&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/u-boot", "labgrid_target": "MUN-01-SC598_EZKIT-02"}'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">   </span>pytest<span class="w"> </span>-vvv
 </pre></div>
 </div>
@@ -251,13 +251,13 @@ exact path it expects:</p>
 <div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-s
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/bootstrap"}'</span><span class="w"> </span>pytest<span class="w"> </span>-s
 </pre></div>
 </div>
 <div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> WARNING hw_tests.github:
-   Neither &#39;workflow_run_url&#39; in context or &#39;GITHUB_REPOSITORY&#39; in
+   Neither 'workflow_run_url' in context or 'GITHUB_REPOSITORY' in
    environment, cannot download artifacts; assuming you have them at
-   &#39;&lt;cwd&gt;/_artifacts/adsp/bootstrap/0&#39;
+   '&lt;cwd&gt;/_artifacts/adsp/bootstrap/0'
 </pre></div>
 </div>
 <div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
@@ -269,7 +269,7 @@ exact path it expects:</p>
 <div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-s
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/bootstrap"}'</span><span class="w"> </span>pytest<span class="w"> </span>-s
 </pre></div>
 </div>
 <div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> ... test uses the local file ...
@@ -283,7 +283,7 @@ and pass <code class="docutils literal notranslate"><span class="pre">workflow_r
 <div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/bootstrap&quot;, &quot;workflow_run_url&quot;: &quot;https://api.github.com/repos/example/project/actions/runs/123&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/bootstrap", "workflow_run_url": "https://api.github.com/repos/example/project/actions/runs/123"}'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">   </span>pytest<span class="w"> </span>-vvs
 </pre></div>
 </div>

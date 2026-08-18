@@ -194,7 +194,7 @@ before writing a test that depends on it.</p>
 These must match tags on a <a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a> (a Labgrid
 Place). <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> selects a board only when every value in <code class="docutils literal notranslate"><span class="pre">needs</span></code>
 matches that place’s tags.</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">needs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;sc598&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ezkit&quot;</span><span class="p">]</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">needs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"sc598"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ezkit"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>For example, a board slot tagged with <code class="docutils literal notranslate"><span class="pre">family=adsp</span></code>, <code class="docutils literal notranslate"><span class="pre">board=sc598</span></code>, and
@@ -217,8 +217,8 @@ fails.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_smoke</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">LabgridClient</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
-        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;SSHDriver&quot;</span><span class="p">)</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">run_check</span><span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">)</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"SSHDriver"</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">run_check</span><span class="p">(</span><span class="s2">"true"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Drivers represent capabilities attached to the board: a serial console, power
@@ -227,8 +227,8 @@ driver by its protocol where possible, so the test does not depend on a
 particular fixture’s implementation.</p>
 <p>For example, a test that controls boot mode and power might start like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
-    <span class="n">boot_mode</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;DigitalOutputProtocol&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;spi_boot&quot;</span><span class="p">)</span>
-    <span class="n">power</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">&quot;PowerProtocol&quot;</span><span class="p">)</span>
+    <span class="n">boot_mode</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"DigitalOutputProtocol"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"spi_boot"</span><span class="p">)</span>
+    <span class="n">power</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"PowerProtocol"</span><span class="p">)</span>
 
     <span class="n">boot_mode</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">power</span><span class="o">.</span><span class="n">cycle</span><span class="p">()</span>
@@ -246,8 +246,8 @@ artifact, <code class="docutils literal notranslate"><span class="pre">GitHub</s
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
 
 
-<span class="n">artifacts</span> <span class="o">=</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;my-build-artifact&quot;</span><span class="p">)</span>
-<span class="n">image</span> <span class="o">=</span> <span class="n">artifacts</span> <span class="o">/</span> <span class="s2">&quot;my-image.bin&quot;</span>
+<span class="n">artifacts</span> <span class="o">=</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">"my-build-artifact"</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">artifacts</span> <span class="o">/</span> <span class="s2">"my-image.bin"</span>
 </pre></div>
 </div>
 <section id="resolve-artifacts-by-role-with-images">
@@ -264,8 +264,8 @@ was built.</p>
 
 
 <span class="n">images</span> <span class="o">=</span> <span class="n">Images</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
-<span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spl&quot;</span><span class="p">)</span>
-<span class="n">uboot</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uboot&quot;</span><span class="p">)</span>
+<span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"spl"</span><span class="p">)</span>
+<span class="n">uboot</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"uboot"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Images.get</span></code> resolves in three steps:</p>
@@ -288,15 +288,15 @@ that use it — <code class="docutils literal notranslate"><span class="pre">cat
 artifact glob (matched against the run’s artifact names) and a file glob
 (matched against files inside it):</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[br2.spl]</span>
-<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*-bootstrap&quot;</span>
-<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;u-boot-spl&quot;</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*-bootstrap"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot-spl"</span>
 <span class="k">[br2.kernel]</span>
-<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*-bootstrap&quot;</span>
-<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Image&quot;</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*-bootstrap"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Image"</span>
 
 <span class="k">[yocto.spl]</span>
-<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
-<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;u-boot-spl-*.elf&quot;</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot-spl-*.elf"</span>
 </pre></div>
 </div>
 <p>For a local run that needs artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
@@ -318,7 +318,7 @@ the test you are working on:</p>
 <div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">&#39;{&quot;name&quot;: &quot;adsp/my-board-smoke&quot;}&#39;</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/my-board-smoke"}'</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
 </pre></div>
 </div>
 <div class="clear-left"></div></div></div><p>The first run is a good time to verify that the test selects the intended type

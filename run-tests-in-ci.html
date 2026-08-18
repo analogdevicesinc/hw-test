@@ -176,7 +176,7 @@ secret and expose it as an environment variable.</p>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analogdevicesinc/hw-test/.github/workflows/run-test.yml@main</span>
 <span class="w">    </span><span class="nt">with</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{&quot;name&quot;:</span><span class="nv"> </span><span class="s">&quot;adsp/smoke&quot;}&#39;</span>
+<span class="w">      </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="s">'{"name":</span><span class="nv"> </span><span class="s">"adsp/smoke"}'</span>
 </pre></div>
 </div>
 <section id="run-more-than-one-test">
@@ -192,9 +192,9 @@ secret and expose it as an environment variable.</p>
 <span class="w">   </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
 <span class="w">       </span><span class="no">[</span>
-<span class="w">        </span><span class="no">{&quot;name&quot;: &quot;demo/basic&quot;},</span>
-<span class="w">        </span><span class="no">{&quot;name&quot;: &quot;feature/new&quot;},</span>
-<span class="w">        </span><span class="no">{&quot;name&quot;: &quot;something/test&quot;}</span>
+<span class="w">        </span><span class="no">{"name": "demo/basic"},</span>
+<span class="w">        </span><span class="no">{"name": "feature/new"},</span>
+<span class="w">        </span><span class="no">{"name": "something/test"}</span>
 <span class="w">       </span><span class="no">]</span>
 </pre></div>
 </div>
@@ -209,9 +209,9 @@ secret and expose it as an environment variable.</p>
 <span class="w">     </span><span class="nt">fail-fast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">     </span><span class="nt">matrix</span><span class="p">:</span>
 <span class="w">       </span><span class="nt">test</span><span class="p">:</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;demo/basic&quot;</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;feature/new&quot;</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;something/test&quot;</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"demo/basic"</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"feature/new"</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"something/test"</span>
 <span class="w">   </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analogdevicesinc/hw-test/.github/workflows/run-test.yml@main</span>
 <span class="w">   </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ toJson(matrix.test) }}</span>
@@ -227,7 +227,7 @@ secret and expose it as an environment variable.</p>
 <p>For a workflow run triggered by the ‘workflow_run’ event, use:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">on</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">workflow_run</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">workflows</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Build&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">workflows</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"Build"</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">completed</span><span class="p p-Indicator">]</span>
 
 <span class="nt">permissions</span><span class="p">:</span>
@@ -237,7 +237,7 @@ secret and expose it as an environment variable.</p>
 
 <span class="nt">jobs</span><span class="p">:</span>
 <span class="w"> </span><span class="nt">hardware-test</span><span class="p">:</span>
-<span class="w">   </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.event.workflow_run.conclusion == &#39;success&#39;</span>
+<span class="w">   </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.event.workflow_run.conclusion == 'success'</span>
 <span class="w">   </span><span class="nt">permissions</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">id-token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
 <span class="w">     </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
@@ -246,8 +246,8 @@ secret and expose it as an environment variable.</p>
 <span class="w">   </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
 <span class="w">       </span><span class="no">{</span>
-<span class="w">         </span><span class="no">&quot;name&quot;: &quot;demo/basic&quot;,</span>
-<span class="w">         </span><span class="no">&quot;workflow_run_url&quot;: &quot;${{ github.event.workflow_run.url }}&quot;</span>
+<span class="w">         </span><span class="no">"name": "demo/basic",</span>
+<span class="w">         </span><span class="no">"workflow_run_url": "${{ github.event.workflow_run.url }}"</span>
 <span class="w">       </span><span class="no">}</span>
 </pre></div>
 </div>
@@ -256,7 +256,7 @@ secret and expose it as an environment variable.</p>
 <span class="w"> </span><span class="nt">workflow_dispatch</span><span class="p">:</span>
 <span class="w">   </span><span class="nt">inputs</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">workflow_run_url</span><span class="p">:</span>
-<span class="w">       </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;The</span><span class="nv"> </span><span class="s">api</span><span class="nv"> </span><span class="s">url</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">workflow_run&quot;</span>
+<span class="w">       </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">"The</span><span class="nv"> </span><span class="s">api</span><span class="nv"> </span><span class="s">url</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">workflow_run"</span>
 <span class="w">       </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">       </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
 
@@ -275,8 +275,8 @@ secret and expose it as an environment variable.</p>
 <span class="w">   </span><span class="nt">with</span><span class="p">:</span>
 <span class="w">     </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
 <span class="w">       </span><span class="no">{</span>
-<span class="w">         </span><span class="no">&quot;name&quot;: &quot;demo/basic&quot;,</span>
-<span class="w">         </span><span class="no">&quot;workflow_run_url&quot;: &quot;${{ inputs.workflow_run_url }}&quot;</span>
+<span class="w">         </span><span class="no">"name": "demo/basic",</span>
+<span class="w">         </span><span class="no">"workflow_run_url": "${{ inputs.workflow_run_url }}"</span>
 <span class="w">       </span><span class="no">}</span>
 </pre></div>
 </div>
