@@ -4,13 +4,12 @@ import subprocess
 import urllib.request
 from os import environ
 from pathlib import Path
-from shutil import which
 
 from hw_tests.github import GitHub
 
 logger = logging.getLogger(__name__)
 
-OPKSSH_VERSION = "v0.14.0"
+OPKSSH_VERSION = "v0.16.0"
 OPKSSH_BASE_URL = f"https://github.com/openpubkey/opkssh/releases/download/{OPKSSH_VERSION}"
 OPKSSH_BIN = Path.home() / ".local" / "bin" / "opkssh"
 
@@ -79,9 +78,6 @@ class OPKSSH:
 
     @staticmethod
     def ensure():
-        if which('opkssh') is not None:
-            return
-
         arch = platform.machine()
         if arch == "x86_64":
             arch = "amd64"
@@ -94,3 +90,4 @@ class OPKSSH:
         logger.info("Downloading opkssh from %s", url)
         urllib.request.urlretrieve(url, OPKSSH_BIN)
         OPKSSH_BIN.chmod(0o755)
+        environ["PATH"] = f"{OPKSSH_BIN.parent}:{environ.get('PATH', '')}"
