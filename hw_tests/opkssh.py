@@ -10,7 +10,7 @@ from hw_tests.github import GitHub
 
 logger = logging.getLogger(__name__)
 
-OPKSSH_VERSION = "v0.14.0"
+OPKSSH_VERSION = "v0.16.0"
 OPKSSH_BASE_URL = f"https://github.com/openpubkey/opkssh/releases/download/{OPKSSH_VERSION}"
 OPKSSH_BIN = Path.home() / ".local" / "bin" / "opkssh"
 
