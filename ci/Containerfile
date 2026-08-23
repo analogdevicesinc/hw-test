@@ -20,7 +20,7 @@ RUN bash ./gh-actions-runner.sh ; rm ./gh-actions-runner.sh
 
 RUN dnf -y install \
     python3 python3-pip \
-    opkssh \
+    opkssh-0.16.0 \
     git openssh-clients rsync curl wget \
     tar gzip unzip \
     iproute
