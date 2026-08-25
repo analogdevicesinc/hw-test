@@ -70,6 +70,10 @@ def test_bootstrap(context):
             )
             console.expect(uboot_driver.prompt, timeout=180)
 
+            # Pass the ADI console arguments to Linux for the RAM boot.
+            console.sendline("setenv bootargs ${adi_bootargs}")
+            console.expect(uboot_driver.prompt, timeout=30)
+
             console.sendline("booti ${kernel_addr_r} - ${fdt_addr_r}")
             uboot_driver.await_boot()
             target.deactivate(uboot_driver)
