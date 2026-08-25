@@ -36,6 +36,7 @@ def test_bootstrap(context):
         ssh.put(str(spl), "u-boot-spl")
         ssh.put(str(uboot), "u-boot")
 
+        target.activate(console)
         target.activate(openocd)
         try:
             openocd.execute(openocd.load_commands)
