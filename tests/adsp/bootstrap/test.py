@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 
 import pytest
 
@@ -43,6 +44,8 @@ def test_bootstrap(context):
         finally:
             target.deactivate(openocd)
 
+        console.sendline("")
+        time.sleep(0.2)
         target.activate(uboot_driver)
         console.sendline("version")
         console.expect("U-Boot", timeout=30)
