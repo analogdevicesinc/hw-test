@@ -112,7 +112,7 @@ def test_bootstrap(context):
             console.expect(uboot_driver.prompt, timeout=30)
             logger.info("SPI U-Boot verified")
 
-            console.sendline("run emmcboot")
+            console.sendline("run mmcboot")
             uboot_driver.await_boot()
             console.expect("login:", timeout=240)
             logger.info("eMMC Linux boot verified")
