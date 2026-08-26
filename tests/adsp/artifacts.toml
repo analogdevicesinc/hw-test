@@ -1,20 +1,20 @@
 # flavor -> role -> {artifact glob over run artifact names, file glob inside zip}
 
 [br2.spl]
-artifact = "*-bootstrap"
-file = "u-boot-spl"
+artifact = "*_defconfig"
+file = "bootstrap/u-boot-spl"
 [br2.uboot]
-artifact = "*-bootstrap"
-file = "u-boot"
+artifact = "*_defconfig"
+file = "bootstrap/u-boot"
 [br2.kernel]
-artifact = "*-bootstrap"
-file = "Image"
+artifact = "*_defconfig"
+file = "bootstrap/Image"
 [br2.dtb]
-artifact = "*-bootstrap"
-file = "*.dtb"
+artifact = "*_defconfig"
+file = "bootstrap/*.dtb"
 [br2.emmc]
-artifact = "*-debug"
-file = "emmc.img.gz"
+artifact = "*_defconfig"
+file = "debug/emmc.img.gz"
 
 [uboot.spl]
 artifact = "*"

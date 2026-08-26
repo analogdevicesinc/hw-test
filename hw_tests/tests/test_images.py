@@ -57,8 +57,8 @@ def test_flavor_unknown_repo_skips():
         _ = imgs.flavor
 
 
-BR2_RUN = ["adi_sc598_ezkit_defconfig-bootstrap", "adi_sc598_ezkit_defconfig-debug",
-           "adi_sc589_ezkit_defconfig-bootstrap"]
+BR2_RUN = ["adi_sc598_ezkit_defconfig", "adi_sc598_ezkit_defconfig-bootstrap",
+           "adi_sc598_ezkit_defconfig-debug", "adi_sc589_ezkit_defconfig"]
 
 
 def _gh_run(repo, artifact_names, download_dir):
@@ -76,33 +76,51 @@ def _make_files(tmp_path, names):
 
 
 def test_get_br2_selects_bootstrap_and_file(tmp_path):
-    d = _make_files(tmp_path, ["u-boot-spl", "u-boot", "Image", "sc598-som-ezkit.dtb"])
+    bootstrap = tmp_path / "bootstrap"
+    bootstrap.mkdir()
+    _make_files(bootstrap, ["u-boot-spl", "u-boot", "Image", "sc598-som-ezkit.dtb"])
+    d = tmp_path
     gh = _gh_run("analogdevicesinc/br2-external", BR2_RUN, d)
     imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
+    assert imgs.get("spl").name == "u-boot-spl"
     assert imgs.get("uboot").name == "u-boot"
-    # picked the bootstrap artifact (needs-match + '*-bootstrap' glob), not sc589
-    gh.download.assert_called_with("adi_sc598_ezkit_defconfig-bootstrap")
+    assert imgs.get("kernel").name == "Image"
+    assert imgs.get("dtb").name == "sc598-som-ezkit.dtb"
+    assert imgs.artifact_path("spl") == "bootstrap/u-boot-spl"
+    assert imgs.artifact_path("uboot") == "bootstrap/u-boot"
+    assert imgs.artifact_path("kernel") == "bootstrap/Image"
+    assert imgs.artifact_path("dtb") == "bootstrap/sc598-som-ezkit.dtb"
+    # Pick the complete board bundle, not its standalone flavor artifacts.
+    gh.download.assert_called_with("adi_sc598_ezkit_defconfig")
+    assert gh.download.call_count == 1
 
 
 def test_get_br2_dtb_narrowed_by_needs(tmp_path):
-    d = _make_files(tmp_path, [
+    bootstrap = tmp_path / "bootstrap"
+    bootstrap.mkdir()
+    _make_files(bootstrap, [
         "sc598-htol.dtb",
         "sc598-som-ezkit.dtb",
         "sc598-som-ezkit-sd.dtb",
         "sc598-som-ezlite.dtb",
     ])
+    d = tmp_path
     gh = _gh_run("analogdevicesinc/br2-external", BR2_RUN, d)
     imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
     assert imgs.get("dtb").name == "sc598-som-ezkit.dtb"
 
 
-def test_get_br2_emmc_selects_debug_artifact(tmp_path):
-    d = _make_files(tmp_path, ["emmc.img.gz"])
+def test_get_br2_emmc_selects_debug_file_from_bundle(tmp_path):
+    debug = tmp_path / "debug"
+    debug.mkdir()
+    _make_files(debug, ["emmc.img.gz"])
+    d = tmp_path
     gh = _gh_run("analogdevicesinc/br2-external", BR2_RUN, d)
     imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
     assert imgs.get("emmc").name == "emmc.img.gz"
-    # emmc role sources from the '-debug' artifact, not '-bootstrap'
-    gh.download.assert_called_with("adi_sc598_ezkit_defconfig-debug")
+    assert imgs.get("emmc").parent == debug
+    assert imgs.artifact_path("emmc") == "debug/emmc.img.gz"
+    gh.download.assert_called_with("adi_sc598_ezkit_defconfig")
 
 
 def test_needs_reject_ezlite_and_wrong_soc(tmp_path):
