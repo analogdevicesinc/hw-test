@@ -3,7 +3,7 @@ import shlex
 from argparse import Namespace
 from contextlib import contextmanager
 from os import environ
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from time import monotonic, sleep
 from urllib.parse import urlsplit
 
@@ -196,8 +196,11 @@ class LabgridClient:
 
 
 @contextmanager
-def exporter_http_server(ssh, *files):
-    """Serve files temporarily from a remote host over HTTP."""
+def exporter_http_server(ssh, files):
+    """Serve files temporarily from a remote host over HTTP.
+
+    ``files`` maps paths relative to the HTTP root to local files.
+    """
     directory = ssh.run_check("mktemp -d /dev/shm/hw-test-http.XXXXXX")[0].strip()
     assert directory.startswith("/dev/shm/hw-test-http."), f"unexpected dir: {directory}"
 
@@ -206,8 +209,27 @@ def exporter_http_server(ssh, *files):
     log_file = shlex.quote(f"{directory}/http.log")
 
     try:
-        for path in files:
-            ssh.put(str(path), f"{directory}/{path.name}")
+        remote_paths = set()
+        for remote_path, source in files.items():
+            remote_path = PurePosixPath(remote_path)
+            if (
+                remote_path.is_absolute()
+                or not remote_path.parts
+                or ".." in remote_path.parts
+            ):
+                raise ValueError(
+                    f"HTTP path must be relative and stay below the server root: "
+                    f"{remote_path}"
+                )
+            if remote_path in remote_paths:
+                raise ValueError(f"duplicate HTTP path: {remote_path}")
+            remote_paths.add(remote_path)
+
+            remote_file = PurePosixPath(directory) / remote_path
+            if remote_file.parent != PurePosixPath(directory):
+                remote_parent = str(remote_file.parent)
+                ssh.run_check(f"mkdir -p {shlex.quote(remote_parent)}")
+            ssh.put(str(source), str(remote_file))
 
         port = ssh.run_check(
             "python3 -c "

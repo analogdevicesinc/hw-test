@@ -51,7 +51,12 @@ def test_bootstrap(context):
         console.expect("U-Boot", timeout=30)
         console.expect(uboot_driver.prompt, timeout=30)
 
-        with exporter_http_server(ssh, kernel, devicetree, emmc_image) as port:
+        files = {
+            images.artifact_path("kernel"): kernel,
+            images.artifact_path("dtb"): devicetree,
+            images.artifact_path("emmc"): emmc_image,
+        }
+        with exporter_http_server(ssh, files) as port:
             console.sendline("dhcp")
             console.expect(uboot_driver.prompt, timeout=120)
 
@@ -61,12 +66,14 @@ def test_bootstrap(context):
             console.expect(uboot_driver.prompt, timeout=30)
 
             console.sendline(
-                f"wget ${{kernel_addr_r}} {openocd.interface.host}:/{kernel.name}"
+                f"wget ${{kernel_addr_r}} {openocd.interface.host}:/"
+                f"{images.artifact_path('kernel')}"
             )
             console.expect(uboot_driver.prompt, timeout=180)
 
             console.sendline(
-                f"wget ${{fdt_addr_r}} {openocd.interface.host}:/{devicetree.name}"
+                f"wget ${{fdt_addr_r}} {openocd.interface.host}:/"
+                f"{images.artifact_path('dtb')}"
             )
             console.expect(uboot_driver.prompt, timeout=180)
 
