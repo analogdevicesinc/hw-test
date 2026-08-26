@@ -163,15 +163,20 @@ artifact glob (matched against the run's artifact names) and a file glob
 .. code:: toml
 
    [br2.spl]
-   artifact = "*-bootstrap"
-   file = "u-boot-spl"
+   artifact = "*_defconfig"
+   file = "bootstrap/u-boot-spl"
    [br2.kernel]
-   artifact = "*-bootstrap"
-   file = "Image"
+   artifact = "*_defconfig"
+   file = "bootstrap/Image"
 
    [yocto.spl]
    artifact = "*"
    file = "u-boot-spl-*.elf"
+
+The file glob may include directories when a workflow publishes a bundle;
+``Images.get`` returns the matching file below the extracted bundle, and
+``Images.artifact_path`` returns its resolved path inside that bundle for
+serving it at the same HTTP path.
 
 For a local run that needs artifacts, provide ``GITHUB_TOKEN`` and
 ``workflow_run_url`` as shown in :ref:`run-a-test`. Without a token, ``Images``

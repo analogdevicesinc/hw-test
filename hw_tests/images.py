@@ -46,6 +46,7 @@ class Images:
         self.github = github
         self._descriptor = None
         self._cache = {}
+        self._paths = {}
 
     @property
     def flavor(self):
@@ -98,13 +99,15 @@ class Images:
         assert len(matches) == 1, f"multiple artifacts match {artifact_glob!r}: {matches}"
         return matches[0]
 
-    def get(self, role):
+    def _role_spec(self, role):
         flavor = self.flavor
         roles = self._load().get(flavor, {})
         if role not in roles:
             pytest.skip(f"role {role!r} not available for flavor {flavor!r}")
-        spec = roles[role]
+        return roles[role]
 
+    def get(self, role):
+        spec = self._role_spec(role)
         name = self._select_artifact(spec["artifact"])
         # Offline: no resolved name; key the download by the artifact glob so
         # roles sharing an artifact still share one local fallback directory.
@@ -113,7 +116,18 @@ class Images:
             self._cache[key] = self.github.download(name or spec["artifact"])
         directory = self._cache[key]
 
-        # Top-level only: artifacts may carry nested duplicates (e.g. yocto's
-        # programming-images/) that would make a basename match ambiguous.
-        files = sorted(p for p in Path(directory).glob("*") if p.is_file())
-        return find_one(files, spec["file"], "file", self._needs())
+        # The descriptor may select a path inside a bundle (e.g.
+        # ``bootstrap/Image``). A bare filename remains top-level-only, which
+        # keeps nested duplicates in other artifact formats out of the match.
+        files = sorted(
+            p for p in Path(directory).glob(spec["file"]) if p.is_file()
+        )
+        image = find_one(files, "*", "file", self._needs())
+        self._paths[role] = image.relative_to(directory).as_posix()
+        return image
+
+    def artifact_path(self, role):
+        """Return the descriptor-relative path resolved for ``role``."""
+        if role not in self._paths:
+            self.get(role)
+        return self._paths[role]
