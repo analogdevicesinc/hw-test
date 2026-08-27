@@ -2,7 +2,7 @@ from os import environ
 from pathlib import Path
 
 from hw_tests.context import build_context, parse_set_env, test_name
-from hw_tests.logging import gha_escape
+from hw_tests.logging import gha_escape, install_pytest_log_redaction
 from hw_tests.ssh_config import ssh_config_path
 
 
@@ -41,6 +41,10 @@ def pytest_configure(config):
         return args
 
     SSHConnection._get_ssh_base_args = _patched
+
+
+def pytest_sessionstart(session):
+    install_pytest_log_redaction(session.config)
 
 
 def pytest_collection_modifyitems(config, items):

@@ -31,7 +31,7 @@ from zipfile import ZipFile
 
 import requests
 
-from hw_tests.logging import gha_escape
+from hw_tests.logging import gha_escape, register_sensitive
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +89,7 @@ class GitHub:
 
     @staticmethod
     def mask(value):
+        register_sensitive(value)
         if GitHub.in_actions():
             print(f"::add-mask::{gha_escape(str(value))}", flush=True)
 
