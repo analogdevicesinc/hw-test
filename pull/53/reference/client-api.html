@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Test API and client reference for hw-test." name="description" />
+
+    <title>Test API and client reference &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=fb8972a4" />
+    <script async="async" src="../_static/app.umd.js?v=26d0298f"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
+    <link rel="prev" title="Hardware Model" href="hardware-model.html" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../index.html">
+          <div>Hardware Test</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root/>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Test API and client reference</a><ul>
+<li><a class="reference internal" href="#use-the-client-api">Use the client API</a></li>
+<li><a class="reference internal" href="#test-configuration">Test configuration</a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../index.html">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root/>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-a-test.html">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../write-a-test.html">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrate-hardware.html">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../register-a-board.html">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-tests-in-ci.html">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../set-up-a-hardware-host.html">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="index.html">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hardware-model.html">Hardware Model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Test API and client reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="index.html">Reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="test-api-and-client-reference">
+<span id="labgrid-client-repo"></span><h1>Test API and client reference<a class="headerlink" href="#test-api-and-client-reference" title="Link to this heading"></a></h1>
+<p>A client is the test process that reserves a board slot and drives the board.
+This page assumes the board is already registered. To add a new board, see
+<a class="reference internal" href="../integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p>
+<p>For the first local run, virtualenv setup, <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>, and basic
+<code class="docutils literal notranslate"><span class="pre">pytest</span></code> commands, start with <a class="reference internal" href="../run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. This page only
+covers reusable client code.</p>
+<p>For labgrid command details, use the upstream
+<a class="icon link reference external" href="https://labgrid.readthedocs.io/en/latest/index.html" target="_blank" title="(in labgrid v0.1)"><span class="xref std std-doc">labgrid documentation</span></a>.</p>
+<p>Useful labgrid inspection commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>places
+labgrid-client<span class="w"> </span>resources
+labgrid-client<span class="w"> </span>who
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>&lt;place&gt;<span class="w"> </span>show
+</pre></div>
+</div>
+<section id="use-the-client-api">
+<h2>Use the client API<a class="headerlink" href="#use-the-client-api" title="Link to this heading"></a></h2>
+<p>Tests should use <code class="docutils literal notranslate"><span class="pre">hw_tests.labgrid.LabgridClient</span></code> instead of open-coding
+labgrid session handling. It selects a matching place from <code class="docutils literal notranslate"><span class="pre">needs</span></code>, acquires
+it, configures SSH, and releases it at the end.</p>
+<p>Small smoke test:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.labgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabgridClient</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_smoke</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">LabgridClient</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"SSHDriver"</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">run_check</span><span class="p">(</span><span class="s2">"true"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>U-Boot style test:</p>
+<p>The images are resolved by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code>, so the same test runs against
+Buildroot, standalone U-Boot, and Yocto builds. See
+<a class="reference internal" href="../write-a-test.html#write-a-test"><span class="std std-ref">Write a test</span></a> for how flavor detection, <code class="docutils literal notranslate"><span class="pre">needs</span></code>-based target selection,
+and the <code class="docutils literal notranslate"><span class="pre">tests/&lt;category&gt;/artifacts.toml</span></code> descriptor work.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.images</span><span class="w"> </span><span class="kn">import</span> <span class="n">Images</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.labgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabgridClient</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_uboot_version</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="n">Images</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"spl"</span><span class="p">)</span>
+    <span class="n">uboot_image</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"uboot"</span><span class="p">)</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">LabgridClient</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
+        <span class="n">spi_boot</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"DigitalOutputProtocol"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"spi_boot"</span><span class="p">)</span>
+        <span class="n">power</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"PowerProtocol"</span><span class="p">)</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"SSHDriver"</span><span class="p">)</span>
+        <span class="n">openocd</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"OpenOCDDriver"</span><span class="p">,</span> <span class="n">activate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">uboot</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"UBootDriver"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"uboot"</span><span class="p">,</span> <span class="n">activate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">spi_boot</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">power</span><span class="o">.</span><span class="n">cycle</span><span class="p">()</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">spl</span><span class="p">),</span> <span class="s2">"u-boot-spl"</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uboot_image</span><span class="p">),</span> <span class="s2">"u-boot"</span><span class="p">)</span>
+        <span class="n">spi_boot</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">target</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">openocd</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">openocd</span><span class="o">.</span><span class="n">load_commands</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
+
+        <span class="n">target</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">uboot</span><span class="p">)</span>
+        <span class="n">uboot</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="s2">"version"</span><span class="p">)</span>
+        <span class="n">uboot</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">expect</span><span class="p">(</span><span class="s2">"U-Boot"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="test-configuration">
+<h2>Test configuration<a class="headerlink" href="#test-configuration" title="Link to this heading"></a></h2>
+<p>Each test has a <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> that contains default context values of a test
+set. For example, the <code class="docutils literal notranslate"><span class="pre">needs</span></code> list selects compatible
+<a class="reference internal" href="glossary.html#hw-test-glossary"><span class="std std-ref">board slots</span></a>:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">needs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"sc598"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ezkit"</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Any context value can be overridden when triggering a test; see
+<a class="reference internal" href="../run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a> for the local command-line form and <a class="reference internal" href="../run-tests-in-ci.html#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a>
+for GitHub Actions.</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="hardware-model.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Hardware Model</a>
+    <a href="glossary.html" title="Next document (Alt+Shift+RightArrow)" class="next">Glossary</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>
