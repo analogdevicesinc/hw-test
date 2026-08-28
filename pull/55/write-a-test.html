@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="A practical guide to writing and trying a hardware test with hw-test." name="description" />
+
+    <title>Write a test &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="_static/app.min.css?v=fb8972a4" />
+    <script async="async" src="_static/app.umd.js?v=26d0298f"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Integrate hardware" href="integrate-hardware.html" />
+    <link rel="prev" title="Run a test" href="run-a-test.html" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="index.html">
+          <div>Hardware Test</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root/>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Write a test</a><ul>
+<li><a class="reference internal" href="#check-that-the-platform-is-available">Check that the platform is available</a></li>
+<li><a class="reference internal" href="#create-the-test-directory">Create the test directory</a></li>
+<li><a class="reference internal" href="#describe-the-hardware-you-need">Describe the hardware you need</a></li>
+<li><a class="reference internal" href="#write-the-test">Write the test</a></li>
+<li><a class="reference internal" href="#use-build-artifacts-when-needed">Use build artifacts when needed</a><ul>
+<li><a class="reference internal" href="#resolve-artifacts-by-role-with-images">Resolve artifacts by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#try-it-locally">Try it locally</a></li>
+<li><a class="reference internal" href="#next-steps">Next steps</a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="index.html">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root/>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run-a-test.html">Run a test</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integrate-hardware.html">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="register-a-board.html">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run-tests-in-ci.html">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="set-up-a-hardware-host.html">Set up a hardware host</a></li>
+<li class="toctree-l1"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1"/><div class="collapse"><a class="reference internal" href="reference/index.html">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/hardware-model.html">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/client-api.html">Test API and client reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/glossary.html">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb empty"><ol></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="write-a-test">
+<span id="id1"></span><h1>Write a test<a class="headerlink" href="#write-a-test" title="Link to this heading"></a></h1>
+<p>Use this guide when you have a supported board and want to add a test for it.
+It assumes the board has already been added to the shared hardware pool. If it
+has not, start with <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p>
+<p>A hardware test is a small Python test plus a <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> file. The
+configuration says which boards can run it. The Python code says what to do
+with the selected board.</p>
+<section id="check-that-the-platform-is-available">
+<h2>Check that the platform is available<a class="headerlink" href="#check-that-the-platform-is-available" title="Link to this heading"></a></h2>
+<p>A platform is supported when at least one compatible board is available in the
+shared pool. Ask your team for the platform’s capability tags and the controls
+it exposes. Common examples are <code class="docutils literal notranslate"><span class="pre">adsp</span></code> and <code class="docutils literal notranslate"><span class="pre">sc598</span></code> for board selection, and
+<code class="docutils literal notranslate"><span class="pre">ssh</span></code>, a serial console, power control, or a debugger for test operations.</p>
+<p>If you do not know whether a board is already available, the infrastructure
+owner can check the shared pool. If it is not, see <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>
+before writing a test that depends on it.</p>
+</section>
+<section id="create-the-test-directory">
+<h2>Create the test directory<a class="headerlink" href="#create-the-test-directory" title="Link to this heading"></a></h2>
+<p>Give the test a descriptive, stable path under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>. For example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tests/adsp/my-board-smoke/
+  config.toml
+  test.py
+  requirements.txt
+</pre></div>
+</div>
+<p>The directory path is the test name. In this example, its name is
+<code class="docutils literal notranslate"><span class="pre">adsp/my-board-smoke</span></code>.</p>
+</section>
+<section id="describe-the-hardware-you-need">
+<h2>Describe the hardware you need<a class="headerlink" href="#describe-the-hardware-you-need" title="Link to this heading"></a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">config.toml</span></code>, list the board-selection tags provided by the platform.
+These must match tags on a <a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a> (a Labgrid
+Place). <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> selects a board only when every value in <code class="docutils literal notranslate"><span class="pre">needs</span></code>
+matches that place’s tags.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">needs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"sc598"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ezkit"</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For example, a board slot tagged with <code class="docutils literal notranslate"><span class="pre">family=adsp</span></code>, <code class="docutils literal notranslate"><span class="pre">board=sc598</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">kind=ezkit</span></code> matches this test because it has both <code class="docutils literal notranslate"><span class="pre">sc598</span></code> and <code class="docutils literal notranslate"><span class="pre">ezkit</span></code>.
+It does not matter which matching board is selected; <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> reserves one
+that is currently free.</p>
+<p>Keep <code class="docutils literal notranslate"><span class="pre">needs</span></code> about hardware capabilities, not an individual board-slot name,
+lab location, or the drivers the test will use. That lets the same test run on
+any compatible board and makes the infrastructure easier to grow. To understand
+how place tags are assigned, see <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p>
+</section>
+<section id="write-the-test">
+<h2>Write the test<a class="headerlink" href="#write-the-test" title="Link to this heading"></a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">LabgridClient</span></code> to find and reserve a compatible board. The <code class="docutils literal notranslate"><span class="pre">with</span></code>
+block is important: it always releases the board, including when the test
+fails.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.labgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabgridClient</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_smoke</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">LabgridClient</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
+        <span class="n">ssh</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"SSHDriver"</span><span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">run_check</span><span class="p">(</span><span class="s2">"true"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Drivers represent capabilities attached to the board: a serial console, power
+switch, GPIO, debug probe, or SSH connection to the hardware host. Ask for a
+driver by its protocol where possible, so the test does not depend on a
+particular fixture’s implementation.</p>
+<p>For example, a test that controls boot mode and power might start like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
+    <span class="n">boot_mode</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"DigitalOutputProtocol"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"spi_boot"</span><span class="p">)</span>
+    <span class="n">power</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">get_driver</span><span class="p">(</span><span class="s2">"PowerProtocol"</span><span class="p">)</span>
+
+    <span class="n">boot_mode</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">power</span><span class="o">.</span><span class="n">cycle</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The board’s available drivers are defined by its environment file. If a driver
+is missing, ask the person who maintains the fixture to update it; the mapping
+is explained in <a class="reference internal" href="reference/hardware-model.html#labgrid-hardware-place"><span class="std std-ref">Hardware Model</span></a>.</p>
+</section>
+<section id="use-build-artifacts-when-needed">
+<h2>Use build artifacts when needed<a class="headerlink" href="#use-build-artifacts-when-needed" title="Link to this heading"></a></h2>
+<p>Tests can retrieve artifacts from the GitHub workflow that produced them. The
+test context contains the workflow run information. For a single, known
+artifact, <code class="docutils literal notranslate"><span class="pre">GitHub</span></code> downloads it by name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
+
+
+<span class="n">artifacts</span> <span class="o">=</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">"my-build-artifact"</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">artifacts</span> <span class="o">/</span> <span class="s2">"my-image.bin"</span>
+</pre></div>
+</div>
+<section id="resolve-artifacts-by-role-with-images">
+<h3>Resolve artifacts by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code><a class="headerlink" href="#resolve-artifacts-by-role-with-images" title="Link to this heading"></a></h3>
+<p>Different build systems publish the same board under different artifact names
+and internal layouts (Buildroot, standalone U-Boot, Yocto). A single workflow
+run also publishes one artifact per board. Hardcoding an artifact name and its
+inner filenames ties a test to one build system and one board.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Images</span></code> removes that coupling: a test asks for a <em>role</em> (<code class="docutils literal notranslate"><span class="pre">spl</span></code>, <code class="docutils literal notranslate"><span class="pre">uboot</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kernel</span></code>, <code class="docutils literal notranslate"><span class="pre">dtb</span></code>, …) and <code class="docutils literal notranslate"><span class="pre">Images</span></code> resolves the right file for whatever
+was built.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.images</span><span class="w"> </span><span class="kn">import</span> <span class="n">Images</span>
+
+
+<span class="n">images</span> <span class="o">=</span> <span class="n">Images</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">))</span>
+<span class="n">spl</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"spl"</span><span class="p">)</span>
+<span class="n">uboot</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"uboot"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Images.get</span></code> resolves in three steps:</p>
+<ol class="arabic simple">
+<li><p>The build system, detected from the repository under test
+(<code class="docutils literal notranslate"><span class="pre">br2-external</span></code> → <code class="docutils literal notranslate"><span class="pre">br2</span></code>, <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> → <code class="docutils literal notranslate"><span class="pre">uboot</span></code>, <code class="docutils literal notranslate"><span class="pre">lnxdsp-adi-meta</span></code> →
+<code class="docutils literal notranslate"><span class="pre">yocto</span></code>). Set <code class="docutils literal notranslate"><span class="pre">flavor</span></code> in the context to override detection for a local
+run. An unknown repository skips the test.</p></li>
+<li><p>The artifact is selected from the run by matching every
+<code class="docutils literal notranslate"><span class="pre">needs</span></code> token as a case-insensitive substring of the artifact name, so
+<code class="docutils literal notranslate"><span class="pre">needs</span> <span class="pre">=</span> <span class="pre">[&quot;sc598&quot;,</span> <span class="pre">&quot;ezkit&quot;]</span></code> picks the sc598 ezkit build and rejects
+<code class="docutils literal notranslate"><span class="pre">ezlite</span></code> or <code class="docutils literal notranslate"><span class="pre">sc589</span></code>.</p></li>
+<li><p>Role descriptor maps each role, per flavor, to an artifact and an inner-file pattern.</p></li>
+</ol>
+<p>If a role is not defined for the detected flavor, the test is skipped rather
+than failed (that image source does not support it).</p>
+<p>The descriptor lives at <code class="docutils literal notranslate"><span class="pre">tests/&lt;category&gt;/artifacts.toml</span></code>, next to the tests
+that use it — <code class="docutils literal notranslate"><span class="pre">category</span></code> is the first path segment of the test name, so
+<code class="docutils literal notranslate"><span class="pre">adsp/u-boot</span></code> reads <code class="docutils literal notranslate"><span class="pre">tests/adsp/artifacts.toml</span></code>. Each entry names an
+artifact glob (matched against the run’s artifact names) and a file glob
+(matched against files inside it):</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[br2.spl]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/u-boot-spl"</span>
+<span class="k">[br2.kernel]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/Image"</span>
+
+<span class="k">[yocto.spl]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot-spl-*.elf"</span>
+</pre></div>
+</div>
+<p>The file glob may include directories when a workflow publishes a bundle;
+<code class="docutils literal notranslate"><span class="pre">Images.get</span></code> returns the matching file below the extracted bundle, and
+<code class="docutils literal notranslate"><span class="pre">Images.artifact_path</span></code> returns its resolved path inside that bundle for
+serving it at the same HTTP path.</p>
+<p>For a local run that needs artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
+<code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
+falls back to files placed locally by <code class="docutils literal notranslate"><span class="pre">GitHub.download</span></code>; see
+<a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
+</section>
+</section>
+<section id="try-it-locally">
+<h2>Try it locally<a class="headerlink" href="#try-it-locally" title="Link to this heading"></a></h2>
+<p>If the test has a <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file, install it first. Then run only
+the test you are working on:</p>
+<div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>tests/adsp/my-board-smoke/requirements.txt
+</pre></div>
+</div>
+<div class="clear-left"></div></div><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">set</span><span class="o">=</span><span class="s1">'{"name": "adsp/my-board-smoke"}'</span><span class="w"> </span>pytest<span class="w"> </span>-vvv
+</pre></div>
+</div>
+<div class="clear-left"></div></div></div><p>The first run is a good time to verify that the test selects the intended type
+of board. Avoid <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while developing: it can reserve and run many
+boards at once.</p>
+<p>When the local test is reliable, add it to your workflow using
+<a class="reference internal" href="run-tests-in-ci.html#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a>.</p>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a> for local setup and
+common failures.</p></li>
+<li><p><a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a> if no compatible board exists.</p></li>
+<li><p><a class="reference internal" href="reference/client-api.html#labgrid-client-repo"><span class="std std-ref">Test API and client reference</span></a> for fuller driver
+examples and CI details.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="run-a-test.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Run a test</a>
+    <a href="integrate-hardware.html" title="Next document (Alt+Shift+RightArrow)" class="next">Integrate hardware</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>
