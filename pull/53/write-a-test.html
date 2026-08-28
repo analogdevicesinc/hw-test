@@ -288,17 +288,21 @@ that use it — <code class="docutils literal notranslate"><span class="pre">cat
 artifact glob (matched against the run’s artifact names) and a file glob
 (matched against files inside it):</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[br2.spl]</span>
-<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*-bootstrap"</span>
-<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot-spl"</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/u-boot-spl"</span>
 <span class="k">[br2.kernel]</span>
-<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*-bootstrap"</span>
-<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Image"</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/Image"</span>
 
 <span class="k">[yocto.spl]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot-spl-*.elf"</span>
 </pre></div>
 </div>
+<p>The file glob may include directories when a workflow publishes a bundle;
+<code class="docutils literal notranslate"><span class="pre">Images.get</span></code> returns the matching file below the extracted bundle, and
+<code class="docutils literal notranslate"><span class="pre">Images.artifact_path</span></code> returns its resolved path inside that bundle for
+serving it at the same HTTP path.</p>
 <p>For a local run that needs artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
 <code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
 falls back to files placed locally by <code class="docutils literal notranslate"><span class="pre">GitHub.download</span></code>; see
