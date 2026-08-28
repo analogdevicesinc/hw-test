@@ -98,9 +98,9 @@ For example, a test that controls boot mode and power might start like this:
        boot_mode.set(True)
        power.cycle()
 
-The board's available drivers are defined by its environment file. If a driver
-is missing, ask the person who maintains the fixture to update it; the mapping
-is explained in :ref:`labgrid-hardware-place`.
+The board's available drivers are defined by its coordinator-side place config.
+If a driver is missing, ask the person who maintains the fixture to update it;
+the mapping is explained in :ref:`labgrid-hardware-place`.
 
 Use build artifacts when needed
 -------------------------------

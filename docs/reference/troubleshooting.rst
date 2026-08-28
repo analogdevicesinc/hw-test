@@ -16,13 +16,14 @@ Check these first:
 * ``labgrid-client places`` shows a :ref:`board slot <hw-test-glossary>` for the
   platform.
 * The test's ``needs`` list matches the board slot's capability tags.
-* The matching ``envs/<board-slot>.yaml`` file exists.
+* ``labgrid-client -p <board-slot> show`` displays a valid coordinator-side
+  config with the expected resources and drivers.
 * The hardware host is reachable over SSH.
 
 A driver is missing
 --------------------
 
-The board's available drivers come from its environment file. If
+The board's available drivers come from its coordinator-side place config. If
 ``get_driver(...)`` fails, ask whoever maintains the fixture to add the driver;
 the mapping is explained in :ref:`labgrid-hardware-place`.
 

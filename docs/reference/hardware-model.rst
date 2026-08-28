@@ -1,6 +1,6 @@
 .. description::
 
-   How hw-test maps labgrid resources, places, and env files.
+   How hw-test maps Labgrid resources, places, and coordinator-side config.
 
 .. _labgrid-hardware-place:
 
@@ -30,9 +30,10 @@ Labgrid Objects
   A lockable slot. In this repository it is usually one board, such as
   ``MUN-01-SC598_EZKIT-02``.
 
-``envs/<place>.yaml``
-  The client-side labgrid environment file used by ``hw-test``. It maps matched
-  resources to drivers such as power, serial, SSH, GPIO, OpenOCD, and U-Boot.
+``place config``
+  The Labgrid target configuration stored on the coordinator for a place. It
+  maps matched resources to drivers such as power, serial, SSH, GPIO, OpenOCD,
+  and U-Boot. ``hw-test`` loads it automatically after acquiring the place.
 
 ``tests/<name>/config.toml``
   Describes the test context. The ``needs`` list selects compatible Labgrid
@@ -41,9 +42,9 @@ Labgrid Objects
 Resource Names
 ++++++++++++++
 
-The resource names in ``exporter.yaml`` are the names used in env file
-``bindings``. For example, if the exporter exposes a serial resource named
-``console``, the env file binds it like this:
+The resource names in the exporter configuration are the names used in place
+config ``bindings``. For example, if the exporter exposes a serial resource
+named ``console``, the coordinator-side place config binds it like this:
 
 .. code:: yaml
 
@@ -55,58 +56,50 @@ The resource names in ``exporter.yaml`` are the names used in env file
 Use stable resource matches on the exporter. Avoid matching serial adapters only
 by ``/dev/ttyUSB0``. Prefer unique serial IDs or stable physical USB paths.
 
-Env File Shape
-++++++++++++++
+Place Config Shape
+++++++++++++++++++
 
-Each place needs a matching env file:
-
-.. code:: text
-
-   envs/<place>.yaml
-
-The filename must match the place name. ``hw_tests.labgrid.LabgridClient``
-selects a place, then loads that file.
-
-Example:
+There is no per-place environment file in ``hw-test``. Configure the place
+from the coordinator with ``labgrid-client -p <place> edit`` while the place
+is idle. The config is the target body itself; do not add a ``targets`` wrapper
+or a nested ``RemotePlace`` resource:
 
 .. code:: yaml
 
-   targets:
-     sample-target:
-       resources:
-         RemotePlace:
-           name: "sample-place"
-         NetworkService:
-           username: "labgrid-client"
-           address: "exporter.example.com"
+   resources:
+     - NetworkService:
+         username: "labgrid-client"
+         address: "exporter.example.com"
 
-       drivers:
-         - SerialDriver:
-             name: serial
-             bindings:
-               port: console
+   drivers:
+     - SerialDriver:
+         name: serial
+         bindings:
+           port: console
 
-         - NetworkPowerDriver:
-             name: power
-             bindings:
-               port: power
+     - NetworkPowerDriver:
+         name: power
+         bindings:
+           port: power
 
-         - SSHDriver:
-             name: ssh
+     - SSHDriver:
+         name: ssh
 
-         - OpenOCDDriver:
-             name: openocd
-             load_commands:
-               - "source [find interface/adi-dbgagent.cfg]"
-               - "source [find target/adspsc59x_a55.cfg]"
-               - "source [find /tools/u-boot.tcl]"
-               - "init"
-               - "autoboot_elf"
-               - "shutdown"
+     - OpenOCDDriver:
+         name: openocd
+         load_commands:
+           - "source [find interface/adi-dbgagent.cfg]"
+           - "source [find target/adspsc59x_a55.cfg]"
+           - "source [find /tools/u-boot.tcl]"
+           - "init"
+           - "autoboot_elf"
+           - "shutdown"
 
-``RemotePlace`` imports resources matched to the place. ``NetworkService`` is
-used for SSH operations on the exporter. Driver ``bindings`` must match resource
-names from the place.
+The selected place imports the resources matched by its coordinator-side
+matches. ``NetworkService`` is used for SSH operations on the exporter. Driver
+``bindings`` must match resource names from the place. The config is visible in
+``labgrid-client -p <place> show`` and can be exported for inspection after
+acquisition with ``labgrid-client -p <place> env``.
 
 OpenOCD Scripts
 +++++++++++++++

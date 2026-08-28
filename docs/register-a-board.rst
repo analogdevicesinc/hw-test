@@ -10,7 +10,8 @@ Register a board
 This is the command-level companion to :ref:`integrate-hardware`. Start there
 for the overall workflow and the choices to make before editing
 configuration. Use this page when you are ready to add the board's
-resources, :ref:`board slot <hw-test-glossary>`, and environment file.
+resources, :ref:`board slot <hw-test-glossary>`, and coordinator-side place
+config.
 
 The hardware host should already be prepared. If it is not, start with
 :ref:`set-up-a-hardware-host`.
@@ -21,7 +22,7 @@ The flow is:
 2. add resources to ``exporter.yaml``,
 3. restart and check the exporter,
 4. create a board slot,
-5. add an ``envs/<place>.yaml`` file,
+5. add the place config to the coordinator,
 6. verify the board from the CLI,
 7. run the matching pytest test.
 
@@ -104,62 +105,61 @@ Run these commands from a client with ``LG_COORDINATOR`` set:
 The tags must match the ``needs`` list of the tests that should run on this
 board.
 
-Add the environment file
-++++++++++++++++++++++++
+Add the coordinator-side place config
++++++++++++++++++++++++++++++++++++++
 
-Create an env file in this repository:
+The place config is stored by the coordinator, so every client and CI job gets
+the same resource and driver definitions. The place must be idle while editing
+it. Run:
 
-.. code:: text
+.. code:: bash
 
-   envs/MUN-01-SC598_EZKIT-02.yaml
+   labgrid-client -p MUN-01-SC598_EZKIT-02 edit
 
-The filename must match the place name. A simple environment looks like this:
+Paste the target body below. Do not wrap it in ``targets:`` and do not add a
+``RemotePlace`` resource; the selected place is already the remote target:
 
 .. code:: yaml
 
-   targets:
-     MUN-01-SC598_EZKIT-02:
-       resources:
-         RemotePlace:
-           name: "MUN-01-SC598_EZKIT-02"
-         NetworkService:
-           username: "labgrid-client"
-           address: "10.44.3.61"
+   resources:
+     - NetworkService:
+         username: "labgrid-client"
+         address: "10.44.3.61"
 
-       drivers:
-         - SerialDriver:
-             name: serial
-             bindings:
-               port: console
+   drivers:
+     - SerialDriver:
+         name: serial
+         bindings:
+           port: console
 
-         - NetworkPowerDriver:
-             name: power
-             bindings:
-               port: power
+     - NetworkPowerDriver:
+         name: power
+         bindings:
+           port: power
 
-         - SSHDriver:
-             name: ssh
+     - SSHDriver:
+         name: ssh
 
-         - FTDIGPIODriver:
-             name: spi_boot
-             bindings:
-               gpio: pin-d3
+     - FTDIGPIODriver:
+         name: spi_boot
+         bindings:
+           gpio: pin-d3
 
-         - OpenOCDDriver:
-             name: openocd
-             load_commands:
-               - "source [find interface/adi-dbgagent.cfg]"
-               - "source [find target/adspsc59x_a55.cfg]"
-               - "source [find /tools/u-boot.tcl]"
-               - "init"
-               - "autoboot_elf"
-               - "shutdown"
+     - OpenOCDDriver:
+         name: openocd
+         load_commands:
+           - "source [find interface/adi-dbgagent.cfg]"
+           - "source [find target/adspsc59x_a55.cfg]"
+           - "source [find /tools/u-boot.tcl]"
+           - "init"
+           - "autoboot_elf"
+           - "shutdown"
 
-         - UBootDriver:
-             name: uboot
-             prompt: "=> "
-             bindings:
-               console: serial
+     - UBootDriver:
+         name: uboot
+         prompt: "=> "
+         bindings:
+           console: serial
 
 Verify the board from the CLI
 +++++++++++++++++++++++++++++
@@ -168,24 +168,24 @@ Acquire the place:
 
 .. code:: bash
 
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 acquire
+   labgrid-client -p MUN-01-SC598_EZKIT-02 acquire
 
 Then test one operation at a time:
 
 .. code:: bash
 
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 io low pin-d3
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 power cycle
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 scp images/u-boot-spl :u-boot-spl
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 scp images/u-boot :u-boot
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 bootstrap dummy
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 console
+   labgrid-client -p MUN-01-SC598_EZKIT-02 io low pin-d3
+   labgrid-client -p MUN-01-SC598_EZKIT-02 power cycle
+   labgrid-client -p MUN-01-SC598_EZKIT-02 scp images/u-boot-spl :u-boot-spl
+   labgrid-client -p MUN-01-SC598_EZKIT-02 scp images/u-boot :u-boot
+   labgrid-client -p MUN-01-SC598_EZKIT-02 bootstrap dummy
+   labgrid-client -p MUN-01-SC598_EZKIT-02 console
 
 Release when done:
 
 .. code:: bash
 
-   labgrid-client -c envs/MUN-01-SC598_EZKIT-02.yaml -p MUN-01-SC598_EZKIT-02 release
+   labgrid-client -p MUN-01-SC598_EZKIT-02 release
 
 Run a test
 ++++++++++

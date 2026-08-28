@@ -51,7 +51,9 @@ The ``set`` variable is the test context override. Its most important field is
 ``name``, which matches the test directory under ``tests/``. It is JSON so a
 test can carry nested, test-specific configuration.
 See
-:ref:`run-tests-in-ci` for how the same object is passed in CI.
+:ref:`run-tests-in-ci` for how the same object is passed in CI. The board
+resources and drivers are loaded from the coordinator-side place config, so no
+board-specific configuration file is needed.
 
 Some tests have extra Python requirements. Install them before running:
 
@@ -130,4 +132,5 @@ If the run fails
 ----------------
 
 See :ref:`hw-test-troubleshooting` for the local-run checklist
-(``LG_COORDINATOR``, matching tags, env file, SSH reachability).
+(``LG_COORDINATOR``, matching tags, coordinator-side place config, and SSH
+reachability).
