@@ -174,7 +174,7 @@ fixed USB paths; and</p></li>
 </ul>
 <p>If there is no prepared hardware host, work through
 <a class="reference internal" href="set-up-a-hardware-host.html#set-up-a-hardware-host"><span class="std std-ref">Set up a hardware host</span></a> first. If a similar board is already integrated,
-use its environment file under <code class="docutils literal notranslate"><span class="pre">envs/</span></code> as the starting point for the new one.</p>
+use its coordinator-side place config as the starting point for the new one.</p>
 </section>
 <section id="the-integration-path">
 <h2>The integration path<a class="headerlink" href="#the-integration-path" title="Link to this heading"></a></h2>
@@ -200,10 +200,11 @@ capability tags such as <code class="docutils literal notranslate"><span class="
 find compatible hardware; they should not be tied to a lab location or a
 single board serial number.</p>
 </li>
-<li><p>Add the board environment to this repository</p>
-<p>Create <code class="docutils literal notranslate"><span class="pre">envs/&lt;board-slot&gt;.yaml</span></code>. It maps the published equipment to the
-capabilities exposed to a test, such as a serial console, power switch, or
-OpenOCD driver.</p>
+<li><p>Add the board config to the coordinator</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;board-slot&gt;</span> <span class="pre">edit</span></code> to store the mapping from
+published equipment to the capabilities exposed to a test, such as a serial
+console, power switch, or OpenOCD driver. This config is shared by all
+clients; no <code class="docutils literal notranslate"><span class="pre">hw-test/envs</span></code> file is needed.</p>
 </li>
 <li><p>Prove each operation before writing a test</p>
 <p>Reserve the board and try power, console, GPIO, image upload, and debug
@@ -221,7 +222,7 @@ locally. <a class="reference internal" href="write-a-test.html#write-a-test"><sp
 <p>The steps above are the integration checklist. Follow
 <a class="reference internal" href="register-a-board.html#register-a-board"><span class="std std-ref">Register a board</span></a> for the exact commands
 and configuration examples, including exporter resources, board tags, and
-the environment file shape.</p>
+the coordinator-side place config shape.</p>
 </section>
 <section id="choosing-good-capabilities">
 <h2>Choosing good capabilities<a class="headerlink" href="#choosing-good-capabilities" title="Link to this heading"></a></h2>

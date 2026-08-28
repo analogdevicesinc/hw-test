@@ -96,7 +96,7 @@
 <li><a class="reference internal" href="#identify-connected-hardware">Identify connected hardware</a></li>
 <li><a class="reference internal" href="#publish-hardware-resources">Publish hardware resources</a></li>
 <li><a class="reference internal" href="#create-a-board-slot">Create a board slot</a></li>
-<li><a class="reference internal" href="#add-the-environment-file">Add the environment file</a></li>
+<li><a class="reference internal" href="#add-the-coordinator-side-place-config">Add the coordinator-side place config</a></li>
 <li><a class="reference internal" href="#verify-the-board-from-the-cli">Verify the board from the CLI</a></li>
 <li><a class="reference internal" href="#run-a-test">Run a test</a></li>
 </ul>
@@ -159,7 +159,8 @@ Content on this topic
 <p>This is the command-level companion to <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>. Start there
 for the overall workflow and the choices to make before editing
 configuration. Use this page when you are ready to add the board’s
-resources, <a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a>, and environment file.</p>
+resources, <a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a>, and coordinator-side place
+config.</p>
 <p>The hardware host should already be prepared. If it is not, start with
 <a class="reference internal" href="set-up-a-hardware-host.html#set-up-a-hardware-host"><span class="std std-ref">Set up a hardware host</span></a>.</p>
 <p>The flow is:</p>
@@ -168,7 +169,7 @@ resources, <a class="reference internal" href="reference/glossary.html#hw-test-g
 <li><p>add resources to <code class="docutils literal notranslate"><span class="pre">exporter.yaml</span></code>,</p></li>
 <li><p>restart and check the exporter,</p></li>
 <li><p>create a board slot,</p></li>
-<li><p>add an <code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code> file,</p></li>
+<li><p>add the place config to the coordinator,</p></li>
 <li><p>verify the board from the CLI,</p></li>
 <li><p>run the matching pytest test.</p></li>
 </ol>
@@ -239,76 +240,75 @@ labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZK
 <p>The tags must match the <code class="docutils literal notranslate"><span class="pre">needs</span></code> list of the tests that should run on this
 board.</p>
 </section>
-<section id="add-the-environment-file">
-<h2>Add the environment file<a class="headerlink" href="#add-the-environment-file" title="Link to this heading"></a></h2>
-<p>Create an env file in this repository:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>envs/MUN-01-SC598_EZKIT-02.yaml
+<section id="add-the-coordinator-side-place-config">
+<h2>Add the coordinator-side place config<a class="headerlink" href="#add-the-coordinator-side-place-config" title="Link to this heading"></a></h2>
+<p>The place config is stored by the coordinator, so every client and CI job gets
+the same resource and driver definitions. The place must be idle while editing
+it. Run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>edit
 </pre></div>
 </div>
-<p>The filename must match the place name. A simple environment looks like this:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">targets</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">MUN-01-SC598_EZKIT-02</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">RemotePlace</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"MUN-01-SC598_EZKIT-02"</span>
-<span class="w">      </span><span class="nt">NetworkService</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">"labgrid-client"</span>
-<span class="w">        </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">"10.44.3.61"</span>
+<p>Paste the target body below. Do not wrap it in <code class="docutils literal notranslate"><span class="pre">targets:</span></code> and do not add a
+<code class="docutils literal notranslate"><span class="pre">RemotePlace</span></code> resource; the selected place is already the remote target:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">NetworkService</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">"labgrid-client"</span>
+<span class="w">      </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">"10.44.3.61"</span>
 
-<span class="w">    </span><span class="nt">drivers</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
-<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">console</span>
+<span class="nt">drivers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
+<span class="w">      </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">console</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">NetworkPowerDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
-<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">NetworkPowerDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
+<span class="w">      </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SSHDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SSHDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">FTDIGPIODriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spi_boot</span>
-<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">gpio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pin-d3</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">FTDIGPIODriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spi_boot</span>
+<span class="w">      </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">gpio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pin-d3</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">OpenOCDDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openocd</span>
-<span class="w">          </span><span class="nt">load_commands</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"init"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"autoboot_elf"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"shutdown"</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">OpenOCDDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openocd</span>
+<span class="w">      </span><span class="nt">load_commands</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"init"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"autoboot_elf"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"shutdown"</span>
 
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">UBootDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uboot</span>
-<span class="w">          </span><span class="nt">prompt</span><span class="p">:</span><span class="w"> </span><span class="s">"=&gt;</span><span class="nv"> </span><span class="s">"</span>
-<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">console</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">UBootDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uboot</span>
+<span class="w">      </span><span class="nt">prompt</span><span class="p">:</span><span class="w"> </span><span class="s">"=&gt;</span><span class="nv"> </span><span class="s">"</span>
+<span class="w">      </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">console</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
 </pre></div>
 </div>
 </section>
 <section id="verify-the-board-from-the-cli">
 <h2>Verify the board from the CLI<a class="headerlink" href="#verify-the-board-from-the-cli" title="Link to this heading"></a></h2>
 <p>Acquire the place:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>acquire
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>acquire
 </pre></div>
 </div>
 <p>Then test one operation at a time:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>io<span class="w"> </span>low<span class="w"> </span>pin-d3
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>power<span class="w"> </span>cycle
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot-spl<span class="w"> </span>:u-boot-spl
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot<span class="w"> </span>:u-boot
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>bootstrap<span class="w"> </span>dummy
-labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>console
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>io<span class="w"> </span>low<span class="w"> </span>pin-d3
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>power<span class="w"> </span>cycle
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot-spl<span class="w"> </span>:u-boot-spl
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>scp<span class="w"> </span>images/u-boot<span class="w"> </span>:u-boot
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>bootstrap<span class="w"> </span>dummy
+labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>console
 </pre></div>
 </div>
 <p>Release when done:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-c<span class="w"> </span>envs/MUN-01-SC598_EZKIT-02.yaml<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>release
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>labgrid-client<span class="w"> </span>-p<span class="w"> </span>MUN-01-SC598_EZKIT-02<span class="w"> </span>release
 </pre></div>
 </div>
 </section>

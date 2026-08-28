@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta content="How hw-test maps labgrid resources, places, and env files." name="description" />
+<meta content="How hw-test maps Labgrid resources, places, and coordinator-side config." name="description" />
 
     <title>Hardware Model &#8212; Hardware Test  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
@@ -95,7 +95,7 @@
 <li><a class="reference internal" href="#">Hardware Model</a><ul>
 <li><a class="reference internal" href="#labgrid-objects">Labgrid Objects</a></li>
 <li><a class="reference internal" href="#resource-names">Resource Names</a></li>
-<li><a class="reference internal" href="#env-file-shape">Env File Shape</a></li>
+<li><a class="reference internal" href="#place-config-shape">Place Config Shape</a></li>
 <li><a class="reference internal" href="#openocd-scripts">OpenOCD Scripts</a></li>
 </ul>
 </li>
@@ -173,8 +173,9 @@ not describe the step-by-step board registration flow. For that, use
 <dt><code class="docutils literal notranslate"><span class="pre">place</span></code></dt><dd><p>A lockable slot. In this repository it is usually one board, such as
 <code class="docutils literal notranslate"><span class="pre">MUN-01-SC598_EZKIT-02</span></code>.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">envs/&lt;place&gt;.yaml</span></code></dt><dd><p>The client-side labgrid environment file used by <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>. It maps matched
-resources to drivers such as power, serial, SSH, GPIO, OpenOCD, and U-Boot.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">place</span> <span class="pre">config</span></code></dt><dd><p>The Labgrid target configuration stored on the coordinator for a place. It
+maps matched resources to drivers such as power, serial, SSH, GPIO, OpenOCD,
+and U-Boot. <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> loads it automatically after acquiring the place.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">tests/&lt;name&gt;/config.toml</span></code></dt><dd><p>Describes the test context. The <code class="docutils literal notranslate"><span class="pre">needs</span></code> list selects compatible Labgrid
 Places by tag.</p>
@@ -183,9 +184,9 @@ Places by tag.</p>
 </section>
 <section id="resource-names">
 <h2>Resource Names<a class="headerlink" href="#resource-names" title="Link to this heading"></a></h2>
-<p>The resource names in <code class="docutils literal notranslate"><span class="pre">exporter.yaml</span></code> are the names used in env file
-<code class="docutils literal notranslate"><span class="pre">bindings</span></code>. For example, if the exporter exposes a serial resource named
-<code class="docutils literal notranslate"><span class="pre">console</span></code>, the env file binds it like this:</p>
+<p>The resource names in the exporter configuration are the names used in place
+config <code class="docutils literal notranslate"><span class="pre">bindings</span></code>. For example, if the exporter exposes a serial resource
+named <code class="docutils literal notranslate"><span class="pre">console</span></code>, the coordinator-side place config binds it like this:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
 <span class="w">    </span><span class="nt">bindings</span><span class="p">:</span>
@@ -195,52 +196,47 @@ Places by tag.</p>
 <p>Use stable resource matches on the exporter. Avoid matching serial adapters only
 by <code class="docutils literal notranslate"><span class="pre">/dev/ttyUSB0</span></code>. Prefer unique serial IDs or stable physical USB paths.</p>
 </section>
-<section id="env-file-shape">
-<h2>Env File Shape<a class="headerlink" href="#env-file-shape" title="Link to this heading"></a></h2>
-<p>Each place needs a matching env file:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>envs/&lt;place&gt;.yaml
+<section id="place-config-shape">
+<h2>Place Config Shape<a class="headerlink" href="#place-config-shape" title="Link to this heading"></a></h2>
+<p>There is no per-place environment file in <code class="docutils literal notranslate"><span class="pre">hw-test</span></code>. Configure the place
+from the coordinator with <code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;place&gt;</span> <span class="pre">edit</span></code> while the place
+is idle. The config is the target body itself; do not add a <code class="docutils literal notranslate"><span class="pre">targets</span></code> wrapper
+or a nested <code class="docutils literal notranslate"><span class="pre">RemotePlace</span></code> resource:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">NetworkService</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">"labgrid-client"</span>
+<span class="w">      </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">"exporter.example.com"</span>
+
+<span class="nt">drivers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
+<span class="w">      </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">console</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">NetworkPowerDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
+<span class="w">      </span><span class="nt">bindings</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SSHDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">OpenOCDDriver</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openocd</span>
+<span class="w">      </span><span class="nt">load_commands</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"init"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"autoboot_elf"</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"shutdown"</span>
 </pre></div>
 </div>
-<p>The filename must match the place name. <code class="docutils literal notranslate"><span class="pre">hw_tests.labgrid.LabgridClient</span></code>
-selects a place, then loads that file.</p>
-<p>Example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">targets</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">sample-target</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">RemotePlace</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"sample-place"</span>
-<span class="w">      </span><span class="nt">NetworkService</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="s">"labgrid-client"</span>
-<span class="w">        </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="s">"exporter.example.com"</span>
-
-<span class="w">    </span><span class="nt">drivers</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SerialDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serial</span>
-<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">console</span>
-
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">NetworkPowerDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
-<span class="w">          </span><span class="nt">bindings</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">power</span>
-
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">SSHDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span>
-
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">OpenOCDDriver</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openocd</span>
-<span class="w">          </span><span class="nt">load_commands</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">interface/adi-dbgagent.cfg]"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">target/adspsc59x_a55.cfg]"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"source</span><span class="nv"> </span><span class="s">[find</span><span class="nv"> </span><span class="s">/tools/u-boot.tcl]"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"init"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"autoboot_elf"</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"shutdown"</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">RemotePlace</span></code> imports resources matched to the place. <code class="docutils literal notranslate"><span class="pre">NetworkService</span></code> is
-used for SSH operations on the exporter. Driver <code class="docutils literal notranslate"><span class="pre">bindings</span></code> must match resource
-names from the place.</p>
+<p>The selected place imports the resources matched by its coordinator-side
+matches. <code class="docutils literal notranslate"><span class="pre">NetworkService</span></code> is used for SSH operations on the exporter. Driver
+<code class="docutils literal notranslate"><span class="pre">bindings</span></code> must match resource names from the place. The config is visible in
+<code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;place&gt;</span> <span class="pre">show</span></code> and can be exported for inspection after
+acquisition with <code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;place&gt;</span> <span class="pre">env</span></code>.</p>
 </section>
 <section id="openocd-scripts">
 <h2>OpenOCD Scripts<a class="headerlink" href="#openocd-scripts" title="Link to this heading"></a></h2>

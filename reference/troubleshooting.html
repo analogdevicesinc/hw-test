@@ -161,13 +161,14 @@ Content on this topic
 <li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">places</span></code> shows a <a class="reference internal" href="glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a> for the
 platform.</p></li>
 <li><p>The test’s <code class="docutils literal notranslate"><span class="pre">needs</span></code> list matches the board slot’s capability tags.</p></li>
-<li><p>The matching <code class="docutils literal notranslate"><span class="pre">envs/&lt;board-slot&gt;.yaml</span></code> file exists.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;board-slot&gt;</span> <span class="pre">show</span></code> displays a valid coordinator-side
+config with the expected resources and drivers.</p></li>
 <li><p>The hardware host is reachable over SSH.</p></li>
 </ul>
 </section>
 <section id="a-driver-is-missing">
 <h2>A driver is missing<a class="headerlink" href="#a-driver-is-missing" title="Link to this heading"></a></h2>
-<p>The board’s available drivers come from its environment file. If
+<p>The board’s available drivers come from its coordinator-side place config. If
 <code class="docutils literal notranslate"><span class="pre">get_driver(...)</span></code> fails, ask whoever maintains the fixture to add the driver;
 the mapping is explained in <a class="reference internal" href="hardware-model.html#labgrid-hardware-place"><span class="std std-ref">Hardware Model</span></a>.</p>
 </section>

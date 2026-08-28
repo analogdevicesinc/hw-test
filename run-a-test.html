@@ -212,7 +212,9 @@ workflow.</p>
 <code class="docutils literal notranslate"><span class="pre">name</span></code>, which matches the test directory under <code class="docutils literal notranslate"><span class="pre">tests/</span></code>. It is JSON so a
 test can carry nested, test-specific configuration.
 See
-<a class="reference internal" href="run-tests-in-ci.html#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a> for how the same object is passed in CI.</p>
+<a class="reference internal" href="run-tests-in-ci.html#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a> for how the same object is passed in CI. The board
+resources and drivers are loaded from the coordinator-side place config, so no
+board-specific configuration file is needed.</p>
 <p>Some tests have extra Python requirements. Install them before running:</p>
 <div class="code-shell"><div><div class="no-select float-left highlight-default notranslate"><div class="highlight"><pre><span></span>~$
 </pre></div>
@@ -306,7 +308,8 @@ test, one board slot, and one board.</p>
 <section id="if-the-run-fails">
 <h2>If the run fails<a class="headerlink" href="#if-the-run-fails" title="Link to this heading"></a></h2>
 <p>See <a class="reference internal" href="reference/troubleshooting.html#hw-test-troubleshooting"><span class="std std-ref">Troubleshooting</span></a> for the local-run checklist
-(<code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>, matching tags, env file, SSH reachability).</p>
+(<code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>, matching tags, coordinator-side place config, and SSH
+reachability).</p>
 </section>
 </section>
 
