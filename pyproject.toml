@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     "pytest",
-    "labgrid",
+    "labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next",
     "requests",
 ]
 requires-python = ">=3.11"

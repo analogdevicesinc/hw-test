@@ -3,11 +3,11 @@ import shlex
 from argparse import Namespace
 from contextlib import contextmanager
 from os import environ
-from pathlib import Path, PurePosixPath
+from pathlib import PurePosixPath
 from time import monotonic, sleep
 from urllib.parse import urlsplit
 
-from labgrid import Environment
+from labgrid.exceptions import NoResourceFoundError
 from labgrid.remote.client import start_session
 from labgrid.util.ssh import sshmanager
 
@@ -24,8 +24,6 @@ class LabgridClient:
         self._configure_identity()
         self.coordinator = self._resolve_coordinator()
         self.place = self._resolve_place()
-        self.config = Path("envs") / f"{self.place}.yaml"
-        assert self.config.is_file(), f"missing labgrid config: {self.config}"
 
         self.hosts = set()
         self.ssh_config = SSHConfig()
@@ -90,7 +88,7 @@ class LabgridClient:
                     tags.update(str(value) for value in place.tags.values())
                     if not (
                         all(need in tags for need in needs)
-                        and (Path("envs") / f"{place.name}.yaml").is_file()
+                        and place.get_config()
                     ):
                         continue
 
@@ -125,7 +123,7 @@ class LabgridClient:
             # Check for available place every 30 seconds
             sleep(30)
 
-    def _configure_ssh(self, session, place):
+    def _configure_ssh(self, session, place, target):
         resources = session.get_target_resources(place)
         for resource in resources.values():
             host = resource.params.get("host")
@@ -136,6 +134,26 @@ class LabgridClient:
             if "://" not in host:
                 self.hosts.add(host)
 
+        # NetworkService is normally supplied by the coordinator-side place
+        # config. Include it explicitly because it may be the only resource
+        # that carries the SSH address.
+        try:
+            networkservice = target.get_resource("NetworkService", wait_avail=False)
+        except NoResourceFoundError as error:
+            if error.found:
+                raise RuntimeError(
+                    f"multiple NetworkService resources found for place {place.name}; "
+                    "the SSH driver must identify the resource to use"
+                ) from error
+            networkservice = None
+        if networkservice is not None:
+            address = str(networkservice.address)
+            if "://" in address:
+                raise ValueError(
+                    f"NetworkService address must be an SSH host, not a URI: {address}"
+                )
+            self.hosts.add(address)
+
         for host in self.hosts:
             GitHub.mask(host)
             self.ssh_config.configure_host(host)
@@ -145,9 +163,6 @@ class LabgridClient:
     @contextmanager
     def acquire(self):
         """Acquire the selected labgrid place and yield its target."""
-        env = Environment(str(self.config))
-        env.config.set_option("coordinator_address", self.coordinator)
-
         session = start_session(
             self.coordinator,
             extra={
@@ -158,11 +173,12 @@ class LabgridClient:
                     place=self.place,
                     state=None,
                 ),
-                "env": env,
-                "role": self.place,
+                "env": None,
+                "role": None,
             },
         )
         acquired = False
+        target = None
 
         try:
             place = session.get_place(self.place)
@@ -176,13 +192,13 @@ class LabgridClient:
                 acquired = True
 
             place = session.get_acquired_place(self.place)
-            self._configure_ssh(session, place)
-
             target = session._get_target(place)
+            self._configure_ssh(session, place, target)
             yield target
         finally:
             try:
-                env.cleanup()
+                if target is not None:
+                    target.cleanup()
             finally:
                 try:
                     if acquired:
