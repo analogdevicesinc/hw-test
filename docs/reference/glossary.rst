@@ -40,10 +40,10 @@ documentation.
      - Driver
      - A single control on a board: power, serial console, GPIO, SSH, OpenOCD,
        or U-Boot. A test asks for a driver by its protocol.
-   * - Environment file
-     - Environment configuration
-     - The ``envs/<board-slot>.yaml`` file that maps a board slot's equipment to
-       the drivers a test can use.
+   * - Place config
+     - Place configuration
+     - The configuration stored on the coordinator that maps a board slot's
+       equipment to the drivers a test can use.
 
 For full Labgrid syntax and options, see the
 :external+labgrid:doc:`Labgrid documentation <index>`.

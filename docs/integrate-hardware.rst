@@ -29,7 +29,7 @@ Have these details ready:
 
 If there is no prepared hardware host, work through
 :ref:`set-up-a-hardware-host` first. If a similar board is already integrated,
-use its environment file under ``envs/`` as the starting point for the new one.
+use its coordinator-side place config as the starting point for the new one.
 
 The integration path
 --------------------
@@ -59,11 +59,12 @@ The integration path
    find compatible hardware; they should not be tied to a lab location or a
    single board serial number.
 
-5. Add the board environment to this repository
+5. Add the board config to the coordinator
 
-   Create ``envs/<board-slot>.yaml``. It maps the published equipment to the
-   capabilities exposed to a test, such as a serial console, power switch, or
-   OpenOCD driver.
+   Use ``labgrid-client -p <board-slot> edit`` to store the mapping from
+   published equipment to the capabilities exposed to a test, such as a serial
+   console, power switch, or OpenOCD driver. This config is shared by all
+   clients; no ``hw-test/envs`` file is needed.
 
 6. Prove each operation before writing a test
 
@@ -82,7 +83,7 @@ Detailed implementation guide
 The steps above are the integration checklist. Follow
 :ref:`register-a-board` for the exact commands
 and configuration examples, including exporter resources, board tags, and
-the environment file shape.
+the coordinator-side place config shape.
 
 Choosing good capabilities
 --------------------------
