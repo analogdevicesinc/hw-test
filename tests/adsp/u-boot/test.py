@@ -1,4 +1,5 @@
 import logging
+import time
 
 import pytest
 
@@ -41,6 +42,8 @@ def test_uboot_version(context):
         finally:
             target.deactivate(openocd)
 
+        console.sendline("")
+        time.sleep(0.2)
         target.activate(uboot_driver)
         console.sendline("version")
         console.expect("U-Boot", timeout=30)
