@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://analogdevicesinc.github.io/hw-test/concepts.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/integrate-hardware.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/reference/client-api.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/reference/glossary.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/reference/hardware-model.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/reference/</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/reference/troubleshooting.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/register-a-board.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/run-a-test.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/run-tests-in-ci.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/set-up-a-hardware-host.html</loc><lastmod>2026-09-03</lastmod></url>
+<url><loc>https://analogdevicesinc.github.io/hw-test/write-a-test.html</loc><lastmod>2026-09-03</lastmod></url>
+</urlset>
