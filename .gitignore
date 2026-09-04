@@ -2,3 +2,5 @@ __pycache__
 _artifacts
 _ssh_config
 _build
+
+.mcp.json
