@@ -22,6 +22,7 @@ dependencies = [
     "pytest",
     "labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next",
     "requests",
+    "mcp>=2.0.0",
 ]
 requires-python = ">=3.11"
 dynamic = ["version"]

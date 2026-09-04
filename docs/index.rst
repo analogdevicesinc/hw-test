@@ -11,6 +11,7 @@ What do you want to do?
 
 * Run a test on a board that is already set up -> :ref:`run-a-test`.
 * Write a new test for a supported platform -> :ref:`write-a-test`.
+* Plan tests with the MCP server -> :ref:`hw-test-mcp-server`.
 * Add my board or fixture to the shared pool -> :ref:`integrate-hardware`.
 * Run hardware tests from CI -> :ref:`run-tests-in-ci`.
 * Set up a new hardware host for my team -> :ref:`set-up-a-hardware-host`.
@@ -37,6 +38,7 @@ when you need options beyond the workflows here.
    concepts
    run-a-test
    write-a-test
+   mcp-server
    integrate-hardware
    register-a-board
    run-tests-in-ci
