@@ -1,0 +1,30 @@
+# Reviewed classification cache: previously human-reviewed subsystem
+# attributions keyed by repo + path glob. Optional fast-path only; the driving
+# LLM remains the classifier and may override any hit. Grown only through
+# review (edit this file or Knowledge.record behind review) — never rewritten
+# by the server at runtime from untrusted input.
+version = "2026-09-03"
+
+# Seed entries are intentionally minimal and ADSP-anchored. Add more only after
+# review.
+
+[[entry]]
+id = "uboot-adsp-board-dt-sc598"
+repo = "u-boot"
+path_glob = "board/adi/sc598*"
+subsystem = "board_dt"
+doc = { repo = "documentation", query = "sc598 ezkit u-boot board" }
+
+[[entry]]
+id = "uboot-adsp-dts-sc5xx"
+repo = "u-boot"
+path_glob = "arch/arm/dts/sc5*"
+subsystem = "board_dt"
+doc = { repo = "documentation", query = "sc598 device tree" }
+
+[[entry]]
+id = "uboot-spi"
+repo = "u-boot"
+path_glob = "drivers/spi/*"
+subsystem = "spi_qspi_xspi"
+doc = { repo = "documentation", query = "sc598 ospi qspi boot" }
