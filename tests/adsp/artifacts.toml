@@ -29,3 +29,27 @@ file = "u-boot-spl-*.elf"
 [yocto.uboot]
 artifact = "*"
 file = "u-boot-proper-*.elf"
+
+[linux.kernel]
+artifact = "*_defconfig-gcc-arm64"
+file = "boot/Image"
+[linux.dtb]
+artifact = "dtb-gcc"
+file = "dtb/arch/*/boot/dts/adi/*.dtb"
+[linux.spl]
+artifact = "*_defconfig*"
+file = "u-boot-spl"
+source = "br2"
+[linux.uboot]
+artifact = "*_defconfig*"
+file = "u-boot"
+source = "br2"
+[linux.rootfs]
+artifact = "*_defconfig*"
+file = "rootfs.cpio.uboot"
+source = "br2"
+
+[sources.br2]
+repository = "analogdevicesinc/br2-external"
+backend = "release"
+tag = "2026.02-1.1.1"

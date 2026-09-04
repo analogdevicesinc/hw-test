@@ -178,6 +178,43 @@ The file glob may include directories when a workflow publishes a bundle;
 ``Images.artifact_path`` returns its resolved path inside that bundle for
 serving it at the same HTTP path.
 
+Artifact selection is glob-first: the ``artifact`` glob is matched against the
+run's artifact names, and ``needs`` tokens narrow the result only when the glob
+matches more than one (one artifact per board in a run). A board-agnostic
+artifact such as the combined ``dtb-gcc`` is therefore selected by its glob
+directly, and the specific board dtb is then chosen by the ``file`` glob
+narrowed by ``needs`` — no board name in the descriptor.
+
+Pull a role from another repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A role can name a ``source`` to resolve its artifact from a different
+repository's run instead of the run under test — for example a kernel test that
+boots on SPL and U-Boot built by the ``u-boot`` repo and an initramfs from
+``br2-external``:
+
+.. code:: toml
+
+   [linux.uboot]
+   artifact = "*"
+   file = "u-boot"
+   source = "uboot"
+
+Each named source is configured in ``config.toml`` with its repository and,
+optionally, a branch and an exact run to pin:
+
+.. code:: toml
+
+   [sources.uboot]
+   repository = "analogdevicesinc/u-boot"
+   branch = "adi-u-boot-2025.10.y"
+   # run_id = "1234567890"   # pin an exact run; otherwise latest green is used
+
+Without ``run_id``, ``Images`` resolves the newest successful run on the branch
+that actually carries the artifact, so a role does not go stale as artifacts
+expire. Set ``run_id`` to pin an exact run, e.g. when bisecting a regression in
+the boot chain.
+
 For a local run that needs artifacts, provide ``GITHUB_TOKEN`` and
 ``workflow_run_url`` as shown in :ref:`run-a-test`. Without a token, ``Images``
 falls back to files placed locally by ``GitHub.download``; see

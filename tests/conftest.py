@@ -1,6 +1,8 @@
 from os import environ
 from pathlib import Path
 
+import pytest
+
 from hw_tests.context import build_context, parse_set_env, test_name
 from hw_tests.logging import gha_escape, install_pytest_log_redaction
 from hw_tests.ssh_config import ssh_config_path
@@ -82,9 +84,24 @@ def pytest_generate_tests(metafunc):
         return
 
     test_dir = Path(metafunc.definition.fspath).parent
-    context = build_context(test_dir, parse_set_env())
+    overrides = parse_set_env()
+    context = build_context(test_dir, overrides)
 
     needs = context.get("needs")
+    # Hardware tests acquire a labgrid board and cannot run without needs to
+    # match it. Fail at collection, before any artifacts are downloaded, rather
+    # than deep inside the test body once a board is requested. Only guard tests
+    # that will actually be selected: when the test call names specific tests,
+    # the rest are deselected later in pytest_collection_modifyitems, so their
+    # missing needs are irrelevant.
+    target_names = {o["name"] for o in overrides if "name" in o}
+    selected = not target_names or context["name"] in target_names
+    if selected and not needs and hasattr(metafunc.module, "LabgridClient"):
+        raise pytest.UsageError(
+            f"{context['name']}: no needs to match a board; pass them via the "
+            f"test call, e.g. set='{{\"needs\": [\"sc598\", \"ezkit\"]}}'"
+        )
+
     if not needs:
         contexts = [context]
     elif all(isinstance(need, str) for need in needs):

@@ -15,9 +15,6 @@ OPKSSH_BASE_URL = f"https://github.com/openpubkey/opkssh/releases/download/{OPKS
 OPKSSH_BIN = Path.home() / ".local" / "bin" / "opkssh"
 
 class OPKSSH:
-    _strict = None
-    _authorized = False
-
     def __init__(self, client=None):
         OPKSSH.ensure()
         self.authenticate(client)
@@ -45,13 +42,11 @@ class OPKSSH:
             GitHub.mask(token)
 
         self.check_ssh_auth(client)
-        self._authorized = True
 
     def check_ssh_auth(self, client):
         """Check ssh config, since 'accept-new' is set, adds to known-hosts.
         Useful to call before any 'StrictHostKeyChecking=no'"""
         if client is None:
-            self._authorized = True
             return
 
         logger.debug(f"Test ssh config target '{client}'.")
@@ -73,9 +68,6 @@ class OPKSSH:
                     f"Check that your key is accepted by the exporter host."
                 )
             logger.debug("SSH auth to %s: OK", host)
-
-        self._authorized = True
-        return
 
     @staticmethod
     def ensure():

@@ -7,6 +7,7 @@ from pathlib import PurePosixPath
 from time import monotonic, sleep
 from urllib.parse import urlsplit
 
+import pytest
 from labgrid.exceptions import NoResourceFoundError
 from labgrid.remote.client import start_session
 from labgrid.util.ssh import sshmanager
@@ -98,7 +99,9 @@ class LabgridClient:
                     ):
                         candidates.append(place)
 
-                assert matches, f"no place found for needs: {needs}"
+                if not matches:
+                    logger.warning("No board matches needs %s; skipping", needs)
+                    pytest.skip(f"no board matches needs: {needs}")
                 if candidates:
                     return min(candidates, key=lambda place: place.name).name
 

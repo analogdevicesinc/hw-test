@@ -23,6 +23,7 @@ Basic usage:
 """
 
 import logging
+import tarfile
 import tempfile
 from os import environ
 from pathlib import Path
@@ -41,12 +42,35 @@ _ZIP_MAGIC = b"PK\x03\x04"
 def _extract_if_archive(archive: Path) -> None:
     with open(archive, "rb") as f:
         header = f.read(4)
-    if header != _ZIP_MAGIC:
+    if header == _ZIP_MAGIC:
+        logger.debug("Extracting zip %s", archive)
+        with ZipFile(archive) as zf:
+            zf.extractall(archive.parent)
+        archive.unlink()
         return
-    logger.debug("Extracting zip %s", archive)
-    with ZipFile(archive) as zf:
-        zf.extractall(archive.parent)
-    archive.unlink()
+    if tarfile.is_tarfile(archive):
+        logger.debug("Extracting tar %s", archive)
+        with tarfile.open(archive) as tf:
+            tf.extractall(archive.parent, filter="data")
+        archive.unlink()
+        return
+
+
+def _download_to(url, name, headers, path=None, prefix="hw-test-") -> Path:
+    """Stream ``url`` to ``<dir>/name``, extract if it is an archive, return the dir."""
+    dest_dir = (
+        Path(path) if path is not None else Path(tempfile.mkdtemp(prefix=prefix))
+    )
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest_file = dest_dir / name
+
+    response = requests.get(url, headers=headers, stream=True)
+    response.raise_for_status()
+    with open(dest_file, "wb") as f:
+        f.writelines(response.iter_content(chunk_size=1 << 20))
+
+    _extract_if_archive(dest_file)
+    return dest_dir
 
 
 class GitHub:
@@ -159,6 +183,29 @@ class GitHub:
             if not item.get("expired")
         ]
 
+    def successful_run_ids(self, owner_repository=None, branch=None, limit=20):
+        """Return ids of recent successful workflow runs, newest first.
+
+        Used to resolve the latest green run of a source repository when a test
+        pins a source by repository/branch rather than an exact run_id. Returns
+        [] when unavailable (no token / no repository)."""
+        if owner_repository is None:
+            owner_repository = self._owner_repository
+        if owner_repository is None or self._token is None:
+            return []
+
+        params = {"status": "success", "per_page": min(limit, 100), "page": 1}
+        if branch:
+            params["branch"] = branch
+        response = requests.get(
+            f"https://api.github.com/repos/{owner_repository}/actions/runs",
+            headers=self._headers(),
+            params=params,
+        )
+        response.raise_for_status()
+        runs = response.json().get("workflow_runs", [])
+        return [run["id"] for run in runs[:limit]]
+
     def download(
         self,
         name: str,
@@ -201,25 +248,43 @@ class GitHub:
                 f"GitHub artifact '{name}' at '{owner_repository}/{run_id}' not found"
             )
 
-        dest_dir = (
-            Path(path)
-            if path is not None
-            else Path(tempfile.mkdtemp(prefix="hw-test-gh-"))
+        logger.info(f"Downloading GitHub artifact '{name}'")
+        return _download_to(
+            artifact["archive_download_url"], name, self._headers(), path, "hw-test-gh-"
         )
-        dest_dir.mkdir(parents=True, exist_ok=True)
 
-        response = requests.get(
-            artifact["archive_download_url"],
-            headers=self._headers(),
-            stream=True
-        )
+    def list_release_assets(self, tag: str, owner_repository: str | None = None) -> list[dict]:
+        """Return the assets of a release addressed by tag.
+
+        Unlike Actions-run artifacts, release assets do not expire, so this is
+        the durable source for companion images (SPL/U-Boot/rootfs) that are not
+        built by the run under test."""
+        if owner_repository is None:
+            owner_repository = self._owner_repository
+        url = f"https://api.github.com/repos/{owner_repository}/releases/tags/{tag}"
+        response = requests.get(url, headers=self._headers())
         response.raise_for_status()
-        logger.info(f"Downloaded GitHub artifact '{name}'")
+        return response.json().get("assets", [])
 
-        dest_file = dest_dir / name
-        with open(dest_file, "wb") as f:
-            f.writelines(response.iter_content(chunk_size=1 << 20))
+    def download_release_asset(
+        self,
+        asset_name: str,
+        tag: str,
+        owner_repository: str | None = None,
+        path: Path | str | None = None,
+    ) -> Path:
+        """Download and extract a single release asset by exact name."""
+        if owner_repository is None:
+            owner_repository = self._owner_repository
+        assets = self.list_release_assets(tag, owner_repository)
+        asset = next((a for a in assets if a.get("name") == asset_name), None)
+        if asset is None:
+            raise LookupError(
+                f"release asset {asset_name!r} not found in {owner_repository}@{tag} "
+                f"(assets: {[a.get('name') for a in assets]})"
+            )
 
-        _extract_if_archive(dest_file)
-
-        return dest_dir
+        logger.info(f"Downloading release asset '{asset_name}' from {owner_repository}@{tag}")
+        headers = self._headers()
+        headers["Accept"] = "application/octet-stream"
+        return _download_to(asset["url"], asset_name, headers, path, "hw-test-rel-")
