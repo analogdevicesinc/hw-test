@@ -11,13 +11,21 @@ ADSP_DESCRIPTOR = TESTS_DIR / "adsp" / "artifacts.toml"
 def test_descriptor_parses_and_has_expected_roles():
     with ADSP_DESCRIPTOR.open("rb") as f:
         data = tomllib.load(f)
-    assert set(data) == {"br2", "uboot", "yocto"}
-    assert set(data["br2"]) >= {"spl", "uboot", "kernel", "dtb", "emmc"}
-    assert set(data["uboot"]) == {"spl", "uboot"}
-    assert set(data["yocto"]) == {"spl", "uboot"}
-    for flavor in data.values():
+    flavors = {k: v for k, v in data.items() if k != "sources"}
+    assert set(flavors) == {"br2-external", "u-boot", "lnxdsp-adi-meta", "linux"}
+    assert set(flavors["br2-external"]) >= {"spl", "uboot", "kernel", "dtb", "emmc"}
+    assert set(flavors["u-boot"]) == {"spl", "uboot"}
+    assert set(flavors["lnxdsp-adi-meta"]) == {"spl", "uboot"}
+    assert set(flavors["linux"]) >= {"kernel", "dtb", "spl", "uboot", "rootfs"}
+    for flavor in flavors.values():
         for role in flavor.values():
-            assert set(role) == {"artifact", "file"}
+            assert {"artifact", "file"} <= set(role) <= {"artifact", "file", "source"}
+
+    assert set(data["sources"]) == {"br2-external"}
+    for src in data["sources"].values():
+        assert src["backend"] == "release"
+        assert src["repository"]
+        assert src["tag"]
 
 
 def _gh(repo):
@@ -27,9 +35,6 @@ def _gh(repo):
 
 
 def test_descriptor_resolved_from_test_category():
-    # The descriptor is looked up at tests/<category>/artifacts.toml, where
-    # category is the first segment of the test name — so non-adsp categories
-    # get their own descriptor, not a hardcoded adsp one.
     imgs = Images({"name": "adsp/u-boot"}, _gh("analogdevicesinc/u-boot"))
     assert imgs._descriptor_path() == TESTS_DIR / "adsp" / "artifacts.toml"
     imgs = Images({"name": "linux/boot"}, _gh("analogdevicesinc/linux"))
@@ -38,23 +43,23 @@ def test_descriptor_resolved_from_test_category():
 
 def test_flavor_from_repo():
     cases = {
-        "analogdevicesinc/br2-external": "br2",
-        "analogdevicesinc/u-boot": "uboot",
-        "analogdevicesinc/lnxdsp-adi-meta": "yocto",
+        "analogdevicesinc/br2-external": "br2-external",
+        "analogdevicesinc/u-boot": "u-boot",
+        "analogdevicesinc/lnxdsp-adi-meta": "lnxdsp-adi-meta",
     }
     for repo, flavor in cases.items():
         assert Images({}, _gh(repo)).flavor == flavor
 
 
 def test_flavor_context_override_wins():
-    imgs = Images({"flavor": "yocto"}, _gh("analogdevicesinc/br2-external"))
-    assert imgs.flavor == "yocto"
+    imgs = Images({"flavor": "lnxdsp-adi-meta"}, _gh("analogdevicesinc/br2-external"))
+    assert imgs.flavor == "lnxdsp-adi-meta"
 
 
 def test_flavor_unknown_repo_skips():
-    imgs = Images({}, _gh("analogdevicesinc/some-other-repo"))
+    imgs = Images({"name": "adsp/test"}, _gh("analogdevicesinc/some-other-repo"))
     with pytest.raises(pytest.skip.Exception):
-        _ = imgs.flavor
+        imgs.get("spl")
 
 
 BR2_RUN = ["adi_sc598_ezkit_defconfig", "adi_sc598_ezkit_defconfig-bootstrap",
@@ -90,7 +95,6 @@ def test_get_br2_selects_bootstrap_and_file(tmp_path):
     assert imgs.artifact_path("uboot") == "bootstrap/u-boot"
     assert imgs.artifact_path("kernel") == "bootstrap/Image"
     assert imgs.artifact_path("dtb") == "bootstrap/sc598-som-ezkit.dtb"
-    # Pick the complete board bundle, not its standalone flavor artifacts.
     gh.download.assert_called_with("adi_sc598_ezkit_defconfig")
     assert gh.download.call_count == 1
 
@@ -143,8 +147,6 @@ def test_yocto_elf_glob(tmp_path):
 
 
 def test_sidecar_sbom_artifact_ignored(tmp_path):
-    # Real yocto runs publish a '<image>.sbom' metadata artifact next to the
-    # image; both match needs + '*', so it must be dropped to stay unambiguous.
     d = _make_files(tmp_path, ["u-boot-proper-sc598-som-ezkit.elf"])
     names = ["adsp-sc598-som-ezkit-adsp-sc5xx-minimal.sbom",
              "adsp-sc598-som-ezkit-adsp-sc5xx-minimal"]
@@ -155,9 +157,6 @@ def test_sidecar_sbom_artifact_ignored(tmp_path):
 
 
 def test_offline_no_listing_uses_download_fallback(tmp_path):
-    # Offline / no GITHUB_TOKEN: list_artifacts() is empty. Images must still
-    # resolve by handing off to GitHub.download (its local '_artifacts/'
-    # fallback) and globbing the role's file there — not assert.
     d = _make_files(tmp_path, ["u-boot-spl", "u-boot"])
     gh = MagicMock()
     gh.owner_repository = "analogdevicesinc/u-boot"
@@ -166,14 +165,10 @@ def test_offline_no_listing_uses_download_fallback(tmp_path):
     imgs = Images({"name": "adsp/test", "needs": ["sc598", "ezkit"]}, gh)
     assert imgs.get("spl").name == "u-boot-spl"
     assert imgs.get("uboot").name == "u-boot"
-    # both roles share the '*' artifact glob → one download
     assert gh.download.call_count == 1
 
 
 def test_nested_duplicate_file_ignored(tmp_path):
-    # Real yocto artifacts carry nested duplicates (programming-images/); file
-    # resolution is top-level only, so a nested same-name file must not make
-    # the match ambiguous.
     (tmp_path / "u-boot-proper-sc598-som-ezkit.elf").write_text("x")
     nested = tmp_path / "programming-images" / "adsp-sc5xx-minimal"
     nested.mkdir(parents=True)
