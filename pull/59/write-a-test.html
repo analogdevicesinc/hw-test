@@ -271,10 +271,9 @@ was built.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Images.get</span></code> resolves in three steps:</p>
 <ol class="arabic simple">
-<li><p>The build system, detected from the repository under test
-(<code class="docutils literal notranslate"><span class="pre">br2-external</span></code> → <code class="docutils literal notranslate"><span class="pre">br2</span></code>, <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> → <code class="docutils literal notranslate"><span class="pre">uboot</span></code>, <code class="docutils literal notranslate"><span class="pre">lnxdsp-adi-meta</span></code> →
-<code class="docutils literal notranslate"><span class="pre">yocto</span></code>, <code class="docutils literal notranslate"><span class="pre">linux</span></code> → <code class="docutils literal notranslate"><span class="pre">linux</span></code>). Set <code class="docutils literal notranslate"><span class="pre">flavor</span></code> in the context to override
-detection for a local run. An unknown repository skips the test.</p></li>
+<li><p>The build system, detected from the repository under test.
+Set <code class="docutils literal notranslate"><span class="pre">flavor</span></code> in the context to override detection for a local run.
+An unknown repository skips the test.</p></li>
 <li><p>The artifact is selected from the run by matching every
 <code class="docutils literal notranslate"><span class="pre">needs</span></code> token as a case-insensitive substring of the artifact name, so
 <code class="docutils literal notranslate"><span class="pre">needs</span> <span class="pre">=</span> <span class="pre">[&quot;sc598&quot;,</span> <span class="pre">&quot;ezkit&quot;]</span></code> picks the sc598 ezkit build and rejects
@@ -304,7 +303,7 @@ artifact glob (matched against the run’s artifact names) and a file glob
 <code class="docutils literal notranslate"><span class="pre">Images.get</span></code> returns the matching file below the extracted bundle, and
 <code class="docutils literal notranslate"><span class="pre">Images.artifact_path</span></code> returns its resolved path inside that bundle for
 serving it at the same HTTP path.</p>
-<p>For a local run that needs workflow artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
+<p>For a local run that needs artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
 <code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
 falls back to files placed locally by <code class="docutils literal notranslate"><span class="pre">GitHub.download</span></code>; see
 <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
@@ -344,17 +343,6 @@ same <code class="docutils literal notranslate"><span class="pre">artifacts.toml
 is <code class="docutils literal notranslate"><span class="pre">release</span></code>; <code class="docutils literal notranslate"><span class="pre">repository</span></code> and <code class="docutils literal notranslate"><span class="pre">tag</span></code> are required. For these roles,
 <code class="docutils literal notranslate"><span class="pre">artifact</span></code> matches release asset names, with <code class="docutils literal notranslate"><span class="pre">needs</span></code> narrowing the board
 selection. Roles without <code class="docutils literal notranslate"><span class="pre">source</span></code> continue to use the workflow’s artifacts.</p>
-<p>Release archives are extracted and searched recursively, allowing a containing
-directory in the archive. Include the intended subtree in <code class="docutils literal notranslate"><span class="pre">file</span></code>: the
-Buildroot bundle contains both <code class="docutils literal notranslate"><span class="pre">bootstrap/</span></code> and <code class="docutils literal notranslate"><span class="pre">debug/</span></code>, with duplicate
-bootloader filenames. The example selects the debug bootloaders and ramdisk
-explicitly.</p>
-<p>Release downloads use a persistent cache at <code class="docutils literal notranslate"><span class="pre">$XDG_CACHE_HOME/hw-test</span></code>
-(default <code class="docutils literal notranslate"><span class="pre">~/.cache/hw-test</span></code>), or at <code class="docutils literal notranslate"><span class="pre">HW_TEST_CACHE_DIR</span></code> when set. Entries
-are separated by repository, tag, asset ID, and asset name.</p>
-<p>Public release assets can be downloaded without a token; private assets require
-a <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> with access to the source repository. Release roles do not
-use the local workflow-artifact fallback described above.</p>
 </section>
 </section>
 <section id="try-it-locally">
