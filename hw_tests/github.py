@@ -22,7 +22,10 @@ Basic usage:
    )
 """
 
+import hashlib
+import json
 import logging
+import shutil
 import tarfile
 import tempfile
 from os import environ
@@ -37,6 +40,19 @@ from hw_tests.logging import gha_escape, register_sensitive
 logger = logging.getLogger(__name__)
 
 _ZIP_MAGIC = b"PK\x03\x04"
+
+
+def _release_cache_root() -> Path:
+    base = environ.get("HW_TEST_CACHE_DIR")
+    if base:
+        return Path(base).expanduser()
+    return Path(environ.get("XDG_CACHE_HOME", Path.home() / ".cache")).expanduser() / "hw-test"
+
+
+def _release_cache_path(owner_repository: str, tag: str, asset: dict) -> Path:
+    encoded = json.dumps([owner_repository, tag, asset.get("id"), asset["name"]]).encode()
+    key = hashlib.sha256(encoded).hexdigest()
+    return _release_cache_root() / "releases" / key
 
 
 def _extract_if_archive(archive: Path) -> None:
@@ -203,8 +219,13 @@ class GitHub:
                 tag,
             )
             url = asset["url"]
+            cache_path = _release_cache_path(owner_repository, tag, asset)
+            if (cache_path / ".complete").is_file() and (cache_path / "files").is_dir():
+                return cache_path / "files"
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
+            path = Path(tempfile.mkdtemp(prefix=f".{cache_path.name}.", dir=cache_path.parent)) / "files"
         else:
-            local_ = Path.cwd() / '_artifacts' / self._test_name / str(self.__down_counter) # fallback
+            local_ = Path.cwd() / '_artifacts' / self._test_name / str(self.__down_counter)
             self.__down_counter += 1
 
             msg__ = f"cannot download artifacts; assuming you have them at '{local_}'"
@@ -230,4 +251,9 @@ class GitHub:
         with open(dest_file, "wb") as f:
             f.writelines(response.iter_content(chunk_size=1 << 20))
         _extract_if_archive(dest_file)
+        if source is not None:
+            (directory.parent / ".complete").touch()
+            shutil.rmtree(cache_path, ignore_errors=True)
+            directory.parent.replace(cache_path)
+            return cache_path / "files"
         return directory
