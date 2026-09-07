@@ -352,8 +352,7 @@ explicitly.</p>
 <p>Release downloads use a persistent cache at <code class="docutils literal notranslate"><span class="pre">$XDG_CACHE_HOME/hw-test</span></code>
 (default <code class="docutils literal notranslate"><span class="pre">~/.cache/hw-test</span></code>), or at <code class="docutils literal notranslate"><span class="pre">HW_TEST_CACHE_DIR</span></code> when set. Entries
 are separated by repository, tag, asset ID, and asset name.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">run-test</span></code> action restores and saves this directory with <code class="docutils literal notranslate"><span class="pre">actions/cache</span></code>.
-Public release assets can be downloaded without a token; private assets require
+<p>Public release assets can be downloaded without a token; private assets require
 a <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> with access to the source repository. Release roles do not
 use the local workflow-artifact fallback described above.</p>
 </section>
