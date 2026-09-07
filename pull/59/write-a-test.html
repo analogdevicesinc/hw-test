@@ -319,19 +319,19 @@ same <code class="docutils literal notranslate"><span class="pre">artifacts.toml
 <span class="k">[linux.spl]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig*"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"debug/u-boot-spl"</span>
-<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2"</span>
+<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2-external"</span>
 
 <span class="k">[linux.uboot]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig*"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"debug/u-boot"</span>
-<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2"</span>
+<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2-external"</span>
 
 <span class="k">[linux.rootfs]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig*"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"debug/rootfs.cpio.uboot"</span>
-<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2"</span>
+<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2-external"</span>
 
-<span class="k">[sources.br2]</span>
+<span class="k">[sources.br2-external]</span>
 <span class="n">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"release"</span>
 <span class="n">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"analogdevicesinc/br2-external"</span>
 <span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"2026.02-1.1.1"</span>
