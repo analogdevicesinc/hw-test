@@ -1,31 +1,53 @@
-# flavor -> role -> {artifact glob over run artifact names, file glob inside zip}
-
-[br2.spl]
+["br2-external".spl]
 artifact = "*_defconfig"
 file = "bootstrap/u-boot-spl"
-[br2.uboot]
+["br2-external".uboot]
 artifact = "*_defconfig"
 file = "bootstrap/u-boot"
-[br2.kernel]
+["br2-external".kernel]
 artifact = "*_defconfig"
 file = "bootstrap/Image"
-[br2.dtb]
+["br2-external".dtb]
 artifact = "*_defconfig"
 file = "bootstrap/*.dtb"
-[br2.emmc]
+["br2-external".emmc]
 artifact = "*_defconfig"
 file = "debug/emmc.img.gz"
 
-[uboot.spl]
+["u-boot".spl]
 artifact = "*"
 file = "u-boot-spl"
-[uboot.uboot]
+["u-boot".uboot]
 artifact = "*"
 file = "u-boot"
 
-[yocto.spl]
+["lnxdsp-adi-meta".spl]
 artifact = "*"
 file = "u-boot-spl-*.elf"
-[yocto.uboot]
+["lnxdsp-adi-meta".uboot]
 artifact = "*"
 file = "u-boot-proper-*.elf"
+
+[linux.kernel]
+artifact = "*_defconfig-gcc-arm64"
+file = "boot/Image"
+[linux.dtb]
+artifact = "dtb-gcc"
+file = "dtb/arch/*/boot/dts/adi/*.dtb"
+[linux.spl]
+artifact = "*_defconfig*"
+file = "debug/u-boot-spl"
+source = "br2-external"
+[linux.uboot]
+artifact = "*_defconfig*"
+file = "debug/u-boot"
+source = "br2-external"
+[linux.rootfs]
+artifact = "*_defconfig*"
+file = "debug/rootfs.cpio.uboot"
+source = "br2-external"
+
+[sources.br2-external]
+repository = "analogdevicesinc/br2-external"
+backend = "release"
+tag = "2026.02-1.1.1"

@@ -141,10 +141,7 @@ was built.
 
 ``Images.get`` resolves in three steps:
 
-#. The build system, detected from the repository under test
-   (``br2-external`` → ``br2``, ``u-boot`` → ``uboot``, ``lnxdsp-adi-meta`` →
-   ``yocto``). Set ``flavor`` in the context to override detection for a local
-   run. An unknown repository skips the test.
+#. The build system, detected from the repository under test.
 #. The artifact is selected from the run by matching every
    ``needs`` token as a case-insensitive substring of the artifact name, so
    ``needs = ["sc598", "ezkit"]`` picks the sc598 ezkit build and rejects
@@ -162,14 +159,14 @@ artifact glob (matched against the run's artifact names) and a file glob
 
 .. code:: toml
 
-   [br2.spl]
+   ["br2-external".spl]
    artifact = "*_defconfig"
    file = "bootstrap/u-boot-spl"
-   [br2.kernel]
+   ["br2-external".kernel]
    artifact = "*_defconfig"
    file = "bootstrap/Image"
 
-   [yocto.spl]
+   ["lnxdsp-adi-meta".spl]
    artifact = "*"
    file = "u-boot-spl-*.elf"
 
@@ -182,6 +179,45 @@ For a local run that needs artifacts, provide ``GITHUB_TOKEN`` and
 ``workflow_run_url`` as shown in :ref:`run-a-test`. Without a token, ``Images``
 falls back to files placed locally by ``GitHub.download``; see
 :ref:`run-a-test`.
+
+Mix workflow artifacts with release assets
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A kernel test can use the kernel and device tree from the workflow under test
+while obtaining SPL, U-Boot, and a root filesystem from a named release in
+another repository. Add ``source`` to those roles and define the source in the
+same ``artifacts.toml`` file:
+
+.. code:: toml
+
+   [linux.kernel]
+   artifact = "*_defconfig-gcc-arm64"
+   file = "boot/Image"
+
+   [linux.spl]
+   artifact = "*_defconfig*"
+   file = "debug/u-boot-spl"
+   source = "br2-external"
+
+   [linux.uboot]
+   artifact = "*_defconfig*"
+   file = "debug/u-boot"
+   source = "br2-external"
+
+   [linux.rootfs]
+   artifact = "*_defconfig*"
+   file = "debug/rootfs.cpio.uboot"
+   source = "br2-external"
+
+   [sources.br2-external]
+   backend = "release"
+   repository = "analogdevicesinc/br2-external"
+   tag = "2026.02-1.1.1"
+
+``source`` refers to a shared ``[sources.<name>]`` entry. The supported backend
+is ``release``; ``repository`` and ``tag`` are required. For these roles,
+``artifact`` matches release asset names, with ``needs`` narrowing the board
+selection. Roles without ``source`` continue to use the workflow's artifacts.
 
 Try it locally
 --------------
