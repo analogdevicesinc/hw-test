@@ -1,0 +1,4 @@
+labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next
+pexpect
+pytest
+pytest-timeout
