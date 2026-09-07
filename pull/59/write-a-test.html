@@ -99,7 +99,6 @@
 <li><a class="reference internal" href="#write-the-test">Write the test</a></li>
 <li><a class="reference internal" href="#use-build-artifacts-when-needed">Use build artifacts when needed</a><ul>
 <li><a class="reference internal" href="#resolve-artifacts-by-role-with-images">Resolve artifacts by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code></a></li>
-<li><a class="reference internal" href="#pull-a-role-from-another-repository">Pull a role from another repository</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#try-it-locally">Try it locally</a></li>
@@ -304,37 +303,6 @@ artifact glob (matched against the run’s artifact names) and a file glob
 <code class="docutils literal notranslate"><span class="pre">Images.get</span></code> returns the matching file below the extracted bundle, and
 <code class="docutils literal notranslate"><span class="pre">Images.artifact_path</span></code> returns its resolved path inside that bundle for
 serving it at the same HTTP path.</p>
-<p>Artifact selection is glob-first: the <code class="docutils literal notranslate"><span class="pre">artifact</span></code> glob is matched against the
-run’s artifact names, and <code class="docutils literal notranslate"><span class="pre">needs</span></code> tokens narrow the result only when the glob
-matches more than one (one artifact per board in a run). A board-agnostic
-artifact such as the combined <code class="docutils literal notranslate"><span class="pre">dtb-gcc</span></code> is therefore selected by its glob
-directly, and the specific board dtb is then chosen by the <code class="docutils literal notranslate"><span class="pre">file</span></code> glob
-narrowed by <code class="docutils literal notranslate"><span class="pre">needs</span></code> — no board name in the descriptor.</p>
-</section>
-<section id="pull-a-role-from-another-repository">
-<h3>Pull a role from another repository<a class="headerlink" href="#pull-a-role-from-another-repository" title="Link to this heading"></a></h3>
-<p>A role can name a <code class="docutils literal notranslate"><span class="pre">source</span></code> to resolve its artifact from a different
-repository’s run instead of the run under test — for example a kernel test that
-boots on SPL and U-Boot built by the <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> repo and an initramfs from
-<code class="docutils literal notranslate"><span class="pre">br2-external</span></code>:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[linux.uboot]</span>
-<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
-<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot"</span>
-<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"uboot"</span>
-</pre></div>
-</div>
-<p>Each named source is configured in <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> with its repository and,
-optionally, a branch and an exact run to pin:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[sources.uboot]</span>
-<span class="n">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"analogdevicesinc/u-boot"</span>
-<span class="n">branch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"adi-u-boot-2025.10.y"</span>
-<span class="c1"># run_id = "1234567890"   # pin an exact run; otherwise latest green is used</span>
-</pre></div>
-</div>
-<p>Without <code class="docutils literal notranslate"><span class="pre">run_id</span></code>, <code class="docutils literal notranslate"><span class="pre">Images</span></code> resolves the newest successful run on the branch
-that actually carries the artifact, so a role does not go stale as artifacts
-expire. Set <code class="docutils literal notranslate"><span class="pre">run_id</span></code> to pin an exact run, e.g. when bisecting a regression in
-the boot chain.</p>
 <p>For a local run that needs artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
 <code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
 falls back to files placed locally by <code class="docutils literal notranslate"><span class="pre">GitHub.download</span></code>; see
