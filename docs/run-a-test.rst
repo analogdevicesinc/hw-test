@@ -96,6 +96,9 @@ exact path it expects:
    $ set='{"name": "adsp/bootstrap"}' pytest -s
      ... test uses the local file ...
 
+For artifacts sourced from a GitHub release, place the release files under
+``_artifacts/<test-name>/release/<source-name>/`` instead.
+
 To download artifacts from a GitHub Actions run instead, set ``GITHUB_TOKEN``
 and pass ``workflow_run_url``:
 

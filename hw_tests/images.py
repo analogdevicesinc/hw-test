@@ -108,9 +108,22 @@ class Images:
 
     def get(self, role):
         spec = self._role_spec(role)
-        name = self._select_artifact(spec["artifact"])
-        # Offline: no resolved name; key the download by the artifact glob so
-        # roles sharing an artifact still share one local fallback directory.
+        source = self._source(spec)
+        if source:
+            local = Path.cwd() / "_artifacts" / self.context["name"] / "release" / spec["source"]
+            if local.is_dir():
+                return self._resolve_file(local, spec["file"], role, recursive=True)
+            owner_repository = source["repository"]
+            tag = source["tag"]
+            assets = self.github.list_artifacts(source=source)
+            name = self._select_artifact(assets, spec["artifact"])
+            key = ("release", owner_repository, tag, name)
+            if key not in self._cache:
+                self._cache[key] = self.github.download(name, source=source)
+            return self._resolve_file(self._cache[key], spec["file"], role, recursive=True)
+
+        artifacts = self.github.list_artifacts()
+        name = self._select_artifact(artifacts, spec["artifact"]) if artifacts else None
         key = name if name is not None else spec["artifact"]
         if key not in self._cache:
             self._cache[key] = self.github.download(name or spec["artifact"])

@@ -23,6 +23,7 @@ Basic usage:
 """
 
 import logging
+import tarfile
 import tempfile
 from os import environ
 from pathlib import Path
@@ -41,12 +42,18 @@ _ZIP_MAGIC = b"PK\x03\x04"
 def _extract_if_archive(archive: Path) -> None:
     with open(archive, "rb") as f:
         header = f.read(4)
-    if header != _ZIP_MAGIC:
+    if header == _ZIP_MAGIC:
+        logger.debug("Extracting zip %s", archive)
+        with ZipFile(archive) as zf:
+            zf.extractall(archive.parent)
+        archive.unlink()
         return
-    logger.debug("Extracting zip %s", archive)
-    with ZipFile(archive) as zf:
-        zf.extractall(archive.parent)
-    archive.unlink()
+    if tarfile.is_tarfile(archive):
+        logger.debug("Extracting tar %s", archive)
+        with tarfile.open(archive) as tf:
+            tf.extractall(archive.parent, filter="data")
+        archive.unlink()
+        return
 
 
 class GitHub:
@@ -61,6 +68,7 @@ class GitHub:
         self._token = environ.get("GITHUB_TOKEN")
         self._get_workflow_run_vars(context)
         self._test_name = context.get("name") # for fallback
+        self._artifact_lists = {}
 
         if self._token is None:
             logger.info("No 'GITHUB_TOKEN' set, only auth-less API calls will work")
@@ -126,100 +134,100 @@ class GitHub:
     def owner_repository(self):
         return self._owner_repository
 
-    def list_artifacts(self, owner_repository=None, run_id=None):
-        """Return non-expired artifact dicts for a run, or [] when unavailable."""
-        if owner_repository is None:
-            owner_repository = self._owner_repository
-        if run_id is None:
-            run_id = self._run_id
-        if owner_repository is None or run_id is None or self._token is None:
-            return []
+    def list_artifacts(self, owner_repository=None, run_id=None, source=None):
+        if source is not None:
+            owner_repository = source["repository"]
+            tag = source["tag"]
+            key = ("release", owner_repository, tag)
+        else:
+            owner_repository = owner_repository or self._owner_repository
+            run_id = run_id or self._run_id
+            if not all((owner_repository, run_id, self._token)):
+                return []
+            key = ("run", owner_repository, run_id)
+        if key in self._artifact_lists:
+            return self._artifact_lists[key]
 
-        all_artifacts = []
-        page = 1
-        total_count = None
-        while total_count is None or len(all_artifacts) < total_count:
+        if source is not None:
             response = requests.get(
-                f"https://api.github.com/repos/{owner_repository}/actions/runs/{run_id}/artifacts",
+                f"https://api.github.com/repos/{owner_repository}/releases/tags/{tag}",
                 headers=self._headers(),
-                params={"per_page": 100, "page": page},
             )
             response.raise_for_status()
-            data = response.json()
-            total_count = data.get("total_count", 0)
-            artifacts = data.get("artifacts", [])
-            if not artifacts:
-                break
-            all_artifacts.extend(artifacts)
-            page += 1
-
-        return [
-            item
-            for item in all_artifacts
-            if not item.get("expired")
-        ]
+            artifacts = response.json().get("assets", [])
+        else:
+            all_artifacts = []
+            page = 1
+            total_count = None
+            while total_count is None or len(all_artifacts) < total_count:
+                response = requests.get(
+                    f"https://api.github.com/repos/{owner_repository}/actions/runs/{run_id}/artifacts",
+                    headers=self._headers(),
+                    params={"per_page": 100, "page": page},
+                )
+                response.raise_for_status()
+                data = response.json()
+                total_count = data.get("total_count", 0)
+                page += 1
+                if not data.get("artifacts"):
+                    break
+                all_artifacts.extend(data["artifacts"])
+            artifacts = [item for item in all_artifacts if not item.get("expired")]
+        self._artifact_lists[key] = artifacts
+        return artifacts
 
     def download(
         self,
         name: str,
         owner_repository: str | None = None,
         run_id: str | None = None,
-        path: Path | str | None = None
+        path: Path | str | None = None,
+        source: dict | None = None,
     ) -> Path:
         """Download artifact a single artifact from GitHub.
         Behaves like actions/download-artifact"""
-        local_ = Path.cwd() / '_artifacts' / self._test_name / str(self.__down_counter) # fallback
-        self.__down_counter += 1
-
-        msg__ = f"cannot download artifacts; assuming you have them at '{local_}'"
-        msg_ = "Neither 'workflow_run_url' in context or '{}' in environment, " + msg__
-
-        if owner_repository is None:
-            owner_repository = self._owner_repository
-        if run_id is None:
-            run_id = self._run_id
-        if owner_repository is None:
-            logger.warning(msg_.format('GITHUB_REPOSITORY'))
-            return local_
-        if run_id is None:
-            logger.warning(msg_.format('GITHUB_RUN_ID'))
-            return local_
-        if self._token is None:
-            # API always requires a token
-            logger.warning(f"No 'GITHUB_TOKEN' in environment, {msg__}")
-            return local_
-
-        artifact = next(
-            (
-                item for item in self.list_artifacts(owner_repository, run_id)
-                if item.get("name") == name
-            ),
-            None,
-        )
-        if artifact is None:
-            raise LookupError(
-                f"GitHub artifact '{name}' at '{owner_repository}/{run_id}' not found"
+        headers = self._headers()
+        if source is not None:
+            owner_repository = source["repository"]
+            tag = source["tag"]
+            asset = next(
+                asset
+                for asset in self.list_artifacts(source=source)
+                if asset["name"] == name
             )
+            headers["Accept"] = "application/octet-stream"
+            logger.info(
+                "Downloading release asset '%s' from %s@%s",
+                name,
+                owner_repository,
+                tag,
+            )
+            url = asset["url"]
+        else:
+            local_ = Path.cwd() / '_artifacts' / self._test_name / str(self.__down_counter) # fallback
+            self.__down_counter += 1
 
-        dest_dir = (
-            Path(path)
-            if path is not None
-            else Path(tempfile.mkdtemp(prefix="hw-test-gh-"))
-        )
-        dest_dir.mkdir(parents=True, exist_ok=True)
+            msg__ = f"cannot download artifacts; assuming you have them at '{local_}'"
+            owner_repository = owner_repository or self._owner_repository
+            run_id = run_id or self._run_id
+            if not all((owner_repository, run_id, self._token)):
+                logger.warning(msg__)
+                return local_
 
-        response = requests.get(
-            artifact["archive_download_url"],
-            headers=self._headers(),
-            stream=True
-        )
+            artifact = next(
+                item
+                for item in self.list_artifacts(owner_repository, run_id)
+                if item["name"] == name
+            )
+            logger.info(f"Downloading GitHub artifact '{name}'")
+            url = artifact["archive_download_url"]
+
+        directory = Path(path) if path is not None else Path(tempfile.mkdtemp(prefix="hw-test-gh-"))
+        directory.mkdir(parents=True, exist_ok=True)
+        dest_file = directory / name
+        response = requests.get(url, headers=headers, stream=True)
         response.raise_for_status()
-        logger.info(f"Downloaded GitHub artifact '{name}'")
-
-        dest_file = dest_dir / name
         with open(dest_file, "wb") as f:
             f.writelines(response.iter_content(chunk_size=1 << 20))
-
         _extract_if_archive(dest_file)
-
-        return dest_dir
+        return directory

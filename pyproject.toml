@@ -23,7 +23,7 @@ dependencies = [
     "labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next",
     "requests",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.11.4"
 dynamic = ["version"]
 
 [project.optional-dependencies]
