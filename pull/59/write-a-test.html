@@ -271,9 +271,7 @@ was built.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Images.get</span></code> resolves in three steps:</p>
 <ol class="arabic simple">
-<li><p>The build system, detected from the repository under test.
-Set <code class="docutils literal notranslate"><span class="pre">flavor</span></code> in the context to override detection for a local run.
-An unknown repository skips the test.</p></li>
+<li><p>The build system, detected from the repository under test.</p></li>
 <li><p>The artifact is selected from the run by matching every
 <code class="docutils literal notranslate"><span class="pre">needs</span></code> token as a case-insensitive substring of the artifact name, so
 <code class="docutils literal notranslate"><span class="pre">needs</span> <span class="pre">=</span> <span class="pre">[&quot;sc598&quot;,</span> <span class="pre">&quot;ezkit&quot;]</span></code> picks the sc598 ezkit build and rejects
@@ -287,14 +285,14 @@ that use it — <code class="docutils literal notranslate"><span class="pre">cat
 <code class="docutils literal notranslate"><span class="pre">adsp/u-boot</span></code> reads <code class="docutils literal notranslate"><span class="pre">tests/adsp/artifacts.toml</span></code>. Each entry names an
 artifact glob (matched against the run’s artifact names) and a file glob
 (matched against files inside it):</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[br2.spl]</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[</span><span class="s2">"br2-external"</span><span class="k">.spl]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/u-boot-spl"</span>
-<span class="k">[br2.kernel]</span>
+<span class="k">[</span><span class="s2">"br2-external"</span><span class="k">.kernel]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/Image"</span>
 
-<span class="k">[yocto.spl]</span>
+<span class="k">[</span><span class="s2">"lnxdsp-adi-meta"</span><span class="k">.spl]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot-spl-*.elf"</span>
 </pre></div>
