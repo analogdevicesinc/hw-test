@@ -99,6 +99,7 @@
 <li><a class="reference internal" href="#write-the-test">Write the test</a></li>
 <li><a class="reference internal" href="#use-build-artifacts-when-needed">Use build artifacts when needed</a><ul>
 <li><a class="reference internal" href="#resolve-artifacts-by-role-with-images">Resolve artifacts by role with <code class="docutils literal notranslate"><span class="pre">Images</span></code></a></li>
+<li><a class="reference internal" href="#mix-workflow-artifacts-with-release-assets">Mix workflow artifacts with release assets</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#try-it-locally">Try it locally</a></li>
@@ -270,10 +271,7 @@ was built.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Images.get</span></code> resolves in three steps:</p>
 <ol class="arabic simple">
-<li><p>The build system, detected from the repository under test
-(<code class="docutils literal notranslate"><span class="pre">br2-external</span></code> → <code class="docutils literal notranslate"><span class="pre">br2</span></code>, <code class="docutils literal notranslate"><span class="pre">u-boot</span></code> → <code class="docutils literal notranslate"><span class="pre">uboot</span></code>, <code class="docutils literal notranslate"><span class="pre">lnxdsp-adi-meta</span></code> →
-<code class="docutils literal notranslate"><span class="pre">yocto</span></code>). Set <code class="docutils literal notranslate"><span class="pre">flavor</span></code> in the context to override detection for a local
-run. An unknown repository skips the test.</p></li>
+<li><p>The build system, detected from the repository under test.</p></li>
 <li><p>The artifact is selected from the run by matching every
 <code class="docutils literal notranslate"><span class="pre">needs</span></code> token as a case-insensitive substring of the artifact name, so
 <code class="docutils literal notranslate"><span class="pre">needs</span> <span class="pre">=</span> <span class="pre">[&quot;sc598&quot;,</span> <span class="pre">&quot;ezkit&quot;]</span></code> picks the sc598 ezkit build and rejects
@@ -287,14 +285,14 @@ that use it — <code class="docutils literal notranslate"><span class="pre">cat
 <code class="docutils literal notranslate"><span class="pre">adsp/u-boot</span></code> reads <code class="docutils literal notranslate"><span class="pre">tests/adsp/artifacts.toml</span></code>. Each entry names an
 artifact glob (matched against the run’s artifact names) and a file glob
 (matched against files inside it):</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[br2.spl]</span>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[</span><span class="s2">"br2-external"</span><span class="k">.spl]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/u-boot-spl"</span>
-<span class="k">[br2.kernel]</span>
+<span class="k">[</span><span class="s2">"br2-external"</span><span class="k">.kernel]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bootstrap/Image"</span>
 
-<span class="k">[yocto.spl]</span>
+<span class="k">[</span><span class="s2">"lnxdsp-adi-meta"</span><span class="k">.spl]</span>
 <span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
 <span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u-boot-spl-*.elf"</span>
 </pre></div>
@@ -307,6 +305,42 @@ serving it at the same HTTP path.</p>
 <code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
 falls back to files placed locally by <code class="docutils literal notranslate"><span class="pre">GitHub.download</span></code>; see
 <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
+</section>
+<section id="mix-workflow-artifacts-with-release-assets">
+<h3>Mix workflow artifacts with release assets<a class="headerlink" href="#mix-workflow-artifacts-with-release-assets" title="Link to this heading"></a></h3>
+<p>A kernel test can use the kernel and device tree from the workflow under test
+while obtaining SPL, U-Boot, and a root filesystem from a named release in
+another repository. Add <code class="docutils literal notranslate"><span class="pre">source</span></code> to those roles and define the source in the
+same <code class="docutils literal notranslate"><span class="pre">artifacts.toml</span></code> file:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[linux.kernel]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig-gcc-arm64"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"boot/Image"</span>
+
+<span class="k">[linux.spl]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig*"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"debug/u-boot-spl"</span>
+<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2-external"</span>
+
+<span class="k">[linux.uboot]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig*"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"debug/u-boot"</span>
+<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2-external"</span>
+
+<span class="k">[linux.rootfs]</span>
+<span class="n">artifact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*_defconfig*"</span>
+<span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"debug/rootfs.cpio.uboot"</span>
+<span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"br2-external"</span>
+
+<span class="k">[sources.br2-external]</span>
+<span class="n">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"release"</span>
+<span class="n">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"analogdevicesinc/br2-external"</span>
+<span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"2026.02-1.1.1"</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">source</span></code> refers to a shared <code class="docutils literal notranslate"><span class="pre">[sources.&lt;name&gt;]</span></code> entry. The supported backend
+is <code class="docutils literal notranslate"><span class="pre">release</span></code>; <code class="docutils literal notranslate"><span class="pre">repository</span></code> and <code class="docutils literal notranslate"><span class="pre">tag</span></code> are required. For these roles,
+<code class="docutils literal notranslate"><span class="pre">artifact</span></code> matches release asset names, with <code class="docutils literal notranslate"><span class="pre">needs</span></code> narrowing the board
+selection. Roles without <code class="docutils literal notranslate"><span class="pre">source</span></code> continue to use the workflow’s artifacts.</p>
 </section>
 </section>
 <section id="try-it-locally">
