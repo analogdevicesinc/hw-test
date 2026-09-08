@@ -277,7 +277,9 @@ exact path it expects:</p>
 <div class="clear-left"></div></div><div><div class="no-select highlight-text notranslate"><div class="highlight"><pre><span></span> ... test uses the local file ...
 </pre></div>
 </div>
-<div class="clear-left"></div></div></div><p>To download artifacts from a GitHub Actions run instead, set <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code>
+<div class="clear-left"></div></div></div><p>For roles sourced from a GitHub release, place the release files under
+<code class="docutils literal notranslate"><span class="pre">_artifacts/&lt;test-name&gt;/release/&lt;source-name&gt;/</span></code> instead.</p>
+<p>To download artifacts from a GitHub Actions run instead, set <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code>
 and pass <code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>&lt;token&gt;
 </pre></div>
