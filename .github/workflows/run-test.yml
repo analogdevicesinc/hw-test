@@ -15,11 +15,15 @@ on:
       set:
         required: true
         type: string
+      runner:
+        required: false
+        type: string
+        default: ${{ vars.RUNNER_HW_TEST }}
 
 
 jobs:
   run-test:
-    runs-on: ${{ vars.RUNNER != '' && fromJSON(vars.RUNNER) || 'ubuntu-slim' }}
+    runs-on: ${{ inputs.runner != '' && fromJSON(inputs.runner) || 'ubuntu-slim' }}
     env:
       LG_COORDINATOR: ${{ secrets.LG_COORDINATOR }}
     permissions:
