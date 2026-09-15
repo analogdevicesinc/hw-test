@@ -1,9 +1,12 @@
 import logging
+import time
 from pathlib import Path
 from time import monotonic, sleep
 
 import pytest
 
+from hw_tests.github import GitHub
+from hw_tests.images import Images
 from hw_tests.labgrid import LabgridClient, exporter_http_server
 
 logger = logging.getLogger(__name__)
@@ -32,13 +35,25 @@ def debounce(driver, level):
 
 @pytest.mark.linux
 def test_boot_time(context, record_property):
+    github = GitHub(context)
+    images = Images(context, github)
+
+    spl = images.get("spl")
+    uboot = images.get("uboot")
+    spl_ldr = images.get("spl-boot")
+    uboot_ldr = images.get("uboot-boot")
+    fit_image = images.get("fitImage")
+    spi_rootfs = images.get("rootfs-spi")
+
     client = LabgridClient(context)
     with client.acquire() as target:
         spi_boot = target.get_driver("DigitalOutputProtocol", name="spi_boot")
         power = target.get_driver("PowerProtocol")
         ssh = target.get_driver("SSHDriver")
         openocd = target.get_driver("OpenOCDDriver", activate=False)
+        uboot_driver = target.get_driver("UBootDriver", name="uboot", activate=False)
         shell = target.get_driver("ShellDriver", activate=False)
+        console = uboot_driver.console
         power_sense = target.get_driver(
             "DigitalOutputProtocol", name="power_sense", activate=False
         )
@@ -46,32 +61,100 @@ def test_boot_time(context, record_property):
             "DigitalOutputProtocol", name="boot_done", activate=False
         )
 
-        spi_boot.set(True)
-
-        # Boot the board and program the systemd service
+        spi_boot.set(False)
         power.cycle()
-        target.activate(shell)
-        shell.run_check("udhcpc -i end0 -n -q")
+
+        ssh.put(str(spl), "u-boot-spl")
+        ssh.put(str(uboot), "u-boot")
+
+        target.activate(console)
+        target.activate(openocd)
+        try:
+            openocd.execute(openocd.load_commands)
+        finally:
+            target.deactivate(openocd)
+
+        console.sendline("")
+        time.sleep(0.2)
+        target.activate(uboot_driver)
+        console.sendline("version")
+        console.expect("U-Boot", timeout=30)
+        console.expect(uboot_driver.prompt, timeout=30)
+
         files = {
+            images.artifact_path("fitImage"): fit_image,
+        }
+        with exporter_http_server(ssh, files) as port:
+            console.sendline("dhcp")
+            console.expect(uboot_driver.prompt, timeout=120)
+
+            console.sendline(f"setenv httpdstp {port}")
+            console.expect(uboot_driver.prompt, timeout=30)
+
+            console.sendline(
+                f"wget ${{loadaddr}} {openocd.interface.host}:/"
+                f"{images.artifact_path('fitImage')}"
+            )
+            console.expect(uboot_driver.prompt, timeout=180)
+
+            console.sendline("run ramargs")
+            console.expect(uboot_driver.prompt, timeout=30)
+
+            console.sendline("bootm ${loadaddr}")
+            uboot_driver.await_boot()
+            target.deactivate(uboot_driver)
+            logger.info("Linux booted from RAM disk")
+
+        target.activate(shell)
+        shell.run_check("udhcpc -i eth0 -q")
+
+        transfers = {
+            "u-boot-spl.ldr": spl_ldr,
+            "u-boot.ldr": uboot_ldr,
+            "fitImage": fit_image,
+            "rootfs.ubi": spi_rootfs,
             "gpio-boot-trace": FILES / "gpio-boot-trace",
             "gpio-boot-trace.service": FILES / "gpio-boot-trace.service",
         }
-        with exporter_http_server(ssh, files) as port:
+        with exporter_http_server(ssh, transfers) as port:
             base = f"http://{openocd.interface.host}:{port}"
-            shell.run_check(f"wget -O /tmp/gpio-boot-trace {base}/gpio-boot-trace")
-            shell.run_check(
-                f"wget -O /tmp/gpio-boot-trace.service {base}/gpio-boot-trace.service"
-            )
+            shell.run_check("mkdir -p /tmp")
+            for name in transfers:
+                shell.run_check(f"wget -O /tmp/{name} {base}/{name}")
+
+        spl_mtd = mtd_index(shell, "u-boot-spl")
+        uboot_mtd = mtd_index(shell, "u-boot")
+        kernel_mtd = mtd_index(shell, "kernel")
+        rootfs_mtd = mtd_index(shell, "rootfs")
+        flash_timeout = 900
+        shell.run_check(f"flashcp -v /tmp/u-boot-spl.ldr /dev/mtd0", timeout=flash_timeout)
+        shell.run_check(f"flashcp -v /tmp/u-boot.ldr /dev/mtd1", timeout=flash_timeout)
+        shell.run_check(f"flashcp -v /tmp/fitImage /dev/mtd2", timeout=flash_timeout)
+        shell.run_check(f"ubiformat /dev/mtd3 -f /tmp/rootfs.ubi -y", timeout=flash_timeout)
+        logger.info("Programmed SPI NOR partitions")
+
+        # Install the boot-trace service into the freshly-flashed rootfs
+        shell.run_check(f"ubiattach -m 3 -d 0")
         shell.run_check(
-            "install -m0755 /tmp/gpio-boot-trace /usr/libexec/gpio-boot-trace && "
-            "install -m0644 /tmp/gpio-boot-trace.service "
-            "/lib/systemd/system/gpio-boot-trace.service && "
-            "systemctl unmask gpio-boot-trace.service; systemctl daemon-reload && "
-            "systemctl enable gpio-boot-trace.service && sync"
+            "mkdir -p /mnt/rootfs && mount -t ubifs ubi0:rootfs /mnt/rootfs"
         )
+        try:
+            shell.run_check(
+                "install -m0755 /tmp/gpio-boot-trace "
+                "/mnt/rootfs/usr/libexec/gpio-boot-trace && "
+                "install -m0644 /tmp/gpio-boot-trace.service "
+                "/mnt/rootfs/lib/systemd/system/gpio-boot-trace.service && "
+                "mkdir -p /mnt/rootfs/etc/systemd/system/multi-user.target.wants && "
+                "ln -sf /lib/systemd/system/gpio-boot-trace.service "
+                "/mnt/rootfs/etc/systemd/system/multi-user.target.wants/"
+                "gpio-boot-trace.service"
+            )
+        finally:
+            shell.run_check("sync && umount /mnt/rootfs && ubidetach -m 3")
         logger.info("gpio-boot-trace service installed into SPI rootfs")
         target.deactivate(shell)
 
+        spi_boot.set(True)
         target.activate(power_sense)
         target.activate(boot_done)
         power_sense.get()
