@@ -1,0 +1,9 @@
+needs = ["sc598", "ezkit"]
+
+[[repository]]
+name = "linux"
+ref = "refs/heads/adsp-6.18.31-y"
+path = '''
+drivers/mmc/*
+arch/arm64/boot/dts/adi/sc598*
+'''

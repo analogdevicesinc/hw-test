@@ -13,6 +13,9 @@ file = "bootstrap/*.dtb"
 ["br2-external".emmc]
 artifact = "*_defconfig"
 file = "debug/emmc.img.gz"
+["br2-external".rootfs]
+artifact = "*_defconfig"
+file = "debug/rootfs.cpio.uboot"
 
 ["u-boot".spl]
 artifact = "*"
