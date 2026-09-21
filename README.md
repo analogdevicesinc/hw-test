@@ -4,7 +4,7 @@ Run hardware tests based on events, with changed-files test selection.
 
 ## Workflows
 
-- `run-test.yml`: Run one individual test, takes as input the test name, e.g., `demo/linux-iio-dac`
+- `run-test.yml`: Run one individual test; `set` is a JSON object such as `{"name":"demo/linux-iio-dac"}`.
 - `run-tests.yml`: Collect tests and run each in a matrix, the input is a `workflow_run` url (`https://api.github.com/repos/**/actions/runs/*`)
 
 The `run-tests.yml` uses [doctools/workflow-run-to-context](https://github.com/analogdevicesinc/doctools/tree/action/workflow-run-to-context) to resolve, through API calls, the changed files set and relevant shas for `push` and `pull_request` events.
