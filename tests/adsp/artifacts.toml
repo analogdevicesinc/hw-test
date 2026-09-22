@@ -1,7 +1,7 @@
 ["br2-external".spl]
 artifact = "*_defconfig"
 file = "bootstrap/u-boot-spl"
-["br2-external".uboot]
+["br2-external".u-boot]
 artifact = "*_defconfig"
 file = "bootstrap/u-boot"
 ["br2-external".kernel]
@@ -17,14 +17,14 @@ file = "debug/emmc.img"
 ["u-boot".spl]
 artifact = "*"
 file = "u-boot-spl"
-["u-boot".uboot]
+["u-boot".u-boot]
 artifact = "*"
 file = "u-boot"
 
 ["lnxdsp-adi-meta".spl]
 artifact = "*"
 file = "u-boot-spl-*.elf"
-["lnxdsp-adi-meta".uboot]
+["lnxdsp-adi-meta".u-boot]
 artifact = "*"
 file = "u-boot-proper-*.elf"
 
@@ -38,7 +38,7 @@ file = "dtb/arch/*/boot/dts/adi/*.dtb"
 artifact = "*_defconfig*"
 file = "debug/u-boot-spl"
 source = "br2-external"
-[linux.uboot]
+[linux.u-boot]
 artifact = "*_defconfig*"
 file = "debug/u-boot"
 source = "br2-external"
