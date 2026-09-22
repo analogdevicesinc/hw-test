@@ -12,7 +12,7 @@ artifact = "*_defconfig"
 file = "bootstrap/*.dtb"
 ["br2-external".emmc]
 artifact = "*_defconfig"
-file = "debug/emmc.img.gz"
+file = "debug/emmc.img"
 
 ["u-boot".spl]
 artifact = "*"
