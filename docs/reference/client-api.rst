@@ -58,7 +58,7 @@ and the ``tests/<category>/artifacts.toml`` descriptor work.
 
    from hw_tests.github import GitHub
    from hw_tests.images import Images
-   from hw_tests.labgrid import LabgridClient
+   from hw_tests.labgrid import LabgridClient, exporter_http_server
 
 
    def test_uboot_version(context):
@@ -77,15 +77,15 @@ and the ``tests/<category>/artifacts.toml`` descriptor work.
 
            spi_boot.set(False)
            power.cycle()
-           ssh.put(str(spl), "u-boot-spl")
-           ssh.put(str(uboot_image), "u-boot")
            spi_boot.set(True)
 
-           target.activate(openocd)
-           try:
-               openocd.execute(openocd.load_commands)
-           finally:
-               target.deactivate(openocd)
+           files = {"u-boot-spl": spl, "u-boot": uboot_image}
+           with exporter_http_server(ssh, files) as (directory, _):
+               target.activate(openocd)
+               try:
+                   openocd.execute([f"cd {directory}", *openocd.load_commands])
+               finally:
+                   target.deactivate(openocd)
 
            target.activate(uboot)
            uboot.console.sendline("version")

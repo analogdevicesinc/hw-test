@@ -1,10 +1,15 @@
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier, Lock
 from types import SimpleNamespace
 
 import pytest
 from labgrid.exceptions import NoResourceFoundError
 
-from hw_tests.labgrid import LabgridClient, exporter_http_server
+from hw_tests.labgrid import (
+    LabgridClient,
+    exporter_http_server,
+)
 
 
 class FakeSSH:
@@ -15,7 +20,7 @@ class FakeSSH:
     def run_check(self, command):
         self.commands.append(command)
         if command.startswith("mktemp -d"):
-            return ["/dev/shm/hw-test-http.test\n"]
+            return ["/var/tmp/hw-test-http.test\n"]
         if "sock.getsockname" in command:
             return ["12345\n"]
         return [""]
@@ -35,14 +40,15 @@ def test_exporter_http_server_uploads_files_at_requested_paths(tmp_path):
     with exporter_http_server(
         ssh,
         {kernel.name: kernel, "debug/emmc.img.gz": emmc},
-    ) as port:
+    ) as (directory, port):
+        assert directory == "/var/tmp/hw-test-http.test"
         assert port == "12345"
 
     assert ssh.uploads == [
-        (str(kernel), "/dev/shm/hw-test-http.test/Image"),
-        (str(emmc), "/dev/shm/hw-test-http.test/debug/emmc.img.gz"),
+        (str(kernel), "/var/tmp/hw-test-http.test/Image"),
+        (str(emmc), "/var/tmp/hw-test-http.test/debug/emmc.img.gz"),
     ]
-    assert "mkdir -p /dev/shm/hw-test-http.test/debug" in ssh.commands
+    assert "mkdir -p /var/tmp/hw-test-http.test/debug" in ssh.commands
     assert not any("ln -s" in command for command in ssh.commands)
 
 
@@ -67,6 +73,97 @@ def test_exporter_http_server_rejects_duplicate_normalized_paths(tmp_path):
         {"debug/emmc.img.gz": image, "debug/./emmc.img.gz": image},
     ):
         pass
+
+
+def test_concurrent_uboot_loads_use_isolated_http_roots(tmp_path):
+    class SharedSSH:
+        def __init__(self):
+            self.lock = Lock()
+            self.next_workspace = 0
+            self.remote_files = {}
+
+        def run_check(self, command):
+            if command == "mktemp -d /var/tmp/hw-test-http.XXXXXX":
+                with self.lock:
+                    workspace = self.next_workspace
+                    self.next_workspace += 1
+                return [f"/var/tmp/hw-test-http.{workspace}\n"]
+            if "sock.getsockname" in command:
+                return ["12345\n"]
+            assert command.startswith(
+                (
+                    "nohup python3 -m http.server",
+                    "chmod 0755 /var/tmp/hw-test-http.",
+                )
+            )
+            return [""]
+
+        def put(self, source, destination):
+            with self.lock:
+                self.remote_files[destination] = Path(source).read_bytes()
+
+        def run(self, command):
+            assert "rm -rf /var/tmp/hw-test-http." in command
+
+    class FakeTarget:
+        def activate(self, driver):
+            driver.active = True
+
+        def deactivate(self, driver):
+            driver.active = False
+
+    class FakeOpenOCD:
+        def __init__(self, ssh, barrier, expected):
+            self.ssh = ssh
+            self.barrier = barrier
+            self.expected = expected
+            self.active = False
+            self.load_commands = [
+                "source [find /tools/u-boot.tcl]",
+                "autoboot_elf",
+            ]
+
+        def execute(self, commands):
+            assert self.active
+            assert commands[0].startswith("cd /var/tmp/hw-test-http.")
+            directory = commands[0].removeprefix("cd ")
+            assert commands[1:] == self.load_commands
+
+            self.barrier.wait()
+            assert self.ssh.remote_files[f"{directory}/u-boot-spl"] == (
+                self.expected + b"-spl"
+            )
+            assert self.ssh.remote_files[f"{directory}/u-boot"] == (
+                self.expected + b"-uboot"
+            )
+
+    ssh = SharedSSH()
+    target = FakeTarget()
+    barrier = Barrier(4)
+
+    def load_board(index):
+        identity = f"board-{index}".encode()
+        spl = tmp_path / f"spl-{index}"
+        uboot = tmp_path / f"uboot-{index}"
+        spl.write_bytes(identity + b"-spl")
+        uboot.write_bytes(identity + b"-uboot")
+        openocd = FakeOpenOCD(ssh, barrier, identity)
+
+        files = {"u-boot-spl": spl, "u-boot": uboot}
+        with exporter_http_server(ssh, files) as (directory, _):
+            target.activate(openocd)
+            try:
+                openocd.execute([f"cd {directory}", *openocd.load_commands])
+            finally:
+                target.deactivate(openocd)
+        assert not openocd.active
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(load_board, index) for index in range(4)]
+        for future in futures:
+            future.result()
+
+    assert ssh.next_workspace == 4
 
 
 def test_labgrid_client_selects_configured_place_without_local_env_file(
