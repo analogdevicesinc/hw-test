@@ -34,29 +34,28 @@ def test_bootstrap(context):
         spi_boot.set(False)
         power.cycle()
 
-        ssh.put(str(spl), "u-boot-spl")
-        ssh.put(str(uboot), "u-boot")
-
-        target.activate(console)
-        target.activate(openocd)
-        try:
-            openocd.execute(openocd.load_commands)
-        finally:
-            target.deactivate(openocd)
-
-        console.sendline("")
-        time.sleep(0.2)
-        target.activate(uboot_driver)
-        console.sendline("version")
-        console.expect("U-Boot", timeout=30)
-        console.expect(uboot_driver.prompt, timeout=30)
-
         files = {
+            "u-boot-spl": spl,
+            "u-boot": uboot,
             images.artifact_path("kernel"): kernel,
             images.artifact_path("dtb"): devicetree,
             images.artifact_path("emmc"): emmc_image,
         }
-        with exporter_http_server(ssh, files) as port:
+        with exporter_http_server(ssh, files) as (directory, port):
+            target.activate(console)
+            target.activate(openocd)
+            try:
+                openocd.execute([f"cd {directory}", *openocd.load_commands])
+            finally:
+                target.deactivate(openocd)
+
+            console.sendline("")
+            time.sleep(0.2)
+            target.activate(uboot_driver)
+            console.sendline("version")
+            console.expect("U-Boot", timeout=30)
+            console.expect(uboot_driver.prompt, timeout=30)
+
             console.sendline("dhcp")
             console.expect(uboot_driver.prompt, timeout=120)
 

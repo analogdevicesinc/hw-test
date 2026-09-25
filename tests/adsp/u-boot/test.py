@@ -5,7 +5,7 @@ import pytest
 
 from hw_tests.github import GitHub
 from hw_tests.images import Images
-from hw_tests.labgrid import LabgridClient
+from hw_tests.labgrid import LabgridClient, exporter_http_server
 
 logger = logging.getLogger(__name__)
 
@@ -32,20 +32,19 @@ def test_uboot_version(context):
         spi_boot.set(False)
         power.cycle()
 
-        ssh.put(str(spl), "u-boot-spl")
-        ssh.put(str(uboot_image), "u-boot")
+        files = {"u-boot-spl": spl, "u-boot": uboot_image}
+        with exporter_http_server(ssh, files) as (directory, _):
+            target.activate(console)
+            target.activate(openocd)
+            try:
+                openocd.execute([f"cd {directory}", *openocd.load_commands])
+            finally:
+                target.deactivate(openocd)
 
-        target.activate(console)
-        target.activate(openocd)
-        try:
-            openocd.execute(openocd.load_commands)
-        finally:
-            target.deactivate(openocd)
-
-        console.sendline("")
-        time.sleep(0.2)
-        target.activate(uboot_driver)
-        console.sendline("version")
-        console.expect("U-Boot", timeout=30)
-        console.expect(uboot_driver.prompt, timeout=30)
-        logger.info("U-Boot prompt verified")
+            console.sendline("")
+            time.sleep(0.2)
+            target.activate(uboot_driver)
+            console.sendline("version")
+            console.expect("U-Boot", timeout=30)
+            console.expect(uboot_driver.prompt, timeout=30)
+            logger.info("U-Boot prompt verified")
