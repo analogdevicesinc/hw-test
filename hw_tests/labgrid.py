@@ -217,8 +217,8 @@ def exporter_http_server(ssh, files):
 
     ``files`` maps paths relative to the HTTP root to local files.
     """
-    directory = ssh.run_check("mktemp -d /dev/shm/hw-test-http.XXXXXX")[0].strip()
-    assert directory.startswith("/dev/shm/hw-test-http."), f"unexpected dir: {directory}"
+    directory = ssh.run_check("mktemp -d /var/tmp/hw-test-http.XXXXXX")[0].strip()
+    assert directory.startswith("/var/tmp/hw-test-http."), f"unexpected dir: {directory}"
 
     directory_q = shlex.quote(directory)
     pid_file = shlex.quote(f"{directory}/http.pid")
@@ -261,6 +261,6 @@ def exporter_http_server(ssh, files):
             f"--directory {directory_q} {port} >{log_file} 2>&1 </dev/null & "
             f"echo $! > {pid_file} && sleep 1 && kill -0 $(cat {pid_file}) || (cat {log_file}; exit 1)"
         )
-        yield port
+        yield directory, port
     finally:
         ssh.run(f"kill $(cat {pid_file}) 2>/dev/null; rm -rf {directory_q}")
