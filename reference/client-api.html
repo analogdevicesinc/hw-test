@@ -8,8 +8,8 @@
 
     <title>Test API and client reference &#8212; Hardware Test  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
-    <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=fb8972a4" />
-    <script async="async" src="../_static/app.umd.js?v=8c78863f"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../_static/app.umd.js?v=daa30c51"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Glossary" href="glossary.html" />
@@ -71,7 +71,7 @@
         <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
         
         <a id="logo" href="../index.html">
-          <div>Hardware Test</div>
+          <div>Hardware Tests</div>
         </a>
       </span>
       <span class="reverse">
@@ -82,7 +82,9 @@
 
 
   <div class="repotoc-tree overlay">
-    <root/>
+    <root>
+  <a href="../index.html" class="current">Hardware Tests</a>
+</root>
 
   </div>
     <div class="localtoc">
@@ -116,7 +118,9 @@ All content
 Content on this topic
 </label>
 <div class="repotoc-tree">
-  <root/>
+  <root>
+  <a href="../index.html" class="current">Hardware Tests</a>
+</root>
 
 </div>
 <div class="toc-tree">
@@ -190,7 +194,7 @@ Buildroot, standalone U-Boot, and Yocto builds. See
 and the <code class="docutils literal notranslate"><span class="pre">tests/&lt;category&gt;/artifacts.toml</span></code> descriptor work.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.images</span><span class="w"> </span><span class="kn">import</span> <span class="n">Images</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.labgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabgridClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.labgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabgridClient</span><span class="p">,</span> <span class="n">exporter_http_server</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">test_uboot_version</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
@@ -209,15 +213,15 @@ and the <code class="docutils literal notranslate"><span class="pre">tests/&lt;c
 
         <span class="n">spi_boot</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">power</span><span class="o">.</span><span class="n">cycle</span><span class="p">()</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">spl</span><span class="p">),</span> <span class="s2">"u-boot-spl"</span><span class="p">)</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uboot_image</span><span class="p">),</span> <span class="s2">"u-boot"</span><span class="p">)</span>
         <span class="n">spi_boot</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">target</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">openocd</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">openocd</span><span class="o">.</span><span class="n">load_commands</span><span class="p">)</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">target</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"u-boot-spl"</span><span class="p">:</span> <span class="n">spl</span><span class="p">,</span> <span class="s2">"u-boot"</span><span class="p">:</span> <span class="n">uboot_image</span><span class="p">}</span>
+        <span class="k">with</span> <span class="n">exporter_http_server</span><span class="p">(</span><span class="n">ssh</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span> <span class="k">as</span> <span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">openocd</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="sa">f</span><span class="s2">"cd </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="o">*</span><span class="n">openocd</span><span class="o">.</span><span class="n">load_commands</span><span class="p">])</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">openocd</span><span class="p">)</span>
 
         <span class="n">target</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">uboot</span><span class="p">)</span>
         <span class="n">uboot</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">sendline</span><span class="p">(</span><span class="s2">"version"</span><span class="p">)</span>
