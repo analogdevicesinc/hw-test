@@ -23,7 +23,7 @@ on:
 
 jobs:
   run-test:
-    runs-on: ${{ inputs.runner != '' && fromJSON(inputs.runner) || 'ubuntu-slim' }}
+    runs-on: ${{ inputs.runner != '' && fromJSON(inputs.runner) || vars.RUNNER_HW_TEST != '' && fromJSON(vars.RUNNER_HW_TEST) || 'ubuntu-slim' }}
     env:
       LG_COORDINATOR: ${{ secrets.LG_COORDINATOR }}
     permissions:
