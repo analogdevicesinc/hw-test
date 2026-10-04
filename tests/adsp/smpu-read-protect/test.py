@@ -138,6 +138,14 @@ def test_smpu_read_protect(context):
             console.sendline("mount -t debugfs none /sys/kernel/debug")
             console.expect(["# ", "~ #"], timeout=30)
 
+            # Confirms the region config itself (not just the eventual
+            # block) matches what we poked, before triggering anything.
+            console.sendline("cat /sys/kernel/debug/*/smpu0/regions")
+            console.expect(
+                rf"0\s+yes\s+0x{PROTECTED_ADDR:08x}\s+0x1000\s+R--", timeout=30
+            )
+            logger.info("SMPU2 region 0 config matches what we poked")
+
             # Controls: just outside the protected 4 KB window, reads must
             # go through untouched. Proves the base/size math is exact
             # before trusting the protected read below.
