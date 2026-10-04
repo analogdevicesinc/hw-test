@@ -107,3 +107,18 @@ def test_spu_write_protect(context):
             # to log in and grep dmesg for it.
             console.expect("peripheral 35 is write-protected from the A55", timeout=240)
             logger.info("SPU correctly kept gpc off the A55")
+
+            console.expect("login:", timeout=120)
+            console.sendline("root")
+            console.expect([r"# ", r"~ #"], timeout=30)
+
+            console.sendline("mount -t debugfs none /sys/kernel/debug")
+            console.expect(["# ", "~ #"], timeout=30)
+
+            # The SPU driver never programs policy itself, only reports what
+            # is already set; the dmesg line above only proves gpc got
+            # detached, not that debugfs is actually surfacing the WP bit
+            # correctly. SPU0 base 0x3108B000 -> dev_name "3108b000.bus".
+            console.sendline("cat /sys/kernel/debug/3108b000.bus/write-protect")
+            console.expect(r"WP\[35\]\s*=\s*0x00000001", timeout=30)
+            logger.info("SPU debugfs reports WP[35] correctly")
