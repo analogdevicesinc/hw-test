@@ -153,3 +153,13 @@ def test_smpu_read_protect(context):
             console.sendline("cat /sys/kernel/debug/*/smpu0/status")
             console.expect(r"Bus error:\s+yes", timeout=30)
             logger.info("SMPU2 debugfs confirms the bus error")
+
+            # The violation IRQ is the driver's only path to logging/counting
+            # a violation (adi_smpu_log_violation(), called from the
+            # STAT.IRQ branch of the IRQ handler, never from STAT.BERR) and
+            # adi_smpu_enable_irq() turns PINTEN on for every instance at
+            # probe, so a real violation is expected to show up here too -
+            # not just as a bus error.
+            console.sendline("cat /sys/kernel/debug/*/smpu0/violations")
+            console.expect(r"Total violations:\s+[1-9]", timeout=30)
+            logger.info("SMPU2 logged the violation")
