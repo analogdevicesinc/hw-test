@@ -27,14 +27,14 @@ jobs:
       run: |
         source ./venv/bin/activate
         cd docs
-        sphinx-build -M html "." "_build" -j auto -W --keep-going
-        rm -rf _build/html/_sources
+        sphinx-build -M dirhtml "." "_build" -j auto -W --keep-going
+        rm -rf _build/dirhtml/_sources
 
     - name: Store the generated doc
       uses: actions/upload-artifact@v7
       with:
-        name: html
-        path: docs/_build/html
+        name: dirhtml
+        path: docs/_build/dirhtml
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,4 +53,4 @@ jobs:
       with:
         new_tag: ${{ github.ref_type == 'tag' }}
         tag: ${{ github.ref_name }}
-        name: html
+        name: dirhtml
