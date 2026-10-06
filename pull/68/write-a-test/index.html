@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="A practical guide to writing and trying a hardware test with hw-test." name="description" />
 
     <title>Write a test &#8212; Hardware Test  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8e8a900e" />
-    <link rel="stylesheet" type="text/css" href="_static/app.min.css?v=b1d7a81a" />
-    <script async="async" src="_static/app.umd.js?v=daa30c51"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Integrate hardware" href="integrate-hardware.html" />
-    <link rel="prev" title="Run a test" href="run-a-test.html" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../_static/app.umd.js?v=daa30c51"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Integrate hardware" href="../integrate-hardware/" />
+    <link rel="prev" title="Run a test" href="../run-a-test/" />
    
   
   
@@ -70,7 +70,7 @@
         
         <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
         
-        <a id="logo" href="index.html">
+        <a id="logo" href="../">
           <div>Hardware Tests</div>
         </a>
       </span>
@@ -83,7 +83,7 @@
 
   <div class="repotoc-tree overlay">
     <root>
-  <a href="./index.html" class="current">Hardware Tests</a>
+  <a href="../index.html" class="current">Hardware Tests</a>
 </root>
 
   </div>
@@ -117,7 +117,7 @@
   
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-    <a id="no-logo" href="index.html">
+    <a id="no-logo" href="../">
       Hardware Test
     </a><input id="input-switch-toc" type="checkbox">
 <label id="show-repotoc" for="input-switch-toc">
@@ -128,24 +128,24 @@ Content on this topic
 </label>
 <div class="repotoc-tree">
   <root>
-  <a href="./index.html" class="current">Hardware Tests</a>
+  <a href="../index.html" class="current">Hardware Tests</a>
 </root>
 
 </div>
 <div class="toc-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">How hw-test works</a></li>
-<li class="toctree-l1"><a class="reference internal" href="run-a-test.html">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-a-test/">Run a test</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Write a test</a></li>
-<li class="toctree-l1"><a class="reference internal" href="integrate-hardware.html">Integrate hardware</a></li>
-<li class="toctree-l1"><a class="reference internal" href="register-a-board.html">Register a board</a></li>
-<li class="toctree-l1"><a class="reference internal" href="run-tests-in-ci.html">Run tests in CI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="set-up-a-hardware-host.html">Set up a hardware host</a></li>
-<li class="toctree-l1"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1"/><div class="collapse"><a class="reference internal" href="reference/index.html">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/hardware-model.html">Hardware Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/client-api.html">Test API and client reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/glossary.html">Glossary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1"/><div class="collapse"><a class="reference internal" href="../reference/">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/client-api/">Test API and client reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
 </ul>
@@ -167,7 +167,7 @@ Content on this topic
 <span id="id1"></span><h1>Write a test<a class="headerlink" href="#write-a-test" title="Link to this heading"></a></h1>
 <p>Use this guide when you have a supported board and want to add a test for it.
 It assumes the board has already been added to the shared hardware pool. If it
-has not, start with <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p>
+has not, start with <a class="reference internal" href="../integrate-hardware/#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p>
 <p>A hardware test is a small Python test plus a <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> file. The
 configuration says which boards can run it. The Python code says what to do
 with the selected board.</p>
@@ -178,7 +178,7 @@ shared pool. Ask your team for the platform’s capability tags and the controls
 it exposes. Common examples are <code class="docutils literal notranslate"><span class="pre">adsp</span></code> and <code class="docutils literal notranslate"><span class="pre">sc598</span></code> for board selection, and
 <code class="docutils literal notranslate"><span class="pre">ssh</span></code>, a serial console, power control, or a debugger for test operations.</p>
 <p>If you do not know whether a board is already available, the infrastructure
-owner can check the shared pool. If it is not, see <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>
+owner can check the shared pool. If it is not, see <a class="reference internal" href="../integrate-hardware/#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>
 before writing a test that depends on it.</p>
 </section>
 <section id="create-the-test-directory">
@@ -196,7 +196,7 @@ before writing a test that depends on it.</p>
 <section id="describe-the-hardware-you-need">
 <h2>Describe the hardware you need<a class="headerlink" href="#describe-the-hardware-you-need" title="Link to this heading"></a></h2>
 <p>In <code class="docutils literal notranslate"><span class="pre">config.toml</span></code>, list the board-selection tags provided by the platform.
-These must match tags on a <a class="reference internal" href="reference/glossary.html#hw-test-glossary"><span class="std std-ref">board slot</span></a> (a Labgrid
+These must match tags on a <a class="reference internal" href="../reference/glossary/#hw-test-glossary"><span class="std std-ref">board slot</span></a> (a Labgrid
 Place). <code class="docutils literal notranslate"><span class="pre">hw-test</span></code> selects a board only when every value in <code class="docutils literal notranslate"><span class="pre">needs</span></code>
 matches that place’s tags.</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">needs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"sc598"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ezkit"</span><span class="p">]</span>
@@ -209,7 +209,7 @@ that is currently free.</p>
 <p>Keep <code class="docutils literal notranslate"><span class="pre">needs</span></code> about hardware capabilities, not an individual board-slot name,
 lab location, or the drivers the test will use. That lets the same test run on
 any compatible board and makes the infrastructure easier to grow. To understand
-how place tags are assigned, see <a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p>
+how place tags are assigned, see <a class="reference internal" href="../integrate-hardware/#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a>.</p>
 </section>
 <section id="write-the-test">
 <h2>Write the test<a class="headerlink" href="#write-the-test" title="Link to this heading"></a></h2>
@@ -241,7 +241,7 @@ particular fixture’s implementation.</p>
 </div>
 <p>The board’s available drivers are defined by its coordinator-side place config.
 If a driver is missing, ask the person who maintains the fixture to update it;
-the mapping is explained in <a class="reference internal" href="reference/hardware-model.html#labgrid-hardware-place"><span class="std std-ref">Hardware Model</span></a>.</p>
+the mapping is explained in <a class="reference internal" href="../reference/hardware-model/#labgrid-hardware-place"><span class="std std-ref">Hardware Model</span></a>.</p>
 </section>
 <section id="use-build-artifacts-when-needed">
 <h2>Use build artifacts when needed<a class="headerlink" href="#use-build-artifacts-when-needed" title="Link to this heading"></a></h2>
@@ -306,9 +306,9 @@ artifact glob (matched against the run’s artifact names) and a file glob
 <code class="docutils literal notranslate"><span class="pre">Images.artifact_path</span></code> returns its resolved path inside that bundle for
 serving it at the same HTTP path.</p>
 <p>For a local run that needs artifacts, provide <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> and
-<code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
+<code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> as shown in <a class="reference internal" href="../run-a-test/#run-a-test"><span class="std std-ref">Run a test</span></a>. Without a token, <code class="docutils literal notranslate"><span class="pre">Images</span></code>
 falls back to files placed locally by <code class="docutils literal notranslate"><span class="pre">GitHub.download</span></code>; see
-<a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
+<a class="reference internal" href="../run-a-test/#run-a-test"><span class="std std-ref">Run a test</span></a>.</p>
 </section>
 <section id="mix-workflow-artifacts-with-release-assets">
 <h3>Mix workflow artifacts with release assets<a class="headerlink" href="#mix-workflow-artifacts-with-release-assets" title="Link to this heading"></a></h3>
@@ -367,15 +367,15 @@ the test you are working on:</p>
 of board. Avoid <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests</span></code> while developing: it can reserve and run many
 boards at once.</p>
 <p>When the local test is reliable, add it to your workflow using
-<a class="reference internal" href="run-tests-in-ci.html#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a>.</p>
+<a class="reference internal" href="../run-tests-in-ci/#run-tests-in-ci"><span class="std std-ref">Run tests in CI</span></a>.</p>
 </section>
 <section id="next-steps">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="run-a-test.html#run-a-test"><span class="std std-ref">Run a test</span></a> for local setup and
+<li><p><a class="reference internal" href="../run-a-test/#run-a-test"><span class="std std-ref">Run a test</span></a> for local setup and
 common failures.</p></li>
-<li><p><a class="reference internal" href="integrate-hardware.html#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a> if no compatible board exists.</p></li>
-<li><p><a class="reference internal" href="reference/client-api.html#labgrid-client-repo"><span class="std std-ref">Test API and client reference</span></a> for fuller driver
+<li><p><a class="reference internal" href="../integrate-hardware/#integrate-hardware"><span class="std std-ref">Integrate hardware</span></a> if no compatible board exists.</p></li>
+<li><p><a class="reference internal" href="../reference/client-api/#labgrid-client-repo"><span class="std std-ref">Test API and client reference</span></a> for fuller driver
 examples and CI details.</p></li>
 </ul>
 </section>
@@ -385,8 +385,8 @@ examples and CI details.</p></li>
           </div>
               <div class="related">
                 &nbsp;
-    <a href="run-a-test.html" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Run a test</a>
-    <a href="integrate-hardware.html" title="Next document (Alt+Shift+RightArrow)" class="next">Integrate hardware</a>
+    <a href="../run-a-test/" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Run a test</a>
+    <a href="../integrate-hardware/" title="Next document (Alt+Shift+RightArrow)" class="next">Integrate hardware</a>
               </div>
           
         </div>
