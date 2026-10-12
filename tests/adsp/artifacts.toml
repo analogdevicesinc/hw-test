@@ -13,6 +13,9 @@ file = "bootstrap/*.dtb"
 ["br2-external".emmc]
 artifact = "*_defconfig"
 file = "debug/emmc.img.gz"
+["br2-external".fedora]
+artifact = "*_defconfig"
+file = "fedora/adsp-arm64-rootfs.tar.zst"
 
 ["u-boot".spl]
 artifact = "*"

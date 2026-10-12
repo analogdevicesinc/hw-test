@@ -56,4 +56,5 @@ markers = [
     "uboot: U-Boot related hardware tests",
     "linux: Linux boot related hardware tests",
     "bootstrap: bootstrap Linux and install U-Boot to SPI flash",
+    "fedora: SC598 Fedora rootfs hardware tests",
 ]
