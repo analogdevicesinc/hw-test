@@ -1,7 +1,8 @@
 """
-Prepare context for a test from tests/**/.
+Prepare context for a test from ``tests/**/``.
 
-Input: Test to run:
+Input: Test to run::
+
   {
     "name": "demo/linux-iio-dac",
     "repository": {
@@ -9,14 +10,18 @@ Input: Test to run:
     }
   }
 
-From the config.toml files, [[repository]] is parsed as
+From the ``config.toml`` files, ``[[repository]]`` is parsed as::
+
   {..., 'repository': [{'name': 'linux', 'ref': 'refs/heads/main', 'files': '...'}]}
-which is reformated to
-  {...,  'repository': {'linux': {'ref': 'refs/heads/main', 'files': '...'}}}
+
+It is reformatted to::
+
+  {..., 'repository': {'linux': {'ref': 'refs/heads/main', 'files': '...'}}}
+
 before merging into the context.
 
-That is, any [{'name': '...', ...}], the list is replaced with dict, where name is the key.
-(name must exist for each group/list entry)
+That is, any ``[{'name': '...', ...}]`` list is replaced with a dict,
+where ``name`` is the key (and must exist for each group/list entry).
 """
 
 import json
