@@ -1,3 +1,10 @@
+"""
+To ensure the tests scope is to test a feature, the ``LabgridClient`` class
+handles acquisition, authentication and lifespan. It picks a free place that
+matches the ``needs`` of the test, acquires it, configures SSH, and releases.
+"""
+
+
 import logging
 import shlex
 from argparse import Namespace
@@ -19,6 +26,21 @@ logger = logging.getLogger(__name__)
 
 
 class LabgridClient:
+    """Select a labgrid place for a test and acquire it.
+
+    The coordinator is ``labgrid_coordinator`` from the context or
+    ``LG_COORDINATOR``. The place is selected on creation: the first free
+    place, by name, whose tags include all ``needs`` from the context. If
+    ``labgrid_target`` is set, only that place is considered. If all matches
+    are acquired, waits up to one hour.
+
+    In GitHub Actions, the labgrid user is set to
+    ``labgrid-client-<run id>-<attempt>``, so places left acquired by a
+    previous attempt of the same run can be taken over.
+
+    :param context: Test context.
+    """
+
     def __init__(self, context):
         self.context = context
         self._configure_identity()
@@ -162,7 +184,12 @@ class LabgridClient:
 
     @contextmanager
     def acquire(self):
-        """Acquire the selected labgrid place and yield its target."""
+        """Acquire the place and yield its labgrid target.
+
+        Writes the SSH config for the exporter and target hosts and checks
+        SSH access. On exit, cleans up the target and releases the place if
+        it was acquired here.
+        """
         session = start_session(
             self.coordinator,
             extra={
@@ -213,9 +240,15 @@ class LabgridClient:
 
 @contextmanager
 def exporter_http_server(ssh, files):
-    """Serve files temporarily from a remote host over HTTP.
+    """Serve files over HTTP from a remote host.
 
-    ``files`` maps paths relative to the HTTP root to local files.
+    Copies ``files`` to a temporary directory on the host, starts
+    ``python3 -m http.server`` on a free port, and removes everything on exit.
+
+    :param ssh: Labgrid ``SSHDriver`` of the host.
+    :param files: Maps paths relative to the HTTP root to local files.
+    :returns: Context manager yielding ``(directory, port)``, the remote
+        directory and the HTTP port.
     """
     directory = ssh.run_check("mktemp -d /var/tmp/hw-test-http.XXXXXX")[0].strip()
     assert directory.startswith("/var/tmp/hw-test-http."), f"unexpected dir: {directory}"

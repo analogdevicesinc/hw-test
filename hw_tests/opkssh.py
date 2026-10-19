@@ -1,3 +1,5 @@
+"""SSH authentication with `opkssh <https://github.com/openpubkey/opkssh>`_."""
+
 import logging
 import platform
 import subprocess
@@ -15,11 +17,26 @@ OPKSSH_BASE_URL = f"https://github.com/openpubkey/opkssh/releases/download/{OPKS
 OPKSSH_BIN = Path.home() / ".local" / "bin" / "opkssh"
 
 class OPKSSH:
+    """Set up SSH access to the hosts of a labgrid client.
+
+    Installs opkssh if missing and runs :meth:`authenticate`.
+
+    :param client: :class:`~hw_tests.labgrid.LabgridClient` whose hosts to
+        check. If ``None``, the SSH check is skipped.
+    """
+
     def __init__(self, client=None):
         OPKSSH.ensure()
         self.authenticate(client)
 
     def authenticate(self, client=None):
+        """Get an SSH certificate and check access to the client hosts.
+
+        In GitHub Actions, runs ``opkssh login github``, which writes
+        ``~/.ssh/id_ecdsa`` and its certificate. The job needs the
+        ``id-token: write`` permission. Elsewhere, the user's SSH keys are
+        used.
+        """
         if not GitHub.in_actions():
             self.check_ssh_auth(client)
             return
@@ -44,8 +61,13 @@ class OPKSSH:
         self.check_ssh_auth(client)
 
     def check_ssh_auth(self, client):
-        """Check ssh config, since 'accept-new' is set, adds to known-hosts.
-        Useful to call before any 'StrictHostKeyChecking=no'"""
+        """Check SSH login to each host of ``client``.
+
+        New host keys are added to ``known_hosts``
+        (``StrictHostKeyChecking=accept-new``).
+
+        :raises PermissionError: login to a host failed.
+        """
         if client is None:
             return
 
@@ -71,6 +93,7 @@ class OPKSSH:
 
     @staticmethod
     def ensure():
+        """Download opkssh to ``~/.local/bin`` if it is not in ``PATH``."""
         if which('opkssh') is not None:
             return
 
