@@ -35,8 +35,10 @@ logger = logging.getLogger(__name__)
 
 class Cloudsmith:
     _token = None
+    __down_counter = 0
 
-    def __init__(self):
+    def __init__(self, context=None):
+        self._test_name = (context or {}).get("name")
         self.authenticate()
 
     def authenticate(self):
@@ -176,6 +178,18 @@ class Cloudsmith:
 
         Returns path to the file.
         """
+        local_ = None
+        if self._test_name is not None:
+            local_ = Path.cwd() / '_artifacts' / self._test_name / str(self.__down_counter)
+            self.__down_counter += 1
+
+        if local_ is not None and not environ.get("CLOUDSMITH_NAMESPACE", "").strip():
+            logger.warning(
+                f"No 'CLOUDSMITH_NAMESPACE' set, cannot download artifacts; "
+                f"assuming you have them at '{local_}'"
+            )
+            return local_
+
         owner_repository = self._org_repo(repository)
         package = self._find_package(owner_repository, name, version, tags)
 
