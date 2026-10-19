@@ -85,7 +85,7 @@ Install the documentation tools:
 $ python3 -m venv ./venv
 $ source ./venv/bin/activate
 $ python3 -m pip install --upgrade pip
-$ (cd docs ; python3 -m pip install -r requirements.txt --upgrade)
+$ (cd docs ; python3 -m pip install -e .. -r requirements.txt --upgrade)
 ```
 
 Launch the live server:

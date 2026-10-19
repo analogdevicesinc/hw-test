@@ -4,8 +4,8 @@
 
 .. _labgrid-client-repo:
 
-Test API and client reference
-=============================
+Integrate with the API
+======================
 
 A client is the test process that reserves a board slot and drives the board.
 This page assumes the board is already registered. To add a new board, see
