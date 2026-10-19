@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Build the test context and select the tests to run." name="description" />
+
+    <title>Test executor &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../../../_static/app.umd.js?v=048c1170"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="Artifact storage" href="../artifact-storage/" />
+    <link rel="prev" title="LabgridClient" href="../labgrid-client/" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../../../">
+          <div>Hardware Tests</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Test executor</a><ul>
+<li><a class="reference internal" href="#module-hw_tests.context">Context</a><ul>
+<li><a class="reference internal" href="#hw_tests.context.reformat_named_lists"><code class="docutils literal notranslate"><span class="pre">reformat_named_lists()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.context.deep_merge"><code class="docutils literal notranslate"><span class="pre">deep_merge()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.context.parse_set_env"><code class="docutils literal notranslate"><span class="pre">parse_set_env()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.context.test_name"><code class="docutils literal notranslate"><span class="pre">test_name()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.context.build_context"><code class="docutils literal notranslate"><span class="pre">build_context()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-hw_tests.collect">Collect</a><ul>
+<li><a class="reference internal" href="#hw_tests.collect.load_test_metas"><code class="docutils literal notranslate"><span class="pre">load_test_metas()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.collect.paths_match"><code class="docutils literal notranslate"><span class="pre">paths_match()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.collect.match_tests"><code class="docutils literal notranslate"><span class="pre">match_tests()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.collect.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../../../">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-a-test/">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../write-a-test/">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="../../">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client-api/">Integrate with the API</a></li>
+<li class="toctree-l2 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1-1" id="toctree-collapse-1-1" checked=""/><div class="collapse"><a class="reference internal" href="../">API reference</a><label for="toctree-collapse-1-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../labgrid-client/">LabgridClient</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Test executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../artifact-storage/">Artifact storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../firmware-images/">Firmware Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ssh-authentication/">SSH authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="../../">Reference</a></li><li><a href="../">API reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="test-executor">
+<h1>Test executor<a class="headerlink" href="#test-executor" title="Link to this heading"></a></h1>
+<p>These modules run before a test. <code class="docutils literal notranslate"><span class="pre">collect</span></code> selects which tests to run, and
+<code class="docutils literal notranslate"><span class="pre">context</span></code> builds the test configuration from its <code class="docutils literal notranslate"><span class="pre">config.toml</span></code>, overwriting
+from the provided context, for example, the git reference to get the artifacts
+from or explicit board to run the test on.</p>
+<section id="module-hw_tests.context">
+<span id="context"></span><h2>Context<a class="headerlink" href="#module-hw_tests.context" title="Link to this heading"></a></h2>
+<p>Prepare context for a test from <code class="docutils literal notranslate"><span class="pre">tests/**/</span></code>.</p>
+<p>Input: Test to run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"demo/linux-iio-dac"</span><span class="p">,</span>
+  <span class="s2">"repository"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"linux"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"ref"</span><span class="p">:</span> <span class="s2">"010c31d..."</span><span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>From the <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> files, <code class="docutils literal notranslate"><span class="pre">[[repository]]</span></code> is parsed as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">...</span><span class="p">,</span> <span class="s1">'repository'</span><span class="p">:</span> <span class="p">[{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'ref'</span><span class="p">:</span> <span class="s1">'refs/heads/main'</span><span class="p">,</span> <span class="s1">'files'</span><span class="p">:</span> <span class="s1">'...'</span><span class="p">}]}</span>
+</pre></div>
+</div>
+<p>It is reformatted to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="o">...</span><span class="p">,</span> <span class="s1">'repository'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'linux'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ref'</span><span class="p">:</span> <span class="s1">'refs/heads/main'</span><span class="p">,</span> <span class="s1">'files'</span><span class="p">:</span> <span class="s1">'...'</span><span class="p">}}}</span>
+</pre></div>
+</div>
+<p>before merging into the context.</p>
+<p>That is, any <code class="docutils literal notranslate"><span class="pre">[{'name':</span> <span class="pre">'...',</span> <span class="pre">...}]</span></code> list is replaced with a dict,
+where <code class="docutils literal notranslate"><span class="pre">name</span></code> is the key (and must exist for each group/list entry).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.context.reformat_named_lists">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.context.</span></span><span class="sig-name descname"><span class="pre">reformat_named_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.context.reformat_named_lists" title="Link to this definition"></a></dt>
+<dd><p>Reformat any list-of-dicts-with-‘name’ into a dict keyed by name.</p>
+<dl class="simple">
+<dt>e.g. [{‘name’: ‘linux’, ‘ref’: ‘…’}, {‘name’: ‘hdl’, ‘ref’: ‘…’}]</dt><dd><p>-&gt; {‘linux’: {‘ref’: ‘…’}, ‘hdl’: {‘ref’: ‘…’}}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.context.deep_merge">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.context.</span></span><span class="sig-name descname"><span class="pre">deep_merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.context.deep_merge" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">base</span></code> updated with <code class="docutils literal notranslate"><span class="pre">override</span></code>, merging nested dicts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.context.parse_set_env">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.context.</span></span><span class="sig-name descname"><span class="pre">parse_set_env</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.context.parse_set_env" title="Link to this definition"></a></dt>
+<dd><p>Parse the <cite>set</cite> env var into a list of override dicts.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.context.test_name">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.context.</span></span><span class="sig-name descname"><span class="pre">test_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#hw_tests.context.test_name" title="Link to this definition"></a></dt>
+<dd><p>Derive the test name from its directory relative to tests/.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.context.build_context">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.context.</span></span><span class="sig-name descname"><span class="pre">build_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#hw_tests.context.build_context" title="Link to this definition"></a></dt>
+<dd><p>Return the context of the test in <code class="docutils literal notranslate"><span class="pre">test_dir</span></code>.</p>
+<p>Merges, in order: the test name, the test <code class="docutils literal notranslate"><span class="pre">config.toml</span></code>, and the first
+override whose <code class="docutils literal notranslate"><span class="pre">name</span></code> matches the test (or has no <code class="docutils literal notranslate"><span class="pre">name</span></code>). <code class="docutils literal notranslate"><span class="pre">needs</span></code>
+is always a list.</p>
+</dd></dl>
+
+</section>
+<section id="module-hw_tests.collect">
+<span id="collect"></span><h2>Collect<a class="headerlink" href="#module-hw_tests.collect" title="Link to this heading"></a></h2>
+<p>Match workflow-run-to-context output against <code class="docutils literal notranslate"><span class="pre">tests/**/config.toml</span></code> metafiles.</p>
+<p>Input: JSON by <code class="docutils literal notranslate"><span class="pre">workflow-run-to-context&#64;action</span></code>, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">"repository"</span><span class="p">:</span> <span class="s2">"linux"</span><span class="p">,</span>
+  <span class="s2">"head_sha"</span><span class="p">:</span> <span class="s2">"010c31d..."</span><span class="p">,</span>
+  <span class="s2">"changed_files"</span><span class="p">:</span> <span class="s2">"drivers/iio/dac/Kconfig</span><span class="se">\n</span><span class="s2">drivers/iio/dac/ad3530r.c"</span><span class="p">,</span>
+  <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Output: JSON list written to &lt;output_path&gt; (or stdout), one entry per matched test:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"demo/linux-iio-dac"</span><span class="p">,</span>
+    <span class="s2">"with"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"linux"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"ref"</span><span class="p">:</span> <span class="s2">"010c31d..."</span><span class="p">},</span>   <span class="o">&lt;-</span> <span class="n">merge_commit_sha</span> <span class="o">||</span> <span class="n">head_sha</span><span class="p">:</span> <span class="n">this</span> <span class="n">repo</span> <span class="n">triggered</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.collect.load_test_metas">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.collect.</span></span><span class="sig-name descname"><span class="pre">load_test_metas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.collect.load_test_metas" title="Link to this definition"></a></dt>
+<dd><p>Load all <code class="docutils literal notranslate"><span class="pre">tests/**/config.toml</span></code> files, with the test name as <code class="docutils literal notranslate"><span class="pre">_uid</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.collect.paths_match">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.collect.</span></span><span class="sig-name descname"><span class="pre">paths_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">changed_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_block</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.collect.paths_match" title="Link to this definition"></a></dt>
+<dd><p>Return True if any changed file matches any glob pattern in path_block.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.collect.match_tests">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.collect.</span></span><span class="sig-name descname"><span class="pre">match_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.collect.match_tests" title="Link to this definition"></a></dt>
+<dd><p>For each test metafile, check whether any repo rule fires for the triggering
+repository.  Emit at most one result entry per test.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.collect.main">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.collect.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.collect.main" title="Link to this definition"></a></dt>
+<dd><p>Log the tests matching the <code class="docutils literal notranslate"><span class="pre">context</span></code> env var.</p>
+<p>In GitHub Actions, also sets the <code class="docutils literal notranslate"><span class="pre">tests</span></code> step output.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="../labgrid-client/" title="Previous document (Alt+Shift+LeftArrow)" class="prev">LabgridClient</a>
+    <a href="../artifact-storage/" title="Next document (Alt+Shift+RightArrow)" class="next">Artifact storage</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>

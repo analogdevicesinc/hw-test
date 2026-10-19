@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="SSH access to exporter and target hosts." name="description" />
+
+    <title>SSH authentication &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../../../_static/app.umd.js?v=048c1170"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="Logging" href="../logging/" />
+    <link rel="prev" title="Firmware Images" href="../firmware-images/" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../../../">
+          <div>Hardware Tests</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">SSH authentication</a><ul>
+<li><a class="reference internal" href="#module-hw_tests.opkssh">OPKSSH</a><ul>
+<li><a class="reference internal" href="#hw_tests.opkssh.OPKSSH"><code class="docutils literal notranslate"><span class="pre">OPKSSH</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.opkssh.OPKSSH.authenticate"><code class="docutils literal notranslate"><span class="pre">OPKSSH.authenticate()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.opkssh.OPKSSH.check_ssh_auth"><code class="docutils literal notranslate"><span class="pre">OPKSSH.check_ssh_auth()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.opkssh.OPKSSH.ensure"><code class="docutils literal notranslate"><span class="pre">OPKSSH.ensure()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-hw_tests.ssh_config">SSHConfig</a><ul>
+<li><a class="reference internal" href="#hw_tests.ssh_config.SSHConfig"><code class="docutils literal notranslate"><span class="pre">SSHConfig</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.ssh_config.SSHConfig.path"><code class="docutils literal notranslate"><span class="pre">SSHConfig.path</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.ssh_config.SSHConfig.set_host_options"><code class="docutils literal notranslate"><span class="pre">SSHConfig.set_host_options()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.ssh_config.SSHConfig.configure_host"><code class="docutils literal notranslate"><span class="pre">SSHConfig.configure_host()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../../../">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-a-test/">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../write-a-test/">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="../../">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client-api/">Integrate with the API</a></li>
+<li class="toctree-l2 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1-1" id="toctree-collapse-1-1" checked=""/><div class="collapse"><a class="reference internal" href="../">API reference</a><label for="toctree-collapse-1-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../labgrid-client/">LabgridClient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../test-executor/">Test executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../artifact-storage/">Artifact storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../firmware-images/">Firmware Images</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">SSH authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="../../">Reference</a></li><li><a href="../">API reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="ssh-authentication">
+<h1>SSH authentication<a class="headerlink" href="#ssh-authentication" title="Link to this heading"></a></h1>
+<p>Labgrid drives boards over SSH through the exporter hosts. In CI, OIDC
+generates short-lived opkssh certificates to SSH to the Labgrid exporters.
+Those methods are managed by <code class="docutils literal notranslate"><span class="pre">LabgridClient</span></code>.</p>
+<section id="module-hw_tests.opkssh">
+<span id="opkssh"></span><h2>OPKSSH<a class="headerlink" href="#module-hw_tests.opkssh" title="Link to this heading"></a></h2>
+<p>SSH authentication with <a class="icon link reference external" href="https://github.com/openpubkey/opkssh" target="_blank">opkssh</a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.opkssh.OPKSSH">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.opkssh.</span></span><span class="sig-name descname"><span class="pre">OPKSSH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.opkssh.OPKSSH" title="Link to this definition"></a></dt>
+<dd><p>Set up SSH access to the hosts of a labgrid client.</p>
+<p>Installs opkssh if missing and runs <a class="reference internal" href="#hw_tests.opkssh.OPKSSH.authenticate" title="hw_tests.opkssh.OPKSSH.authenticate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>client</strong> – <a class="reference internal" href="../labgrid-client/#hw_tests.labgrid.LabgridClient" title="hw_tests.labgrid.LabgridClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabgridClient</span></code></a> whose hosts to
+check. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the SSH check is skipped.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.opkssh.OPKSSH.authenticate">
+<span class="sig-name descname"><span class="pre">authenticate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.opkssh.OPKSSH.authenticate" title="Link to this definition"></a></dt>
+<dd><p>Get an SSH certificate and check access to the client hosts.</p>
+<p>In GitHub Actions, runs <code class="docutils literal notranslate"><span class="pre">opkssh</span> <span class="pre">login</span> <span class="pre">github</span></code>, which writes
+<code class="docutils literal notranslate"><span class="pre">~/.ssh/id_ecdsa</span></code> and its certificate. The job needs the
+<code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code> permission. Elsewhere, the user’s SSH keys are
+used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.opkssh.OPKSSH.check_ssh_auth">
+<span class="sig-name descname"><span class="pre">check_ssh_auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.opkssh.OPKSSH.check_ssh_auth" title="Link to this definition"></a></dt>
+<dd><p>Check SSH login to each host of <code class="docutils literal notranslate"><span class="pre">client</span></code>.</p>
+<p>New host keys are added to <code class="docutils literal notranslate"><span class="pre">known_hosts</span></code>
+(<code class="docutils literal notranslate"><span class="pre">StrictHostKeyChecking=accept-new</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>PermissionError</strong> – login to a host failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.opkssh.OPKSSH.ensure">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ensure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.opkssh.OPKSSH.ensure" title="Link to this definition"></a></dt>
+<dd><p>Download opkssh to <code class="docutils literal notranslate"><span class="pre">~/.local/bin</span></code> if it is not in <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hw_tests.ssh_config">
+<span id="sshconfig"></span><h2>SSHConfig<a class="headerlink" href="#module-hw_tests.ssh_config" title="Link to this heading"></a></h2>
+<p>Manage the SSH config file used by tests.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.ssh_config.SSHConfig">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.ssh_config.</span></span><span class="sig-name descname"><span class="pre">SSHConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">PosixPath('/home/runner/work/hw-test/hw-test/docs/_ssh_config')</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.ssh_config.SSHConfig" title="Link to this definition"></a></dt>
+<dd><p>SSH config file with per-host options.</p>
+<p>A new file includes <code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – Config file. Defaults to <code class="docutils literal notranslate"><span class="pre">_ssh_config</span></code> in the current
+directory.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="hw_tests.ssh_config.SSHConfig.path">
+<span class="sig-name descname"><span class="pre">path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/runner/work/hw-test/hw-test/docs/_ssh_config')</span></span><a class="headerlink" href="#hw_tests.ssh_config.SSHConfig.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.ssh_config.SSHConfig.set_host_options">
+<span class="sig-name descname"><span class="pre">set_host_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hosts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.ssh_config.SSHConfig.set_host_options" title="Link to this definition"></a></dt>
+<dd><p>Set <code class="docutils literal notranslate"><span class="pre">options</span></code> in the <code class="docutils literal notranslate"><span class="pre">Host</span></code> block for <code class="docutils literal notranslate"><span class="pre">hosts</span></code>.</p>
+<p>Updates the first block that matches one of <code class="docutils literal notranslate"><span class="pre">hosts</span></code>, or appends a
+new one. Other options in the block are kept.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hosts</strong> – Host patterns for the <code class="docutils literal notranslate"><span class="pre">Host</span></code> line.</p></li>
+<li><p><strong>options</strong> – Maps option names to values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.ssh_config.SSHConfig.configure_host">
+<span class="sig-name descname"><span class="pre">configure_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.ssh_config.SSHConfig.configure_host" title="Link to this definition"></a></dt>
+<dd><p>Set the options to reach <code class="docutils literal notranslate"><span class="pre">host</span></code>.</p>
+<p>In GitHub Actions, logs in as <code class="docutils literal notranslate"><span class="pre">labgrid-client</span></code> with the opkssh key
+and certificate. New host keys are accepted.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="../firmware-images/" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Firmware Images</a>
+    <a href="../logging/" title="Next document (Alt+Shift+RightArrow)" class="next">Logging</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>

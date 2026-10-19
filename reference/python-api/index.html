@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Python API reference." name="description" />
+
+    <title>API reference &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../../_static/app.umd.js?v=048c1170"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="LabgridClient" href="labgrid-client/" />
+    <link rel="prev" title="Integrate with the API" href="../client-api/" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../../">
+          <div>Hardware Tests</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root>
+  <a href="../../index.html" class="current">Hardware Tests</a>
+</root>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">API reference</a></li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../../">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root>
+  <a href="../../index.html" class="current">Hardware Tests</a>
+</root>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../run-a-test/">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../write-a-test/">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="../">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client-api/">Integrate with the API</a></li>
+<li class="toctree-l2 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1-1" id="toctree-collapse-1-1" checked=""/><div class="collapse"><a class="current reference internal" href="#">API reference</a><label for="toctree-collapse-1-1"><div class="icon"></div></label></div><ul>
+<li class="toctree-l3"><a class="reference internal" href="labgrid-client/">LabgridClient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test-executor/">Test executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="artifact-storage/">Artifact storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firmware-images/">Firmware Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ssh-authentication/">SSH authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logging/">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="../">Reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="api-reference">
+<h1>API reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">hw_tests</span></code> package holds the code shared by all tests: reserving a
+board, building the test context, fetching firmware, and setting up SSH.
+Tests import it instead of calling labgrid, GitHub, or Cloudsmith directly.</p>
+<div class="toctree-wrapper compound">
+<ul class="toctree-preview">
+<li><p><a class="reference internal" href="labgrid-client/">LabgridClient</a></p>
+<p>Reserve a labgrid place and access its target.</p>
+</li>
+<li><p><a class="reference internal" href="test-executor/">Test executor</a></p>
+<p>Build the test context and select the tests to run.</p>
+</li>
+<li><p><a class="reference internal" href="artifact-storage/">Artifact storage</a></p>
+<p>Download build artifacts from GitHub and Cloudsmith.</p>
+</li>
+<li><p><a class="reference internal" href="firmware-images/">Firmware Images</a></p>
+<p>Resolve firmware images by role.</p>
+</li>
+<li><p><a class="reference internal" href="ssh-authentication/">SSH authentication</a></p>
+<p>SSH access to exporter and target hosts.</p>
+</li>
+<li><p><a class="reference internal" href="logging/">Logging</a></p>
+<p>Logging setup and redaction.</p>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="../client-api/" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Integrate with the API</a>
+    <a href="labgrid-client/" title="Next document (Alt+Shift+RightArrow)" class="next">LabgridClient</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>
