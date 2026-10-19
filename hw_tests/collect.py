@@ -1,7 +1,8 @@
-"""
-Match workflow-run-to-context output against tests/**/config.toml metafiles.
+r"""
+Match workflow-run-to-context output against ``tests/**/config.toml`` metafiles.
 
-Input: JSON by workflow-run-to-context@action, e.g.:
+Input: JSON by workflow-run-to-context@action, e.g.::
+
   {
     "repository": "linux",
     "head_sha": "010c31d...",
@@ -9,7 +10,8 @@ Input: JSON by workflow-run-to-context@action, e.g.:
     ...
   }
 
-Output: JSON list written to <output_path> (or stdout), one entry per matched test:
+Output: JSON list written to <output_path> (or stdout), one entry per matched test::
+
   [
     {
       "name": "demo/linux-iio-dac",
