@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Download build artifacts from GitHub and Cloudsmith." name="description" />
+
+    <title>Artifact storage &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../../../_static/app.umd.js?v=048c1170"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="Firmware Images" href="../firmware-images/" />
+    <link rel="prev" title="Test executor" href="../test-executor/" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../../../">
+          <div>Hardware Tests</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Artifact storage</a><ul>
+<li><a class="reference internal" href="#module-hw_tests.github">GitHub</a><ul>
+<li><a class="reference internal" href="#hw_tests.github.GitHub"><code class="docutils literal notranslate"><span class="pre">GitHub</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.github.GitHub.in_actions"><code class="docutils literal notranslate"><span class="pre">GitHub.in_actions()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.github.GitHub.mask"><code class="docutils literal notranslate"><span class="pre">GitHub.mask()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.github.GitHub.get_id_token"><code class="docutils literal notranslate"><span class="pre">GitHub.get_id_token()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.github.GitHub.owner_repository"><code class="docutils literal notranslate"><span class="pre">GitHub.owner_repository</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.github.GitHub.list_artifacts"><code class="docutils literal notranslate"><span class="pre">GitHub.list_artifacts()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.github.GitHub.download"><code class="docutils literal notranslate"><span class="pre">GitHub.download()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-hw_tests.cloudsmith">Cloudsmith</a><ul>
+<li><a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith"><code class="docutils literal notranslate"><span class="pre">Cloudsmith</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.authenticate"><code class="docutils literal notranslate"><span class="pre">Cloudsmith.authenticate()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.github_oidc"><code class="docutils literal notranslate"><span class="pre">Cloudsmith.github_oidc()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.get_api_token"><code class="docutils literal notranslate"><span class="pre">Cloudsmith.get_api_token()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.validate"><code class="docutils literal notranslate"><span class="pre">Cloudsmith.validate()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.download"><code class="docutils literal notranslate"><span class="pre">Cloudsmith.download()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../../../">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-a-test/">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../write-a-test/">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="../../">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client-api/">Integrate with the API</a></li>
+<li class="toctree-l2 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1-1" id="toctree-collapse-1-1" checked=""/><div class="collapse"><a class="reference internal" href="../">API reference</a><label for="toctree-collapse-1-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../labgrid-client/">LabgridClient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../test-executor/">Test executor</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Artifact storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../firmware-images/">Firmware Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ssh-authentication/">SSH authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="../../">Reference</a></li><li><a href="../">API reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="artifact-storage">
+<h1>Artifact storage<a class="headerlink" href="#artifact-storage" title="Link to this heading"></a></h1>
+<p>Firmware is built in other repositories and stored as GitHub workflow
+artifacts, GitHub release assets, or Cloudsmith packages. These classes handle
+authentication, lookup, and download.</p>
+<p>They include a fallback to allow providing the artifacts directly, without
+downloading from the storage buckets, allowing to use locally built artifacts.
+For Cloudsmith, the fallback is when <code class="docutils literal notranslate"><span class="pre">CLOUDSMITH_NAMESPACE</span></code> is unset (no
+token required for public repos), and GitHub, <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> (token
+required).</p>
+<section id="module-hw_tests.github">
+<span id="github"></span><h2>GitHub<a class="headerlink" href="#module-hw_tests.github" title="Link to this heading"></a></h2>
+<p>Download workflow artifacts and release assets from GitHub.</p>
+<p>Basic usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHub</span>
+
+<span class="c1"># Gets defaults from context</span>
+<span class="n">gh</span> <span class="o">=</span> <span class="n">GitHub</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+<span class="c1"># Get artifact 'example' from run '1234' (overrides the context)</span>
+<span class="c1"># of the repository from the context</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">gh</span><span class="o">.</span><span class="n">download</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'example'</span><span class="p">,</span>
+    <span class="n">run_id</span><span class="o">=</span><span class="s1">'1234'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.github.</span></span><span class="sig-name descname"><span class="pre">GitHub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.github.GitHub" title="Link to this definition"></a></dt>
+<dd><p>GitHub API client for a test run.</p>
+<p>The default repository and workflow run come from <code class="docutils literal notranslate"><span class="pre">workflow_run_url</span></code> in
+<code class="docutils literal notranslate"><span class="pre">context</span></code> if present, else from <code class="docutils literal notranslate"><span class="pre">GITHUB_REPOSITORY</span></code> and
+<code class="docutils literal notranslate"><span class="pre">GITHUB_RUN_ID</span></code>. <code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code> is used for authentication; without
+it, workflow artifacts cannot be downloaded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>context</strong> – Test context, see <a class="reference internal" href="../test-executor/#hw_tests.context.build_context" title="hw_tests.context.build_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">hw_tests.context.build_context()</span></code></a>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub.in_actions">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">in_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.github.GitHub.in_actions" title="Link to this definition"></a></dt>
+<dd><p>Return whether the process runs in GitHub Actions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub.mask">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.github.GitHub.mask" title="Link to this definition"></a></dt>
+<dd><p>Hide <code class="docutils literal notranslate"><span class="pre">value</span></code> from logs and, in GitHub Actions, from job output.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub.get_id_token">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_id_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.github.GitHub.get_id_token" title="Link to this definition"></a></dt>
+<dd><p>Return a GitHub Actions OIDC token.</p>
+<p>The audience is <code class="docutils literal notranslate"><span class="pre">https://github.com/&lt;owner&gt;</span></code>. The job needs the
+<code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code> permission.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub.owner_repository">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">owner_repository</span></span><a class="headerlink" href="#hw_tests.github.GitHub.owner_repository" title="Link to this definition"></a></dt>
+<dd><p>Default repository, as <code class="docutils literal notranslate"><span class="pre">owner/name</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub.list_artifacts">
+<span class="sig-name descname"><span class="pre">list_artifacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">owner_repository</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.github.GitHub.list_artifacts" title="Link to this definition"></a></dt>
+<dd><p>List the artifacts of a workflow run or the assets of a release.</p>
+<p>Results are cached per run or release. Expired artifacts are skipped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>owner_repository</strong> – Repository. Defaults to <a class="reference internal" href="#hw_tests.github.GitHub.owner_repository" title="hw_tests.github.GitHub.owner_repository"><code class="xref py py-attr docutils literal notranslate"><span class="pre">owner_repository</span></code></a>.</p></li>
+<li><p><strong>run_id</strong> – Workflow run ID. Defaults to the run from the context.</p></li>
+<li><p><strong>source</strong> – Release, as <code class="docutils literal notranslate"><span class="pre">{'repository':</span> <span class="pre">...,</span> <span class="pre">'tag':</span> <span class="pre">...}</span></code>. Takes
+precedence over <code class="docutils literal notranslate"><span class="pre">owner_repository</span></code> and <code class="docutils literal notranslate"><span class="pre">run_id</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Artifact or asset dicts from the GitHub API. Empty if the
+run cannot be resolved or there is no token.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#hw_tests.github.GitHub.download" title="Link to this definition"></a></dt>
+<dd><p>Download an artifact and extract it if it is an archive.</p>
+<p>Like <code class="docutils literal notranslate"><span class="pre">actions/download-artifact</span></code>. Release assets are cached in
+<code class="docutils literal notranslate"><span class="pre">$HW_TEST_CACHE_DIR</span></code> (default <code class="docutils literal notranslate"><span class="pre">$XDG_CACHE_HOME/hw-test</span></code>).</p>
+<p>If a workflow artifact cannot be downloaded (no token or no run), a
+warning is logged and <code class="docutils literal notranslate"><span class="pre">_artifacts/&lt;test</span> <span class="pre">name&gt;/&lt;n&gt;</span></code> is returned, where
+<code class="docutils literal notranslate"><span class="pre">n</span></code> counts calls. Put the files there to run locally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Artifact or asset name.</p></li>
+<li><p><strong>owner_repository</strong> – Repository. Defaults to <a class="reference internal" href="#hw_tests.github.GitHub.owner_repository" title="hw_tests.github.GitHub.owner_repository"><code class="xref py py-attr docutils literal notranslate"><span class="pre">owner_repository</span></code></a>.</p></li>
+<li><p><strong>run_id</strong> – Workflow run ID. Defaults to the run from the context.</p></li>
+<li><p><strong>path</strong> – Output directory for workflow artifacts. A temporary
+directory by default.</p></li>
+<li><p><strong>source</strong> – Release, as <code class="docutils literal notranslate"><span class="pre">{'repository':</span> <span class="pre">...,</span> <span class="pre">'tag':</span> <span class="pre">...}</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Directory containing the artifact.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-hw_tests.cloudsmith">
+<span id="cloudsmith"></span><h2>Cloudsmith<a class="headerlink" href="#module-hw_tests.cloudsmith" title="Link to this heading"></a></h2>
+<p>Download build artifacts from Cloudsmith.</p>
+<p>Basic usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.cloudsmith</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cloudsmith</span>
+
+<span class="n">cs</span> <span class="o">=</span> <span class="n">Cloudsmith</span><span class="p">()</span>
+
+<span class="c1"># Get the latest artifact from branch 'refs/heads/...'</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">download</span><span class="p">(</span>
+    <span class="n">repository</span><span class="o">=</span><span class="s1">'linux'</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'adi_bcm2709_defconfig-gcc-arm-devel'</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s1">'refs/heads/rpi-6.12.y'</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.cloudsmith.Cloudsmith">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.cloudsmith.</span></span><span class="sig-name descname"><span class="pre">Cloudsmith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.cloudsmith.Cloudsmith" title="Link to this definition"></a></dt>
+<dd><p>Cloudsmith API client.</p>
+<p>Packages are looked up in <code class="docutils literal notranslate"><span class="pre">$CLOUDSMITH_NAMESPACE/&lt;repository&gt;</span></code>.
+Authentication is done on creation, see <a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.authenticate" title="hw_tests.cloudsmith.Cloudsmith.authenticate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>context</strong> – Test context. Its <code class="docutils literal notranslate"><span class="pre">name</span></code> sets the local fallback
+directory of <a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.download" title="hw_tests.cloudsmith.Cloudsmith.download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download()</span></code></a>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.cloudsmith.Cloudsmith.authenticate">
+<span class="sig-name descname"><span class="pre">authenticate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.cloudsmith.Cloudsmith.authenticate" title="Link to this definition"></a></dt>
+<dd><p>Get an API token and validate it.</p>
+<p>Uses <code class="docutils literal notranslate"><span class="pre">CLOUDSMITH_API_KEY</span></code> if set. Otherwise, in GitHub Actions, gets
+a token through <a class="reference internal" href="#hw_tests.cloudsmith.Cloudsmith.github_oidc" title="hw_tests.cloudsmith.Cloudsmith.github_oidc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">github_oidc()</span></code></a>. Without a token, only public
+artifacts can be downloaded.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.cloudsmith.Cloudsmith.github_oidc">
+<span class="sig-name descname"><span class="pre">github_oidc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.cloudsmith.Cloudsmith.github_oidc" title="Link to this definition"></a></dt>
+<dd><p>Exchange a GitHub OIDC token for a Cloudsmith API token.</p>
+<p>Requires <code class="docutils literal notranslate"><span class="pre">CLOUDSMITH_SERVICE_SLUG</span></code> and <code class="docutils literal notranslate"><span class="pre">CLOUDSMITH_NAMESPACE</span></code>.
+The token is exported as <code class="docutils literal notranslate"><span class="pre">CLOUDSMITH_API_KEY</span></code> to the environment
+and <code class="docutils literal notranslate"><span class="pre">GITHUB_ENV</span></code>, for the next steps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.cloudsmith.Cloudsmith.get_api_token">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_api_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">org_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs_service_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'api.cloudsmith.io'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#hw_tests.cloudsmith.Cloudsmith.get_api_token" title="Link to this definition"></a></dt>
+<dd><p>Return a Cloudsmith API token for an OIDC <code class="docutils literal notranslate"><span class="pre">id_token</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Cloudsmith returned an empty token.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.cloudsmith.Cloudsmith.validate">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'api.cloudsmith.io'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#hw_tests.cloudsmith.Cloudsmith.validate" title="Link to this definition"></a></dt>
+<dd><p>Check <code class="docutils literal notranslate"><span class="pre">token</span></code> against the API and log the authenticated user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>requests.HTTPError</strong> – the token is rejected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.cloudsmith.Cloudsmith.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#hw_tests.cloudsmith.Cloudsmith.download" title="Link to this definition"></a></dt>
+<dd><p>Download an artifact and extract it if it is an archive.</p>
+<p>The package is selected by <code class="docutils literal notranslate"><span class="pre">version</span></code> if given, else by <code class="docutils literal notranslate"><span class="pre">tags</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code> as a full 40-char SHA: exact match.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code> as a git ref (<code class="docutils literal notranslate"><span class="pre">refs/heads/*</span></code>, <code class="docutils literal notranslate"><span class="pre">refs/tags/*</span></code>,
+<code class="docutils literal notranslate"><span class="pre">refs/pull/*</span></code>): latest package built from that ref.</p></li>
+<li><p>other <code class="docutils literal notranslate"><span class="pre">version</span></code> values, such as a short SHA: latest pushed
+package matching the version.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code>: latest package that has all the tags, for example
+<code class="docutils literal notranslate"><span class="pre">('on/push',</span> <span class="pre">'refs/heads/main')</span></code>.</p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">CLOUDSMITH_NAMESPACE</span></code> is not set, a warning is logged and
+<code class="docutils literal notranslate"><span class="pre">_artifacts/&lt;test</span> <span class="pre">name&gt;/&lt;n&gt;</span></code> is returned, where <code class="docutils literal notranslate"><span class="pre">n</span></code> counts calls.
+Put the files there to run locally. Without a <code class="docutils literal notranslate"><span class="pre">context</span></code>, a
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repository</strong> – Cloudsmith repository in <code class="docutils literal notranslate"><span class="pre">CLOUDSMITH_NAMESPACE</span></code>.</p></li>
+<li><p><strong>name</strong> – Package name.</p></li>
+<li><p><strong>version</strong> – SHA, git ref, or version.</p></li>
+<li><p><strong>tags</strong> – Tags to match when <code class="docutils literal notranslate"><span class="pre">version</span></code> is not given.</p></li>
+<li><p><strong>path</strong> – Output directory. A temporary directory by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Directory containing the artifact.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>LookupError</strong> – no package matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="../test-executor/" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Test executor</a>
+    <a href="../firmware-images/" title="Next document (Alt+Shift+RightArrow)" class="next">Firmware Images</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>

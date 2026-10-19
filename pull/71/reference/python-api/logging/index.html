@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Logging setup and redaction." name="description" />
+
+    <title>Logging &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../../../_static/app.umd.js?v=048c1170"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="Glossary" href="../../glossary/" />
+    <link rel="prev" title="SSH authentication" href="../ssh-authentication/" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../../../">
+          <div>Hardware Tests</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Logging</a><ul>
+<li><a class="reference internal" href="#hw_tests.logging.RedactingFormatter"><code class="docutils literal notranslate"><span class="pre">RedactingFormatter</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.logging.RedactingFormatter.format"><code class="docutils literal notranslate"><span class="pre">RedactingFormatter.format()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hw_tests.logging.ColorFormatter"><code class="docutils literal notranslate"><span class="pre">ColorFormatter</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.logging.ColorFormatter.format"><code class="docutils literal notranslate"><span class="pre">ColorFormatter.format()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hw_tests.logging.set_logging"><code class="docutils literal notranslate"><span class="pre">set_logging()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.logging.register_sensitive"><code class="docutils literal notranslate"><span class="pre">register_sensitive()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.logging.redact_text"><code class="docutils literal notranslate"><span class="pre">redact_text()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.logging.install_log_redaction"><code class="docutils literal notranslate"><span class="pre">install_log_redaction()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.logging.install_pytest_log_redaction"><code class="docutils literal notranslate"><span class="pre">install_pytest_log_redaction()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.logging.gha_escape"><code class="docutils literal notranslate"><span class="pre">gha_escape()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../../../">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-a-test/">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../write-a-test/">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="../../">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client-api/">Integrate with the API</a></li>
+<li class="toctree-l2 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1-1" id="toctree-collapse-1-1" checked=""/><div class="collapse"><a class="reference internal" href="../">API reference</a><label for="toctree-collapse-1-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../labgrid-client/">LabgridClient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../test-executor/">Test executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../artifact-storage/">Artifact storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../firmware-images/">Firmware Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ssh-authentication/">SSH authentication</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="../../">Reference</a></li><li><a href="../">API reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="module-hw_tests.logging">
+<span id="logging"></span><h1>Logging<a class="headerlink" href="#module-hw_tests.logging" title="Link to this heading"></a></h1>
+<p>Logging setup with colors and redaction of secrets.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.logging.RedactingFormatter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">RedactingFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formatter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.RedactingFormatter" title="Link to this definition"></a></dt>
+<dd><p>Formatter that redacts the output of another formatter.</p>
+<p>See <a class="reference internal" href="#hw_tests.logging.redact_text" title="hw_tests.logging.redact_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">redact_text()</span></code></a> for what is redacted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>formatter</strong> – Formatter to wrap.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.logging.RedactingFormatter.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.RedactingFormatter.format" title="Link to this definition"></a></dt>
+<dd><p>Format the specified record as text.</p>
+<p>The record’s attribute dictionary is used as the operand to a
+string formatting operation which yields the returned string.
+Before formatting the dictionary, a couple of preparatory steps
+are carried out. The message attribute of the record is computed
+using LogRecord.getMessage(). If the formatting string uses the
+time (as determined by a call to usesTime(), formatTime() is
+called to format the event time. If there is exception information,
+it is formatted using formatException() and appended to the message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.logging.ColorFormatter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">ColorFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.ColorFormatter" title="Link to this definition"></a></dt>
+<dd><p>Formatter that colors the level name by severity.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.logging.ColorFormatter.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.ColorFormatter.format" title="Link to this definition"></a></dt>
+<dd><p>Format the specified record as text.</p>
+<p>The record’s attribute dictionary is used as the operand to a
+string formatting operation which yields the returned string.
+Before formatting the dictionary, a couple of preparatory steps
+are carried out. The message attribute of the record is computed
+using LogRecord.getMessage(). If the formatting string uses the
+time (as determined by a call to usesTime(), formatTime() is
+called to format the event time. If there is exception information,
+it is formatted using formatException() and appended to the message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.logging.set_logging">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">set_logging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.set_logging" title="Link to this definition"></a></dt>
+<dd><p>Log <code class="docutils literal notranslate"><span class="pre">INFO</span></code> and above to stderr, with colors and redaction.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.logging.register_sensitive">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">register_sensitive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.register_sensitive" title="Link to this definition"></a></dt>
+<dd><p>Register a runtime value for redaction from subsequent log output.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.logging.redact_text">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">redact_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.redact_text" title="Link to this definition"></a></dt>
+<dd><p>Redact network and registered sensitive values from log text.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.logging.install_log_redaction">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">install_log_redaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handlers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.install_log_redaction" title="Link to this definition"></a></dt>
+<dd><p>Wrap handlers with the redacting formatter, without double wrapping.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.logging.install_pytest_log_redaction">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">install_pytest_log_redaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.install_pytest_log_redaction" title="Link to this definition"></a></dt>
+<dd><p>Install redaction on pytest’s live, captured, and file log handlers.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.logging.gha_escape">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.logging.</span></span><span class="sig-name descname"><span class="pre">gha_escape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.logging.gha_escape" title="Link to this definition"></a></dt>
+<dd><p>Escape a string for a GitHub Actions workflow command.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="../ssh-authentication/" title="Previous document (Alt+Shift+LeftArrow)" class="prev">SSH authentication</a>
+    <a href="../../glossary/" title="Next document (Alt+Shift+RightArrow)" class="next">Glossary</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>

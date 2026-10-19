@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Resolve firmware images by role." name="description" />
+
+    <title>Firmware Images &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../../../_static/app.umd.js?v=048c1170"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="SSH authentication" href="../ssh-authentication/" />
+    <link rel="prev" title="Artifact storage" href="../artifact-storage/" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../../../">
+          <div>Hardware Tests</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">Firmware Images</a><ul>
+<li><a class="reference internal" href="#hw_tests.images.Images"><code class="docutils literal notranslate"><span class="pre">Images</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.images.Images.flavor"><code class="docutils literal notranslate"><span class="pre">Images.flavor</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.images.Images.get"><code class="docutils literal notranslate"><span class="pre">Images.get()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.images.Images.artifact_path"><code class="docutils literal notranslate"><span class="pre">Images.artifact_path()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hw_tests.images.find_one"><code class="docutils literal notranslate"><span class="pre">find_one()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../../../">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-a-test/">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../write-a-test/">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="../../">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client-api/">Integrate with the API</a></li>
+<li class="toctree-l2 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1-1" id="toctree-collapse-1-1" checked=""/><div class="collapse"><a class="reference internal" href="../">API reference</a><label for="toctree-collapse-1-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../labgrid-client/">LabgridClient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../test-executor/">Test executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../artifact-storage/">Artifact storage</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Firmware Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ssh-authentication/">SSH authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="../../">Reference</a></li><li><a href="../">API reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="firmware-images">
+<h1>Firmware Images<a class="headerlink" href="#firmware-images" title="Link to this heading"></a></h1>
+<p>Each build flavor names and packages its images differently. <code class="docutils literal notranslate"><span class="pre">Images</span></code>
+maps a role, such as <code class="docutils literal notranslate"><span class="pre">spl</span></code> or <code class="docutils literal notranslate"><span class="pre">kernel</span></code>, to a file using the
+<code class="docutils literal notranslate"><span class="pre">artifacts.toml</span></code> of the test category, so one test runs against every
+flavor. See <a class="reference internal" href="../../../write-a-test/#write-a-test"><span class="std std-ref">Write a test</span></a>.</p>
+<p id="module-hw_tests.images">Resolve firmware images by role from the <code class="docutils literal notranslate"><span class="pre">artifacts.toml</span></code> descriptor.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.images.Images">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.images.</span></span><span class="sig-name descname"><span class="pre">Images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">github</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.images.Images" title="Link to this definition"></a></dt>
+<dd><p>Find and download the images used by a test.</p>
+<p>Images are looked up by role (for example <code class="docutils literal notranslate"><span class="pre">spl</span></code>, <code class="docutils literal notranslate"><span class="pre">uboot</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kernel</span></code>) in <code class="docutils literal notranslate"><span class="pre">tests/&lt;category&gt;/artifacts.toml</span></code>, under the table of
+the current <a class="reference internal" href="#hw_tests.images.Images.flavor" title="hw_tests.images.Images.flavor"><code class="xref py py-attr docutils literal notranslate"><span class="pre">flavor</span></code></a>. Each role sets <code class="docutils literal notranslate"><span class="pre">artifact</span></code> (artifact name
+glob), <code class="docutils literal notranslate"><span class="pre">file</span></code> (file glob inside the artifact), and optionally
+<code class="docutils literal notranslate"><span class="pre">source</span></code> (a release from the <code class="docutils literal notranslate"><span class="pre">[sources]</span></code> table).</p>
+<p>When several artifacts or files match, the ones containing all
+<code class="docutils literal notranslate"><span class="pre">needs</span></code> from the context are preferred.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – Test context.</p></li>
+<li><p><strong>github</strong> – <a class="reference internal" href="../artifact-storage/#hw_tests.github.GitHub" title="hw_tests.github.GitHub"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitHub</span></code></a> client to download with.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="hw_tests.images.Images.flavor">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">flavor</span></span><a class="headerlink" href="#hw_tests.images.Images.flavor" title="Link to this definition"></a></dt>
+<dd><p>Image flavor, such as <code class="docutils literal notranslate"><span class="pre">br2-external</span></code> or <code class="docutils literal notranslate"><span class="pre">u-boot</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">flavor</span></code> from the context, else the name of the repository that
+built the images. Skips the test if neither is known.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.images.Images.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.images.Images.get" title="Link to this definition"></a></dt>
+<dd><p>Download the artifact for <code class="docutils literal notranslate"><span class="pre">role</span></code> and return the image path.</p>
+<p>Each artifact is downloaded once per instance. Release assets are
+also cached on disk across runs, see
+<a class="reference internal" href="../artifact-storage/#hw_tests.github.GitHub.download" title="hw_tests.github.GitHub.download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GitHub.download</span></code></a>.
+To use local release files instead, put them in
+<code class="docutils literal notranslate"><span class="pre">_artifacts/&lt;test</span> <span class="pre">name&gt;/release/&lt;source&gt;</span></code>.</p>
+<p>Skips the test if the flavor has no such role.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.images.Images.artifact_path">
+<span class="sig-name descname"><span class="pre">artifact_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.images.Images.artifact_path" title="Link to this definition"></a></dt>
+<dd><p>Return the image path for <code class="docutils literal notranslate"><span class="pre">role</span></code>, relative to its artifact.</p>
+<p>Use it to place the file at the same path on a target or server.
+Calls <a class="reference internal" href="#hw_tests.images.Images.get" title="hw_tests.images.Images.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a> if needed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.images.find_one">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.images.</span></span><span class="sig-name descname"><span class="pre">find_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">what</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.images.find_one" title="Link to this definition"></a></dt>
+<dd><p>Return the single item, narrowed by needs then base-stem when several match.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="../artifact-storage/" title="Previous document (Alt+Shift+LeftArrow)" class="prev">Artifact storage</a>
+    <a href="../ssh-authentication/" title="Next document (Alt+Shift+RightArrow)" class="next">SSH authentication</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>

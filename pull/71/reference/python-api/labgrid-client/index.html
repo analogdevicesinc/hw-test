@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Reserve a labgrid place and access its target." name="description" />
+
+    <title>LabgridClient &#8212; Hardware Test  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8e8a900e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/app.min.css?v=b1d7a81a" />
+    <script async="async" src="../../../_static/app.umd.js?v=048c1170"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="Test executor" href="../test-executor/" />
+    <link rel="prev" title="API reference" href="../" />
+   
+  
+  
+  
+  <meta name="repository" content="hw-test">
+  <meta name="version" content="0.1">
+  
+    <meta name="page_source_suffix" content=".rst">
+  
+  
+  
+
+
+<style>
+  body {
+    
+  }
+
+  body.dark {
+    
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:not(.light) {
+      
+    }
+  }
+</style>
+  </head>
+  
+    <body>
+  
+  <input type="checkbox" id="input-show-toc">
+  <input type="checkbox" id="input-show-localtoc">
+  <input type="checkbox" id="input-show-repotoc">
+
+  
+  <div class="search-area">
+    <form action="" method="get">
+      <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="search" placeholder="Search"/>
+      <button class="icon"></button>
+    </form>
+  </div>
+  
+
+  <header>
+    <div id="left">
+      <label id="show-sidebar" class="icon" for="input-show-toc" title="Show/hide index"></label>
+    </div>
+    <div id="right">
+      <span>
+        <a id="logo-org" href="https://developer.analog.com/" aria-label="Analog Devices Inc. landing page"></a>
+        <div class="vertical-divider"></div>
+        
+        <label id="show-repotoc" for="input-show-repotoc" title="Show/hide docs">Documentation</label>
+        
+        <a id="logo" href="../../../">
+          <div>Hardware Tests</div>
+        </a>
+      </span>
+      <span class="reverse">
+        <label id="show-localtoc" class="icon" for="input-show-localtoc" title="Show/hide contents"></label>
+      </span>
+    </div>
+  </header>
+
+
+  <div class="repotoc-tree overlay">
+    <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+  </div>
+    <div class="localtoc">
+      <div class="tocwrapper">
+        <div class="header localtoc-header">
+          <a id="scroll-up" href="#top-anchor" title="Back to top"></a>
+        </div>
+        <nav>
+          <ul>
+<li><a class="reference internal" href="#">LabgridClient</a><ul>
+<li><a class="reference internal" href="#hw_tests.labgrid.LabgridClient"><code class="docutils literal notranslate"><span class="pre">LabgridClient</span></code></a><ul>
+<li><a class="reference internal" href="#hw_tests.labgrid.LabgridClient.acquire"><code class="docutils literal notranslate"><span class="pre">LabgridClient.acquire()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hw_tests.labgrid.exporter_http_server"><code class="docutils literal notranslate"><span class="pre">exporter_http_server()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </nav>
+      </div>
+    </div>
+
+  
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+    <a id="no-logo" href="../../../">
+      Hardware Test
+    </a><input id="input-switch-toc" type="checkbox">
+<label id="show-repotoc" for="input-switch-toc">
+All content
+</label>
+<label id="show-toc" for="input-switch-toc">
+Content on this topic
+</label>
+<div class="repotoc-tree">
+  <root>
+  <a href="../../../index.html" class="current">Hardware Tests</a>
+</root>
+
+</div>
+<div class="toc-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts/">How hw-test works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-a-test/">Run a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../write-a-test/">Write a test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrate-hardware/">Integrate hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../register-a-board/">Register a board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../run-tests-in-ci/">Run tests in CI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../set-up-a-hardware-host/">Set up a hardware host</a></li>
+<li class="toctree-l1 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1" id="toctree-collapse-1" checked=""/><div class="collapse"><a class="reference internal" href="../../">Reference</a><label for="toctree-collapse-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../hardware-model/">Hardware Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client-api/">Integrate with the API</a></li>
+<li class="toctree-l2 current"><input class="toctree-collapse" type="checkbox" name="toctree-collapse-1-1" id="toctree-collapse-1-1" checked=""/><div class="collapse"><a class="reference internal" href="../">API reference</a><label for="toctree-collapse-1-1"><div class="icon"></div></label></div><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LabgridClient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../test-executor/">Test executor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../artifact-storage/">Artifact storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../firmware-images/">Firmware Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ssh-authentication/">SSH authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting/">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+
+</div>
+        </div>
+      </div>
+
+  <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper" id="top-anchor">
+          <div class="body-header">
+  <nav class="breadcrumb"><ol><li><a href="../../">Reference</a></li><li><a href="../">API reference</a></li></ol></nav>
+</div>
+          <div class="body" role="main">
+            
+  <section id="module-hw_tests.labgrid">
+<span id="labgridclient"></span><h1>LabgridClient<a class="headerlink" href="#module-hw_tests.labgrid" title="Link to this heading"></a></h1>
+<p>To ensure the tests scope is to test a feature, the <code class="docutils literal notranslate"><span class="pre">LabgridClient</span></code> class
+handles acquisition, authentication and lifespan. It picks a free place that
+matches the <code class="docutils literal notranslate"><span class="pre">needs</span></code> of the test, acquires it, configures SSH, and releases.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="hw_tests.labgrid.LabgridClient">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.labgrid.</span></span><span class="sig-name descname"><span class="pre">LabgridClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.labgrid.LabgridClient" title="Link to this definition"></a></dt>
+<dd><p>Select a labgrid place for a test and acquire it.</p>
+<p>The coordinator is <code class="docutils literal notranslate"><span class="pre">labgrid_coordinator</span></code> from the context or
+<code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>. The place is selected on creation: the first free
+place, by name, whose tags include all <code class="docutils literal notranslate"><span class="pre">needs</span></code> from the context. If
+<code class="docutils literal notranslate"><span class="pre">labgrid_target</span></code> is set, only that place is considered. If all matches
+are acquired, waits up to one hour.</p>
+<p>In GitHub Actions, the labgrid user is set to
+<code class="docutils literal notranslate"><span class="pre">labgrid-client-&lt;run</span> <span class="pre">id&gt;-&lt;attempt&gt;</span></code>, so places left acquired by a
+previous attempt of the same run can be taken over.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>context</strong> – Test context.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.labgrid.LabgridClient.acquire">
+<span class="sig-name descname"><span class="pre">acquire</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.labgrid.LabgridClient.acquire" title="Link to this definition"></a></dt>
+<dd><p>Acquire the place and yield its labgrid target.</p>
+<p>Writes the SSH config for the exporter and target hosts and checks
+SSH access. On exit, cleans up the target and releases the place if
+it was acquired here.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hw_tests.labgrid.exporter_http_server">
+<span class="sig-prename descclassname"><span class="pre">hw_tests.labgrid.</span></span><span class="sig-name descname"><span class="pre">exporter_http_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ssh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.labgrid.exporter_http_server" title="Link to this definition"></a></dt>
+<dd><p>Serve files over HTTP from a remote host.</p>
+<p>Copies <code class="docutils literal notranslate"><span class="pre">files</span></code> to a temporary directory on the host, starts
+<code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">http.server</span></code> on a free port, and removes everything on exit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ssh</strong> – Labgrid <code class="docutils literal notranslate"><span class="pre">SSHDriver</span></code> of the host.</p></li>
+<li><p><strong>files</strong> – Maps paths relative to the HTTP root to local files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Context manager yielding <code class="docutils literal notranslate"><span class="pre">(directory,</span> <span class="pre">port)</span></code>, the remote
+directory and the HTTP port.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+              <div class="related">
+                &nbsp;
+    <a href="../" title="Previous document (Alt+Shift+LeftArrow)" class="prev">API reference</a>
+    <a href="../test-executor/" title="Next document (Alt+Shift+RightArrow)" class="next">Test executor</a>
+              </div>
+          
+        </div>
+      </div>
+  </div>
+
+  <label id="cancel-area-show-toc" for="input-show-toc"></label>
+  <label id="cancel-area-show-localtoc" for="input-show-localtoc"></label>
+    <footer>
+      &#169;2026, Analog Devices, Inc.
+      
+      |
+      Made with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+      &amp; <a href="https://github.com/analogdevicesinc/doctools">Doctools</a>
+      
+    </footer>
+  </body>
+</html>
