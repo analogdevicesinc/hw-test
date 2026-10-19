@@ -13,6 +13,7 @@ language = 'en'
 
 extensions = [
     'adi_doctools',
+    'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
 ]
 
@@ -22,6 +23,12 @@ needs_extensions = {
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 source_suffix = '.rst'
+
+autodoc_member_order = 'bysource'
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+}
 
 #  -- Options for PDF output --------------------------------------------------
 
