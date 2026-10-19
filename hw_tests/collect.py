@@ -1,7 +1,7 @@
 r"""
 Match workflow-run-to-context output against ``tests/**/config.toml`` metafiles.
 
-Input: JSON by workflow-run-to-context@action, e.g.::
+Input: JSON by ``workflow-run-to-context@action``, e.g.::
 
   {
     "repository": "linux",
@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 def load_test_metas():
+    """Load all ``tests/**/config.toml`` files, with the test name as ``_uid``."""
     metas = []
     for path in sorted(glob.glob('tests/**/config.toml', recursive=True)):
         uid = path[len('tests/'):-len('/config.toml')]
@@ -107,6 +108,10 @@ def match_tests(context, metas):
 
 
 def main():
+    """Log the tests matching the ``context`` env var.
+
+    In GitHub Actions, also sets the ``tests`` step output.
+    """
     set_logging()
 
     context = json.loads(environ['context'])

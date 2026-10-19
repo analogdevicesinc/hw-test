@@ -1,9 +1,9 @@
 """
-Cloudsmith wrapper lib
+Download build artifacts from Cloudsmith.
 
 Basic usage:
 
-.. code: python3
+.. code-block:: python
 
    import logging
    logging.basicConfig(level=logging.INFO)
@@ -12,10 +12,10 @@ Basic usage:
 
    cs = Cloudsmith()
 
-   # Get latest 'artifact' from branch 'refs/heads/...'
+   # Get the latest artifact from branch 'refs/heads/...'
    path = cs.download(
        repository='linux',
-       artifact='adi_bcm2709_defconfig-gcc-arm-devel',
+       name='adi_bcm2709_defconfig-gcc-arm-devel',
        version='refs/heads/rpi-6.12.y',
    )
 """
@@ -34,6 +34,15 @@ logger = logging.getLogger(__name__)
 
 
 class Cloudsmith:
+    """Cloudsmith API client.
+
+    Packages are looked up in ``$CLOUDSMITH_NAMESPACE/<repository>``.
+    Authentication is done on creation, see :meth:`authenticate`.
+
+    :param context: Test context. Its ``name`` sets the local fallback
+        directory of :meth:`download`.
+    """
+
     _token = None
     __down_counter = 0
 
@@ -42,6 +51,12 @@ class Cloudsmith:
         self.authenticate()
 
     def authenticate(self):
+        """Get an API token and validate it.
+
+        Uses ``CLOUDSMITH_API_KEY`` if set. Otherwise, in GitHub Actions, gets
+        a token through :meth:`github_oidc`. Without a token, only public
+        artifacts can be downloaded.
+        """
         self._token = environ.get('CLOUDSMITH_API_KEY', '').strip()
 
         if self._token != '':
@@ -55,6 +70,12 @@ class Cloudsmith:
             logger.warning("No 'CLOUDSMITH_API_KEY' obtained, only public artifacts will be available.")
 
     def github_oidc(self):
+        """Exchange a GitHub OIDC token for a Cloudsmith API token.
+
+        Requires ``CLOUDSMITH_SERVICE_SLUG`` and ``CLOUDSMITH_NAMESPACE``.
+        The token is exported as ``CLOUDSMITH_API_KEY`` to the environment
+        and ``GITHUB_ENV``, for the next steps.
+        """
         cs_namespace = environ.get("CLOUDSMITH_NAMESPACE", '').strip()
         cs_service_slug = environ.get("CLOUDSMITH_SERVICE_SLUG", '').strip()
         if cs_service_slug == '':
@@ -71,6 +92,10 @@ class Cloudsmith:
 
     @staticmethod
     def get_api_token(org_name: str, cs_service_slug: str, id_token: str, api_host: str = "api.cloudsmith.io") -> str:
+        """Return a Cloudsmith API token for an OIDC ``id_token``.
+
+        :raises ValueError: Cloudsmith returned an empty token.
+        """
         logger.debug("Exchanging for Cloudsmith token...")
         url = f"https://{api_host}/openid/{org_name}/"
         payload = {
@@ -87,6 +112,10 @@ class Cloudsmith:
 
     @staticmethod
     def validate(token: str, api_host: str = "api.cloudsmith.io") -> None:
+        """Check ``token`` against the API and log the authenticated user.
+
+        :raises requests.HTTPError: the token is rejected.
+        """
         url = f"https://{api_host}/v1/user/self/"
         headers = {
             "Authorization": f"Bearer {token}",
@@ -165,18 +194,30 @@ class Cloudsmith:
         tags: tuple | list = (),
         path: Path | str | None = None,
     ) -> Path:
-        """Download a single artifact from Cloudsmith.
+        """Download an artifact and extract it if it is an archive.
 
-        Resolves the target package version in order of precedence:
+        The package is selected by ``version`` if given, else by ``tags``:
 
-        - ``version`` as a full 40-char SHA.
-        - ``version`` as a git ref (``refs/heads/*``, ``refs/pull/*``):
-          latest SHA that contain the artifact.
-        - ``version`` as a short SHA: resolved to the full SHA.
-        - ``tags``: all supplied tags must match
-          (``tags=('on/push', 'refs/heads/main')``).
+        - ``version`` as a full 40-char SHA: exact match.
+        - ``version`` as a git ref (``refs/heads/*``, ``refs/tags/*``,
+          ``refs/pull/*``): latest package built from that ref.
+        - other ``version`` values, such as a short SHA: latest pushed
+          package matching the version.
+        - ``tags``: latest package that has all the tags, for example
+          ``('on/push', 'refs/heads/main')``.
 
-        Returns path to the file.
+        If ``CLOUDSMITH_NAMESPACE`` is not set, a warning is logged and
+        ``_artifacts/<test name>/<n>`` is returned, where ``n`` counts calls.
+        Put the files there to run locally. Without a ``context``, a
+        ``ValueError`` is raised instead.
+
+        :param repository: Cloudsmith repository in ``CLOUDSMITH_NAMESPACE``.
+        :param name: Package name.
+        :param version: SHA, git ref, or version.
+        :param tags: Tags to match when ``version`` is not given.
+        :param path: Output directory. A temporary directory by default.
+        :returns: Directory containing the artifact.
+        :raises LookupError: no package matches.
         """
         local_ = None
         if self._test_name is not None:

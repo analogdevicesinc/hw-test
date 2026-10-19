@@ -1,9 +1,9 @@
 """
-GitHub wrapper lib
+Download workflow artifacts and release assets from GitHub.
 
 Basic usage:
 
-.. code: python3
+.. code-block:: python
 
    import logging
    logging.basicConfig(level=logging.INFO)
@@ -13,11 +13,10 @@ Basic usage:
    # Gets defaults from context
    gh = GitHub(context)
 
-   # Get artifact 'example'
-   # from run_id '1234' (overwrites from context)
-   # and from repository from context
+   # Get artifact 'example' from run '1234' (overrides the context)
+   # of the repository from the context
    path = gh.download(
-       artifact='example',
+       name='example',
        run_id='1234',
    )
 """
@@ -73,6 +72,16 @@ def _extract_if_archive(archive: Path) -> None:
 
 
 class GitHub:
+    """GitHub API client for a test run.
+
+    The default repository and workflow run come from ``workflow_run_url`` in
+    ``context`` if present, else from ``GITHUB_REPOSITORY`` and
+    ``GITHUB_RUN_ID``. ``GITHUB_TOKEN`` is used for authentication; without
+    it, workflow artifacts cannot be downloaded.
+
+    :param context: Test context, see :func:`hw_tests.context.build_context`.
+    """
+
     _token = None
     _owner_repository = None
     _test_name = None
@@ -91,6 +100,7 @@ class GitHub:
 
     @staticmethod
     def in_actions():
+        """Return whether the process runs in GitHub Actions."""
         return environ.get("GITHUB_ACTIONS") == "true"
 
     def _get_workflow_run_vars(self, context):
@@ -113,12 +123,18 @@ class GitHub:
 
     @staticmethod
     def mask(value):
+        """Hide ``value`` from logs and, in GitHub Actions, from job output."""
         register_sensitive(value)
         if GitHub.in_actions():
             print(f"::add-mask::{gha_escape(str(value))}", flush=True)
 
     @staticmethod
     def get_id_token():
+        """Return a GitHub Actions OIDC token.
+
+        The audience is ``https://github.com/<owner>``. The job needs the
+        ``id-token: write`` permission.
+        """
         logger.debug("Requesting GitHub OIDC token...")
 
         owner = environ.get("GITHUB_REPOSITORY_OWNER")
@@ -148,9 +164,21 @@ class GitHub:
 
     @property
     def owner_repository(self):
+        """Default repository, as ``owner/name``."""
         return self._owner_repository
 
     def list_artifacts(self, owner_repository=None, run_id=None, source=None):
+        """List the artifacts of a workflow run or the assets of a release.
+
+        Results are cached per run or release. Expired artifacts are skipped.
+
+        :param owner_repository: Repository. Defaults to :attr:`owner_repository`.
+        :param run_id: Workflow run ID. Defaults to the run from the context.
+        :param source: Release, as ``{'repository': ..., 'tag': ...}``. Takes
+            precedence over ``owner_repository`` and ``run_id``.
+        :returns: Artifact or asset dicts from the GitHub API. Empty if the
+            run cannot be resolved or there is no token.
+        """
         if source is not None:
             owner_repository = source["repository"]
             tag = source["tag"]
@@ -200,8 +228,23 @@ class GitHub:
         path: Path | str | None = None,
         source: dict | None = None,
     ) -> Path:
-        """Download artifact a single artifact from GitHub.
-        Behaves like actions/download-artifact"""
+        """Download an artifact and extract it if it is an archive.
+
+        Like ``actions/download-artifact``. Release assets are cached in
+        ``$HW_TEST_CACHE_DIR`` (default ``$XDG_CACHE_HOME/hw-test``).
+
+        If a workflow artifact cannot be downloaded (no token or no run), a
+        warning is logged and ``_artifacts/<test name>/<n>`` is returned, where
+        ``n`` counts calls. Put the files there to run locally.
+
+        :param name: Artifact or asset name.
+        :param owner_repository: Repository. Defaults to :attr:`owner_repository`.
+        :param run_id: Workflow run ID. Defaults to the run from the context.
+        :param path: Output directory for workflow artifacts. A temporary
+            directory by default.
+        :param source: Release, as ``{'repository': ..., 'tag': ...}``.
+        :returns: Directory containing the artifact.
+        """
         headers = self._headers()
         if source is not None:
             owner_repository = source["repository"]

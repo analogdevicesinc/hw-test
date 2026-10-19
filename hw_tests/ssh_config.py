@@ -1,3 +1,5 @@
+"""Manage the SSH config file used by tests."""
+
 import logging
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,6 +12,14 @@ ssh_config_path = Path.cwd() / "_ssh_config"
 
 @dataclass
 class SSHConfig:
+    """SSH config file with per-host options.
+
+    A new file includes ``~/.ssh/config``.
+
+    :param path: Config file. Defaults to ``_ssh_config`` in the current
+        directory.
+    """
+
     path: Path = ssh_config_path
 
     def _read_lines(self):
@@ -39,6 +49,14 @@ class SSHConfig:
         return start, len(lines)
 
     def set_host_options(self, hosts, options):
+        """Set ``options`` in the ``Host`` block for ``hosts``.
+
+        Updates the first block that matches one of ``hosts``, or appends a
+        new one. Other options in the block are kept.
+
+        :param hosts: Host patterns for the ``Host`` line.
+        :param options: Maps option names to values.
+        """
         self.path.parent.mkdir(parents=True, exist_ok=True)
 
         host_list = list(hosts)
@@ -86,6 +104,11 @@ class SSHConfig:
 
 
     def configure_host(self, host):
+        """Set the options to reach ``host``.
+
+        In GitHub Actions, logs in as ``labgrid-client`` with the opkssh key
+        and certificate. New host keys are accepted.
+        """
         if GitHub.in_actions():
             options = {
                 "User": "labgrid-client",

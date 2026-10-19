@@ -48,6 +48,7 @@ def reformat_named_lists(d):
 
 
 def deep_merge(base, override):
+    """Return ``base`` updated with ``override``, merging nested dicts."""
     result = dict(base)
     for k, v in override.items():
         if k in result and isinstance(result[k], dict) and isinstance(v, dict):
@@ -77,6 +78,12 @@ def test_name(test_dir: Path) -> str:
 
 
 def build_context(test_dir: Path, overrides: list[dict]) -> dict:
+    """Return the context of the test in ``test_dir``.
+
+    Merges, in order: the test name, the test ``config.toml``, and the first
+    override whose ``name`` matches the test (or has no ``name``). ``needs``
+    is always a list.
+    """
     name = test_name(test_dir)
 
     config_path = test_dir / "config.toml"

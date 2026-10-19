@@ -14,7 +14,7 @@ Consult these pages when a task guide needs more detail.
 
    hardware-model
    client-api
-   python-api
+   python-api/index
    glossary
    troubleshooting
 

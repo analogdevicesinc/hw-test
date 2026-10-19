@@ -1,3 +1,5 @@
+"""Resolve firmware images by role from the ``artifacts.toml`` descriptor."""
+
 import logging
 import tomllib
 from fnmatch import fnmatch
@@ -35,6 +37,21 @@ def _name(item):
 
 
 class Images:
+    """Find and download the images used by a test.
+
+    Images are looked up by role (for example ``spl``, ``uboot``,
+    ``kernel``) in ``tests/<category>/artifacts.toml``, under the table of
+    the current :attr:`flavor`. Each role sets ``artifact`` (artifact name
+    glob), ``file`` (file glob inside the artifact), and optionally
+    ``source`` (a release from the ``[sources]`` table).
+
+    When several artifacts or files match, the ones containing all
+    ``needs`` from the context are preferred.
+
+    :param context: Test context.
+    :param github: :class:`~hw_tests.github.GitHub` client to download with.
+    """
+
     def __init__(self, context, github):
         self.context = context
         self.github = github
@@ -44,6 +61,11 @@ class Images:
 
     @property
     def flavor(self):
+        """Image flavor, such as ``br2-external`` or ``u-boot``.
+
+        ``flavor`` from the context, else the name of the repository that
+        built the images. Skips the test if neither is known.
+        """
         override = self.context.get("flavor")
         if override:
             return override
@@ -114,6 +136,16 @@ class Images:
         return image
 
     def get(self, role):
+        """Download the artifact for ``role`` and return the image path.
+
+        Each artifact is downloaded once per instance. Release assets are
+        also cached on disk across runs, see
+        :meth:`GitHub.download <hw_tests.github.GitHub.download>`.
+        To use local release files instead, put them in
+        ``_artifacts/<test name>/release/<source>``.
+
+        Skips the test if the flavor has no such role.
+        """
         spec = self._role_spec(role)
         source = self._source(spec)
         if source:
@@ -137,7 +169,11 @@ class Images:
         return self._resolve_file(self._cache[key], spec["file"], role)
 
     def artifact_path(self, role):
-        """Return the descriptor-relative path resolved for ``role``."""
+        """Return the image path for ``role``, relative to its artifact.
+
+        Use it to place the file at the same path on a target or server.
+        Calls :meth:`get` if needed.
+        """
         if role not in self._paths:
             self.get(role)
         return self._paths[role]

@@ -1,3 +1,7 @@
+"""
+Logging setup with colors and redaction of secrets.
+"""
+
 import ipaddress
 import logging
 import logging.config
@@ -68,7 +72,12 @@ def redact_text(value):
 
 
 class RedactingFormatter(logging.Formatter):
-    """Apply redaction after the wrapped formatter renders a log record."""
+    """Formatter that redacts the output of another formatter.
+
+    See :func:`redact_text` for what is redacted.
+
+    :param formatter: Formatter to wrap.
+    """
 
     def __init__(self, formatter):
         self._formatter = formatter
@@ -102,6 +111,8 @@ def install_pytest_log_redaction(config):
 
 
 class ColorFormatter(logging.Formatter):
+    """Formatter that colors the level name by severity."""
+
     def format(self, record):
         level_color = LEVEL_COLORS.get(record.levelno, "")
         record.levelname = f"{level_color}{record.levelname}:{NC}"
@@ -146,5 +157,6 @@ LOGGING_CONFIG = {
 
 
 def set_logging():
+    """Log ``INFO`` and above to stderr, with colors and redaction."""
     logging.config.dictConfig(LOGGING_CONFIG)
     install_log_redaction(logging.getLogger().handlers)
