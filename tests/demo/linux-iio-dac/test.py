@@ -8,5 +8,5 @@ logger = logging.getLogger(__name__)
 def test_linux_iio_dac(context):
     logger.info(f"got {context}")
 
-    Cloudsmith()
+    Cloudsmith(context)
     logger.info("cloudsmith auth done")
