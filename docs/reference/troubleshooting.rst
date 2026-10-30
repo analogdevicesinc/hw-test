@@ -30,10 +30,17 @@ the mapping is explained in :ref:`labgrid-hardware-place`.
 Artifacts will not download
 ---------------------------
 
-If you see ``Neither 'workflow_run_url' in context or 'GITHUB_REPOSITORY' in
-environment``, the run has no artifact source. Either pass ``workflow_run_url``
-with a ``GITHUB_TOKEN``, or place local files at the printed
-``_artifacts/<test-name>/0/`` path. See :ref:`run-a-test`.
+If you see ``cannot download artifacts; assuming you have them at
+'<cwd>/_artifacts/<test-name>/0'``, the run has no artifact source. There is
+no ``GITHUB_TOKEN``, or neither ``workflow_run_url`` in the context nor
+``GITHUB_REPOSITORY`` and ``GITHUB_RUN_ID`` in the environment. Either pass
+``workflow_run_url`` with a ``GITHUB_TOKEN``, or place local files at the
+printed path. See :ref:`run-a-test`.
+
+A test that resolves images by role is skipped with ``unknown flavor`` when
+the repository that built the images is not known. Set ``flavor`` in the test
+context when running from local files, for example
+``{"name": "adsp/bootstrap", "flavor": "br2-external"}``.
 
 The exporter service will not start
 -----------------------------------
