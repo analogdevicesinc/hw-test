@@ -32,11 +32,6 @@ test = [
     "ruff",
 ]
 
-[tool.setuptools.packages.find]
-where = [""]
-include = ["hw_tests*"]
-namespaces = true
-
 [tool.pytest.ini_options]
 minversion = "9.0"
 addopts = [
