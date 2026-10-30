@@ -1,7 +1,8 @@
 """
 To ensure the tests scope is to test a feature, the ``LabgridClient`` class
-handles acquisition, authentication and lifespan. It picks a free place that
-matches the ``needs`` of the test, acquires it, configures SSH, and releases.
+handles reservation, acquisition, authentication and lifespan. It reserves a
+place that matches the ``needs`` of the test, acquires it, configures SSH, and
+releases.
 """
 
 
@@ -16,6 +17,8 @@ from urllib.parse import urlsplit
 
 from labgrid.exceptions import NoResourceFoundError
 from labgrid.remote.client import start_session
+from labgrid.remote.common import Reservation, ReservationState
+from labgrid.remote.generated import labgrid_coordinator_pb2
 from labgrid.util.ssh import sshmanager
 
 from hw_tests.github import GitHub
@@ -26,17 +29,16 @@ logger = logging.getLogger(__name__)
 
 
 class LabgridClient:
-    """Select a labgrid place for a test and acquire it.
+    """Reserve a labgrid place for a test and acquire it.
 
     The coordinator is ``labgrid_coordinator`` from the context or
-    ``LG_COORDINATOR``. The place is selected on creation: the first free
-    place, by name, whose tags include all ``needs`` from the context. If
-    ``labgrid_target`` is set, only that place is considered. If all matches
-    are acquired, waits up to one hour.
+    ``LG_COORDINATOR``. :meth:`acquire` reserves a place with the ``needs``
+    tags (``key=value``) on the coordinator, which allocates a free match or
+    queues the request until one is released. ``labgrid_target`` limits the
+    match to one place. Waits up to one hour.
 
-    In GitHub Actions, the labgrid user is set to
-    ``labgrid-client-<run id>-<attempt>``, so places left acquired by a
-    previous attempt of the same run can be taken over.
+    In GitHub Actions, the labgrid user is ``labgrid-client-<run id>-<attempt>``,
+    so places left acquired by a previous attempt of the run are released first.
 
     :param context: Test context.
     """
@@ -45,13 +47,13 @@ class LabgridClient:
         self.context = context
         self._configure_identity()
         self.coordinator = self._resolve_coordinator()
-        self.place = self._resolve_place()
+        self.filters = self._resolve_filters()
+        self.place = None
+        self.reservation = None
 
         self.hosts = set()
         self.ssh_config = SSHConfig()
         self._opkssh = None
-
-        logger.info("Labgrid place: %s", self.place)
 
     def _configure_identity(self):
         self._workflow_owner = None
@@ -88,62 +90,43 @@ class LabgridClient:
             GitHub.mask(coordinator_host)
         return coordinator
 
-    def _resolve_place(self):
+    def _resolve_filters(self):
         needs = self.context.get("needs")
         assert needs, "missing needs in test config"
-        requested = self.context.get("labgrid_target")
+        assert all("=" in need for need in needs), f"needs must be place tags as key=value: {needs}"
+        filters = dict(need.split("=", 1) for need in needs)
+        if self.context.get("labgrid_target"):
+            filters["name"] = self.context["labgrid_target"]
+        return filters
 
-        # Wait for a place that matches the needs and is not acquired by another user for 1 hour
+    def _matches(self, place):
+        tags = {**place.tags, "name": place.name}
+        return all(tags.get(key) == value for key, value in self.filters.items())
+
+    def _reserve(self, session):
+        """Reserve a place and return its name once allocated."""
+        run = session.loop.run_until_complete
+        request = labgrid_coordinator_pb2.CreateReservationRequest(
+            filters={"main": labgrid_coordinator_pb2.Reservation.Filter(filter=self.filters)}
+        )
+        reservation = Reservation.from_pb2(run(session.stub.CreateReservation(request)).reservation)
+        self.reservation = reservation.id
+        logger.info("Labgrid reservation %s: %s", reservation.id, self.filters)
+
+        if reservation.state is ReservationState.waiting:
+            logger.info("Waiting for a free labgrid place")
+        # Reservations expire 60 s after the last poll
         deadline = monotonic() + 60 * 60
-        while True:
-            session = start_session(self.coordinator)
-            try:
-                owner = f"{session.gethostname()}/{session.getuser()}"
-                matches = []
-                candidates = []
-                for place in session.places.values():
-                    if requested and place.name != requested:
-                        continue
-                    if requested:
-                        logger.debug("Explicit labgrid target found: %s", requested)
-                    tags = set(place.tags)
-                    tags.update(str(value) for value in place.tags.values())
-                    if not (
-                        all(need in tags for need in needs)
-                        and place.get_config()
-                    ):
-                        continue
+        while reservation.state is ReservationState.waiting:
+            assert monotonic() < deadline, f"no place allocated after 1 hour for {self.filters}"
+            sleep(5)
+            request = labgrid_coordinator_pb2.PollReservationRequest(token=reservation.id)
+            reservation = Reservation.from_pb2(run(session.stub.PollReservation(request)).reservation)
 
-                    matches.append(place)
-                    if place.acquired in (None, owner) or self._is_previous_workflow_owner(
-                        place.acquired
-                    ):
-                        candidates.append(place)
-
-                assert matches, f"no place found for needs: {needs}"
-                if candidates:
-                    return min(candidates, key=lambda place: place.name).name
-
-                if monotonic() >= deadline:
-                    acquired_by = ", ".join(
-                        f"{place.name} by {place.acquired}" for place in matches
-                    )
-                    raise AssertionError(
-                        f"no available place found for needs after "
-                        f"1 hour: {needs} ({acquired_by})"
-                    )
-
-                logger.info(
-                    "Waiting for labgrid place with needs %s; all matches are acquired",
-                    needs,
-                )
-            finally:
-                try:
-                    session.loop.run_until_complete(session.stop())
-                finally:
-                    session.loop.run_until_complete(session.close())
-            # Check for available place every 30 seconds
-            sleep(30)
+        assert reservation.state is ReservationState.allocated, (
+            f"reservation {reservation.id} is {reservation.state.name}"
+        )
+        return reservation.allocations["main"][0]
 
     def _configure_ssh(self, session, place, target):
         resources = session.get_target_resources(place)
@@ -184,11 +167,10 @@ class LabgridClient:
 
     @contextmanager
     def acquire(self):
-        """Acquire the place and yield its labgrid target.
+        """Reserve and acquire a place and yield its labgrid target.
 
-        Writes the SSH config for the exporter and target hosts and checks
-        SSH access. On exit, cleans up the target and releases the place if
-        it was acquired here.
+        Writes the SSH config for the hosts and checks SSH access. On exit,
+        cleans up the target, releases the place and cancels the reservation.
         """
         session = start_session(
             self.coordinator,
@@ -197,26 +179,30 @@ class LabgridClient:
                     allow_unmatched=False,
                     initial_state=None,
                     kick=True,
-                    place=self.place,
+                    place=None,
                     state=None,
                 ),
                 "env": None,
                 "role": None,
             },
         )
+        run = session.loop.run_until_complete
         acquired = False
         target = None
 
         try:
-            place = session.get_place(self.place)
-            owner = f"{session.gethostname()}/{session.getuser()}"
-            if place.acquired == owner:
-                session.check_matches(place)
-            else:
+            matches = [place for place in session.places.values() if self._matches(place)]
+            assert matches, f"no place found for {self.filters}"
+            for place in matches:
                 if self._is_previous_workflow_owner(place.acquired):
-                    session.loop.run_until_complete(session.release())
-                session.loop.run_until_complete(session.acquire())
-                acquired = True
+                    logger.info("Releasing place %s left by %s", place.name, place.acquired)
+                    session.args.place = place.name
+                    run(session.release())
+
+            self.place = session.args.place = self._reserve(session)
+            run(session.acquire())
+            acquired = True
+            logger.info("Labgrid place: %s", self.place)
 
             place = session.get_acquired_place(self.place)
             target = session._get_target(place)
@@ -229,13 +215,18 @@ class LabgridClient:
             finally:
                 try:
                     if acquired:
-                        session.loop.run_until_complete(session.release())
+                        run(session.release())
                 finally:
                     try:
-                        session.loop.run_until_complete(session.stop())
+                        if self.reservation:
+                            request = labgrid_coordinator_pb2.CancelReservationRequest(token=self.reservation)
+                            run(session.stub.CancelReservation(request))
                     finally:
-                        session.loop.run_until_complete(session.close())
-                        sshmanager.close_all()
+                        try:
+                            run(session.stop())
+                        finally:
+                            run(session.close())
+                            sshmanager.close_all()
 
 
 @contextmanager
