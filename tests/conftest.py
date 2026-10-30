@@ -98,10 +98,3 @@ def pytest_generate_tests(metafunc):
     ]
     metafunc.parametrize("context", contexts, ids=ids)
 
-
-def _addoption_once(group, *args, **kwargs):
-    try:
-        group.addoption(*args, **kwargs)
-    except ValueError as exc:
-        if "already added" not in str(exc):
-            raise
