@@ -1,3 +1,4 @@
+from hw_tests import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -5,7 +6,7 @@ repository = 'hw-test'
 project = 'Hardware Test'
 copyright = '2026, Analog Devices, Inc.'
 author = 'Analog Devices, Inc.'
-version = '0.1'
+version = release = __version__
 
 language = 'en'
 
