@@ -100,7 +100,7 @@ set. For example, the ``needs`` list selects compatible
 
 .. code:: toml
 
-   needs = ["sc598", "ezkit"]
+   needs = ["board=sc598", "kind=ezkit"]
 
 Any context value can be overridden when triggering a test; see
 :ref:`run-a-test` for the local command-line form and :ref:`run-tests-in-ci`
