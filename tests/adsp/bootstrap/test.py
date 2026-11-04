@@ -85,19 +85,20 @@ def test_bootstrap(context):
             target.deactivate(uboot_driver)
             logger.info("Linux booted")
 
-            console.expect(re.escape("Continue? [y/N]:"), timeout=240)
-            console.sendline("y")
-            console.expect(re.escape("SPI install complete"), timeout=600)
+            console.expect(re.escape("Choice: "), timeout=240)
+            console.sendline("1")
+            console.expect(re.escape("SPI U-Boot install complete."), timeout=600)
             logger.info("SPI install complete")
 
-            # This test only serves the Buildroot eMMC image.
-            console.expect(re.escape("Choice [0/1/2]:"), timeout=240)
-            console.sendline("1")
-            console.expect(re.escape("PC IP address:"), timeout=240)
+            console.expect(re.escape("Choice: "), timeout=240)
+            console.sendline("2")
+            console.expect(re.escape("PC IP address: "), timeout=240)
             console.sendline(f"{openocd.interface.host}:{port}")
             console.expect(re.escape("eMMC install complete."), timeout=1800)
             logger.info("eMMC install complete")
 
+            console.expect(re.escape("Choice: "), timeout=240)
+            console.sendline("0")
             console.expect(re.escape("Waiting for switch"), timeout=120)
 
             spi_boot.set(True)
