@@ -1,0 +1,12 @@
+needs = ["sc598", "ezkit"]
+
+# Length of the open/close loop on the board, in seconds.
+duration_s = 600
+
+[[repository]]
+name = "linux"
+ref = "refs/heads/adsp-6.18.31-y"
+path = '''
+drivers/tty/serial/adi_uart4.c
+drivers/dma/adi-dma.c
+'''
