@@ -33,9 +33,8 @@ def pytest_configure(config):
 
     _original = SSHConnection._get_ssh_base_args
 
-    @staticmethod
-    def _patched():
-        args = _original()
+    def _patched(self):
+        args = _original(self)
         if ssh_config_path.exists():
             args += ["-F", str(ssh_config_path)]
         return args
