@@ -89,15 +89,11 @@ def test_uart4_open_close(context):
             console.expect("U-Boot", timeout=30)
             console.expect(uboot_driver.prompt, timeout=30)
 
-            # No DHCP server on the lab link: static IP in the exporter's subnet.
-            for cmd in (
-                "setenv ipaddr 192.168.1.200",
-                "setenv netmask 255.255.255.0",
-                f"setenv serverip {openocd.interface.host}",
-                f"setenv httpdstp {port}",
-            ):
-                console.sendline(cmd)
-                console.expect(uboot_driver.prompt, timeout=30)
+            console.sendline("dhcp")
+            console.expect(uboot_driver.prompt, timeout=120)
+
+            console.sendline(f"setenv httpdstp {port}")
+            console.expect(uboot_driver.prompt, timeout=30)
 
             for addr, role in (
                 ("kernel_addr_r", "kernel"),
