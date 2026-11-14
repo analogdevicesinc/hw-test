@@ -1,4 +1,4 @@
-labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next
+labgrid @ git+https://github.com/analogdevicesinc/labgrid.git@adi-next-2026-11-13
 pexpect
 pytest
 pytest-timeout
