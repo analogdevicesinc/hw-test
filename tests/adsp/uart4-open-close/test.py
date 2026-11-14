@@ -7,6 +7,12 @@ of a port (oops in adi_uart4_serial_rx_dma_timeout()).
 ttySC0 is the console and is held open by init, so it never sees a last
 close. Instead, uart2 is enabled in the devicetree from U-Boot; nothing else
 opens it, so every close in the loop runs the shutdown path.
+
+The RX flush timer is armed in startup() and fires every 50 ms while the
+port is open. The bug needs it to fire during shutdown(), so each
+iteration holds the port open for about one timer period (hold_ms, with
+hold_jitter_ms of random spread) to vary where the close lands relative to
+the timer. hold_ms = 0 opens and closes back to back instead.
 """
 
 import logging
@@ -46,6 +52,8 @@ def shell(console, cmd, timeout=30):
 @pytest.mark.linux
 def test_uart4_open_close(context):
     duration = int(context.get("duration", 600))
+    hold_ms = int(context.get("hold_ms", 50))
+    hold_jitter_ms = int(context.get("hold_jitter_ms", 20))
 
     github = GitHub(context)
     images = Images(context, github)
@@ -143,7 +151,13 @@ def test_uart4_open_close(context):
             ttys = sorted(set(re.findall(r"/tty/(ttySC\d+)\s", out)))
             assert len(ttys) == 1, f"no tty for {UART_DEVICE}: {out!r}"
             tty = f"/dev/{ttys[0]}"
-            logger.info("Stressing %s for %d s", tty, duration)
+            logger.info(
+                "Stressing %s for %d s (hold %d ms, jitter %d ms)",
+                tty,
+                duration,
+                hold_ms,
+                hold_jitter_ms,
+            )
 
             shell(console, "echo 8 > /proc/sys/kernel/printk")
             # No modem lines on this port: do not block open() on carrier.
@@ -152,13 +166,21 @@ def test_uart4_open_close(context):
             logger.info("dmesg: %s", out.strip())
 
             # Each iteration is a full open + last close, i.e. startup() and
-            # shutdown() of the port. Check the clock every 100 iterations.
+            # shutdown() of the port.
+            if hold_ms > 0:
+                low_us = max(hold_ms * 1000 - hold_jitter_ms * 500, 0)
+                span_us = max(hold_jitter_ms * 1000, 1)
+                hold = f"usleep $(( {low_us} + (RANDOM * 32768 + RANDOM) % {span_us} )); "
+                batch = 1
+            else:
+                hold = ""
+                batch = 100
             # The 'done' marker is split so the command echo does not match.
             console.sendline(
                 f"end=$(( $(date +%s) + {duration} )); n=0; "
                 f"while [ $(date +%s) -lt $end ]; do "
-                f"for i in $(seq 100); do exec 3<{tty}; exec 3<&-; done; "
-                f"n=$((n + 100)); done; "
+                f"for i in $(seq {batch}); do exec 3<{tty}; {hold}exec 3<&-; done; "
+                f"n=$((n + {batch})); done; "
                 f"echo uart4-open-close: 'DO''NE' $n"
             )
             try:
