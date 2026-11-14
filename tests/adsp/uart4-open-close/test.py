@@ -10,6 +10,7 @@ opens it, so every close in the loop runs the shutdown path.
 """
 
 import logging
+import re
 import time
 
 import pexpect
@@ -132,8 +133,14 @@ def test_uart4_open_close(context):
             assert index == 0, "root login asks for a password"
             logger.info("Logged in")
 
-            out = shell(console, f"ls /sys/bus/platform/devices/{UART_DEVICE}/tty/")
-            ttys = [w for w in out.split() if w.startswith("ttySC")]
+            # The tty sits below the serial-base port device, so resolve it
+            # through /sys/class/tty instead of the platform device.
+            out = shell(
+                console,
+                "for t in /sys/class/tty/ttySC*; do readlink -f $t; done"
+                f" | grep '/{UART_DEVICE}/'",
+            )
+            ttys = sorted(set(re.findall(r"/tty/(ttySC\d+)\s", out)))
             assert len(ttys) == 1, f"no tty for {UART_DEVICE}: {out!r}"
             tty = f"/dev/{ttys[0]}"
             logger.info("Stressing %s for %d s", tty, duration)
