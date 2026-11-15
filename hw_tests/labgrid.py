@@ -37,7 +37,7 @@ class LabgridClient:
     place, by name, whose tags include all ``needs`` from the context and
     whose resources are all available. If ``labgrid_target`` is set, only that
     place is considered. If all usable places are acquired, waits up to one
-    hour. If no place is usable, raises ``LabError``.
+    hour. If no place is usable, or none becomes free, raises ``LabError``.
 
     In GitHub Actions, the labgrid user is set to
     ``labgrid-client-<run id>-<attempt>``, so places left acquired by a
@@ -144,12 +144,9 @@ class LabgridClient:
                     return min(candidates, key=lambda place: place.name).name
 
                 if monotonic() >= deadline:
-                    acquired_by = ", ".join(
-                        f"{place.name} by {place.acquired}" for place in usable
-                    )
-                    raise AssertionError(
-                        f"no available place found for needs after "
-                        f"1 hour: {needs} ({acquired_by})"
+                    raise LabError(
+                        f"No labgrid place for {selection} became free within 1 hour, "
+                        f"{len(usable)} usable place(s) stayed acquired."
                     )
 
                 logger.info(
