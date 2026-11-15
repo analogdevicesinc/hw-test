@@ -25,14 +25,19 @@ from hw_tests.ssh_config import SSHConfig
 logger = logging.getLogger(__name__)
 
 
+class LabError(Exception):
+    """The lab could not run the test, for example because no place is usable."""
+
+
 class LabgridClient:
     """Select a labgrid place for a test and acquire it.
 
     The coordinator is ``labgrid_coordinator`` from the context or
     ``LG_COORDINATOR``. The place is selected on creation: the first free
-    place, by name, whose tags include all ``needs`` from the context. If
-    ``labgrid_target`` is set, only that place is considered. If all matches
-    are acquired, waits up to one hour.
+    place, by name, whose tags include all ``needs`` from the context and
+    whose resources are all available. If ``labgrid_target`` is set, only that
+    place is considered. If all usable places are acquired, waits up to one
+    hour. If no place is usable, raises ``LabError``.
 
     In GitHub Actions, the labgrid user is set to
     ``labgrid-client-<run id>-<attempt>``, so places left acquired by a
@@ -92,6 +97,9 @@ class LabgridClient:
         needs = self.context.get("needs")
         assert needs, "missing needs in test config"
         requested = self.context.get("labgrid_target")
+        selection = f"needs {needs}"
+        if requested:
+            selection += " and the requested labgrid_target"
 
         # Wait for a place that matches the needs and is not acquired by another user for 1 hour
         deadline = monotonic() + 60 * 60
@@ -100,7 +108,7 @@ class LabgridClient:
             try:
                 owner = f"{session.gethostname()}/{session.getuser()}"
                 matches = []
-                candidates = []
+                usable = []
                 for place in session.places.values():
                     if requested and place.name != requested:
                         continue
@@ -115,18 +123,29 @@ class LabgridClient:
                         continue
 
                     matches.append(place)
-                    if place.acquired in (None, owner) or self._is_previous_workflow_owner(
-                        place.acquired
-                    ):
-                        candidates.append(place)
+                    if _place_usable(session, place):
+                        usable.append(place)
 
-                assert matches, f"no place found for needs: {needs}"
+                if not matches:
+                    raise LabError(f"No labgrid place matches {selection}.")
+                if not usable:
+                    raise LabError(
+                        f"{len(matches)} labgrid place(s) match {selection}, but each misses "
+                        "a resource or has one that is not available. See "
+                        "labgrid-client -p <place> show."
+                    )
+                candidates = [
+                    place
+                    for place in usable
+                    if place.acquired in (None, owner)
+                    or self._is_previous_workflow_owner(place.acquired)
+                ]
                 if candidates:
                     return min(candidates, key=lambda place: place.name).name
 
                 if monotonic() >= deadline:
                     acquired_by = ", ".join(
-                        f"{place.name} by {place.acquired}" for place in matches
+                        f"{place.name} by {place.acquired}" for place in usable
                     )
                     raise AssertionError(
                         f"no available place found for needs after "
@@ -134,7 +153,7 @@ class LabgridClient:
                     )
 
                 logger.info(
-                    "Waiting for labgrid place with needs %s; all matches are acquired",
+                    "Waiting for labgrid place with needs %s; all usable places are acquired",
                     needs,
                 )
             finally:
@@ -236,6 +255,20 @@ class LabgridClient:
                     finally:
                         session.loop.run_until_complete(session.close())
                         sshmanager.close_all()
+
+
+def _place_usable(session, place):
+    resources = [
+        ((exporter, group, resource.cls, name), resource)
+        for exporter, groups in session.resources.items()
+        for group, named in groups.items()
+        for name, resource in named.items()
+    ]
+    for match in place.matches:
+        matched = [resource for path, resource in resources if match.ismatch(path)]
+        if not matched or not all(resource.avail for resource in matched):
+            return False
+    return True
 
 
 @contextmanager
