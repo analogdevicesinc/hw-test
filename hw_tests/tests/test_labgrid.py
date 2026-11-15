@@ -92,7 +92,7 @@ def test_concurrent_uboot_loads_use_isolated_http_roots(tmp_path):
                 return ["12345\n"]
             assert command.startswith(
                 (
-                    "nohup python3 -m http.server",
+                    "nohup timeout 6h python3 -m http.server",
                     "chmod 0755 /var/tmp/hw-test-http.",
                 )
             )
