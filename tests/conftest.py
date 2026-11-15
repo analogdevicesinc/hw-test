@@ -17,13 +17,18 @@ def pytest_exception_interact(node, call, report):
     else:
         path, lineno, _ = node.location
         lineno = lineno + 1 if lineno is not None else None
-    GitHub.annotate(
-        "error",
-        "Test failed; see the job log for details.",
-        title=f"Test failure: {call.excinfo.type.__name__}",
-        file=path,
-        line=lineno,
-    )
+    error = call.excinfo.value
+    title = f"Test failure in {node.nodeid}"
+    message = crash.message if crash is not None else call.excinfo.exconly()
+    if output := getattr(error, "output", None):
+        if isinstance(output, bytes):
+            output = output.decode(errors="replace")
+        lines = output.splitlines()
+        picked = [line for line in lines if "Error" in line][:10] + lines[-3:]
+        if (returncode := getattr(error, "returncode", None)) is not None:
+            message = f"{call.excinfo.typename}, exit status {returncode}"
+        message += "\n" + "\n".join(dict.fromkeys(picked))
+    GitHub.annotate("error", message, title=title, file=path, line=lineno)
 
 
 def pytest_configure(config):
