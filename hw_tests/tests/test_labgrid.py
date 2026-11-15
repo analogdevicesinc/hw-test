@@ -5,8 +5,10 @@ from types import SimpleNamespace
 
 import pytest
 from labgrid.exceptions import NoResourceFoundError
+from labgrid.remote.common import ResourceMatch
 
 from hw_tests.labgrid import (
+    LabError,
     LabgridClient,
     exporter_http_server,
 )
@@ -179,15 +181,18 @@ def test_labgrid_client_selects_configured_place_without_local_env_file(
         name="MUN-00-SC598_EZKIT-01",
         tags={"board": "sc598", "kind": "ezkit"},
         acquired=None,
+        matches=[],
         get_config=dict,
     )
     place = SimpleNamespace(
         name="MUN-01-SC598_EZKIT-02",
         tags={"board": "sc598", "kind": "ezkit"},
         acquired=None,
+        matches=[],
         get_config=lambda: {"drivers": [{"SSHDriver": {"name": "ssh"}}]},
     )
     session = SimpleNamespace(
+        resources={},
         places={unconfigured_place.name: unconfigured_place, place.name: place},
         loop=FakeLoop(),
         gethostname=lambda: "test-host",
@@ -261,3 +266,65 @@ def test_labgrid_client_cleans_up_target_before_release(monkeypatch):
         raise RuntimeError("test failure")
 
     assert events == ["acquire", "cleanup", "release", "stop", "close"]
+
+
+def _session(places, resources):
+    return SimpleNamespace(
+        places={place.name: place for place in places},
+        resources=resources,
+        loop=SimpleNamespace(run_until_complete=lambda result: result),
+        gethostname=lambda: "test-host",
+        getuser=lambda: "test-user",
+        stop=lambda: None,
+        close=lambda: None,
+    )
+
+
+def _place(name, *matches):
+    return SimpleNamespace(
+        name=name,
+        tags={"board": "sc598", "kind": "ezlite"},
+        acquired=None,
+        matches=[ResourceMatch.fromstr(match) for match in matches],
+        get_config=lambda: {"drivers": [{"SSHDriver": {"name": "ssh"}}]},
+    )
+
+
+_RESOURCES = {
+    "lab-host": {
+        "EZLITE-01": {"console": SimpleNamespace(cls="NetworkSerialPort", avail=False)},
+        "EZLITE-02": {"console": SimpleNamespace(cls="NetworkSerialPort", avail=True)},
+    },
+}
+
+
+def _client_for(monkeypatch, places, context):
+    monkeypatch.setenv("LG_COORDINATOR", "coordinator.example:20408")
+    monkeypatch.delenv("GITHUB_RUN_ID", raising=False)
+    session = _session(places, _RESOURCES)
+    monkeypatch.setattr("hw_tests.labgrid.start_session", lambda coordinator: session)
+    return LabgridClient(context)
+
+
+def test_labgrid_client_leaves_out_places_that_cannot_be_used(monkeypatch):
+    places = [
+        _place("EZLITE-01", "*/EZLITE-01/*"),
+        _place("EZLITE-02", "*/EZLITE-03/*"),
+        _place("EZLITE-03", "*/EZLITE-02/*"),
+    ]
+
+    assert _client_for(monkeypatch, places, {"needs": ["sc598", "ezlite"]}).place == "EZLITE-03"
+
+
+def test_labgrid_client_fails_with_a_lab_error_when_no_place_is_usable(monkeypatch):
+    """Say why, without the names of places, resources or lab hosts."""
+
+    places = [_place("EZLITE-01", "*/EZLITE-01/*"), _place("EZLITE-02", "*/EZLITE-03/*")]
+
+    with pytest.raises(LabError) as error:
+        _client_for(monkeypatch, places, {"needs": ["sc598", "ezlite"]})
+
+    assert str(error.value) == (
+        "2 labgrid place(s) match needs ['sc598', 'ezlite'], but each misses a resource or "
+        "has one that is not available. See labgrid-client -p <place> show."
+    )

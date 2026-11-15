@@ -20,6 +20,17 @@ Check these first:
   config with the expected resources and drivers.
 * The hardware host is reachable over SSH.
 
+A test fails with a lab problem
+-------------------------------
+
+In GitHub Actions, the annotation of a failed test says why it failed. An
+annotation titled ``Lab problem in <test>`` means that the lab could not run
+the test, not that the change under test is wrong, for example because each
+matching place misses a resource or has one that is not available. The
+annotation does not name places or resources. Find them with
+``labgrid-client places`` and ``labgrid-client -p <place> show``, then fix
+them or ask whoever maintains the fixture.
+
 A driver is missing
 --------------------
 

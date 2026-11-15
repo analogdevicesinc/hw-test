@@ -2,6 +2,7 @@ from pathlib import Path
 
 from hw_tests.context import build_context, parse_set_env, test_name
 from hw_tests.github import GitHub
+from hw_tests.labgrid import LabError
 from hw_tests.logging import install_pytest_log_redaction
 from hw_tests.ssh_config import ssh_config_path
 
@@ -18,16 +19,19 @@ def pytest_exception_interact(node, call, report):
         path, lineno, _ = node.location
         lineno = lineno + 1 if lineno is not None else None
     error = call.excinfo.value
-    title = f"Test failure in {node.nodeid}"
-    message = crash.message if crash is not None else call.excinfo.exconly()
-    if output := getattr(error, "output", None):
-        if isinstance(output, bytes):
-            output = output.decode(errors="replace")
-        lines = output.splitlines()
-        picked = [line for line in lines if "Error" in line][:10] + lines[-3:]
-        if (returncode := getattr(error, "returncode", None)) is not None:
-            message = f"{call.excinfo.typename}, exit status {returncode}"
-        message += "\n" + "\n".join(dict.fromkeys(picked))
+    if isinstance(error, LabError):
+        title, message = f"Lab problem in {node.nodeid}", str(error)
+    else:
+        title = f"Test failure in {node.nodeid}"
+        message = crash.message if crash is not None else call.excinfo.exconly()
+        if output := getattr(error, "output", None):
+            if isinstance(output, bytes):
+                output = output.decode(errors="replace")
+            lines = output.splitlines()
+            picked = [line for line in lines if "Error" in line][:10] + lines[-3:]
+            if (returncode := getattr(error, "returncode", None)) is not None:
+                message = f"{call.excinfo.typename}, exit status {returncode}"
+            message += "\n" + "\n".join(dict.fromkeys(picked))
     GitHub.annotate("error", message, title=title, file=path, line=lineno)
 
 
