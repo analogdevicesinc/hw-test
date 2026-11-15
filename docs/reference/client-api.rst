@@ -35,7 +35,8 @@ labgrid session handling. It selects a matching place from ``needs``, acquires
 it, configures SSH, and releases it at the end.
 
 Places with a missing or unavailable resource are left out. If no place is
-usable, the test fails with a ``LabError``.
+usable, or none becomes free within one hour, the test fails with a
+``LabError``.
 
 Small smoke test:
 
