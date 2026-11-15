@@ -34,7 +34,7 @@ from zipfile import ZipFile
 
 import requests
 
-from hw_tests.logging import gha_escape, register_sensitive
+from hw_tests.logging import gha_escape, redact_text, register_sensitive
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +127,20 @@ class GitHub:
         register_sensitive(value)
         if GitHub.in_actions():
             print(f"::add-mask::{gha_escape(str(value))}", flush=True)
+
+    @staticmethod
+    def annotate(level, message, *, title=None, file=None, line=None):
+        """In GitHub Actions, add an ``error`` or ``warning`` annotation to the job."""
+        if not GitHub.in_actions():
+            return
+        props = {"file": file, "line": line, "title": title and redact_text(title)}
+        props = ",".join(
+            f"{key}={gha_escape(str(value), prop=True)}"
+            for key, value in props.items()
+            if value is not None
+        )
+        command = f"::{level} {props}" if props else f"::{level}"
+        print(f"\n{command}::{gha_escape(redact_text(message))}", flush=True)
 
     @staticmethod
     def get_id_token():
