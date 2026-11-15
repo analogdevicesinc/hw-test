@@ -6,6 +6,7 @@ matches the ``needs`` of the test, acquires it, configures SSH, and releases.
 
 
 import logging
+import re
 import shlex
 from argparse import Namespace
 from contextlib import contextmanager
@@ -80,11 +81,9 @@ class LabgridClient:
             return False
 
         acquired_user = acquired.rsplit("/", maxsplit=1)[-1]
-        prefix = self._workflow_owner.rsplit("-", maxsplit=1)[0]
-        return acquired_user == prefix or (
-            acquired_user.startswith(f"{prefix}-")
-            and acquired_user != self._workflow_owner
-        )
+        run, attempt = self._workflow_owner.split("-")[2:4]
+        match = re.fullmatch(rf"labgrid-client-{run}-(\d+)", acquired_user)
+        return match is not None and int(match.group(1)) < int(attempt)
 
     def _resolve_coordinator(self):
         coordinator = self.context.get("labgrid_coordinator") or environ.get(
@@ -236,7 +235,8 @@ class LabgridClient:
                 session.check_matches(place)
             else:
                 if self._is_previous_workflow_owner(place.acquired):
-                    session.loop.run_until_complete(session.release())
+                    session.args.acquired = place.acquired
+                    session.loop.run_until_complete(session.release_from())
                 session.loop.run_until_complete(session.acquire())
                 acquired = True
 

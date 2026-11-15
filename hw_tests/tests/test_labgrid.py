@@ -328,3 +328,62 @@ def test_labgrid_client_fails_with_a_lab_error_when_no_place_is_usable(monkeypat
         "2 labgrid place(s) match needs ['sc598', 'ezlite'], but each misses a resource or "
         "has one that is not available. See labgrid-client -p <place> show."
     )
+
+
+def test_labgrid_client_takes_over_with_release_from(monkeypatch):
+    """Release a place of an earlier attempt only if that attempt still has it."""
+
+    events = []
+    previous = "runner-host/labgrid-client-100-1"
+    place = SimpleNamespace(name="board", acquired=previous)
+
+    class FakeLoop:
+        def run_until_complete(self, result):
+            return result
+
+    session = SimpleNamespace(
+        args=SimpleNamespace(),
+        get_place=lambda name: place,
+        gethostname=lambda: "runner-host",
+        getuser=lambda: "labgrid-client-100-2",
+        release_from=lambda: events.append(("release_from", session.args.acquired)),
+        acquire=lambda: events.append("acquire"),
+        get_acquired_place=lambda name: place,
+        _get_target=lambda selected_place: SimpleNamespace(cleanup=lambda: None),
+        release=lambda: events.append("release"),
+        stop=lambda: None,
+        close=lambda: None,
+        loop=FakeLoop(),
+    )
+
+    client = object.__new__(LabgridClient)
+    client.coordinator = "coordinator.example:20408"
+    client.place = place.name
+    client._workflow_owner = "labgrid-client-100-2"
+    monkeypatch.setattr("hw_tests.labgrid.start_session", lambda *args, **kwargs: session)
+    monkeypatch.setattr(client, "_configure_ssh", lambda *args: None)
+
+    with client.acquire():
+        pass
+
+    assert events == [("release_from", previous), "acquire", "release"]
+
+
+@pytest.mark.parametrize(
+    ("acquired", "expected"),
+    [
+        ("runner-host/labgrid-client-100-1", True),
+        ("runner-host/labgrid-client-100-2", False),
+        ("runner-host/labgrid-client-100-3", False),
+        ("runner-host/labgrid-client-1000-1", False),
+        ("runner-host/someone", False),
+        (None, False),
+    ],
+)
+def test_labgrid_client_takes_over_only_earlier_attempts(acquired, expected):
+    """Take over places of earlier attempts of the run only."""
+
+    client = object.__new__(LabgridClient)
+    client._workflow_owner = "labgrid-client-100-2"
+
+    assert client._is_previous_workflow_owner(acquired) is expected
