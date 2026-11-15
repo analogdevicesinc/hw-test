@@ -1,14 +1,14 @@
-from os import environ
 from pathlib import Path
 
 from hw_tests.context import build_context, parse_set_env, test_name
-from hw_tests.logging import gha_escape, install_pytest_log_redaction
+from hw_tests.github import GitHub
+from hw_tests.logging import install_pytest_log_redaction
 from hw_tests.ssh_config import ssh_config_path
 
 
 def pytest_exception_interact(node, call, report):
     """Surface a test failure as a GitHub Actions error annotation."""
-    if environ.get("GITHUB_ACTIONS") != "true" or not report.failed:
+    if not report.failed:
         return
 
     crash = getattr(report.longrepr, "reprcrash", None)
@@ -17,15 +17,13 @@ def pytest_exception_interact(node, call, report):
     else:
         path, lineno, _ = node.location
         lineno = lineno + 1 if lineno is not None else None
-    exc = call.excinfo
-    title = f"Test failure: {exc.type.__name__}"
-
-    command = f"::error file={gha_escape(path, prop=True)}"
-    if lineno is not None:
-        command += f",line={lineno}"
-    command += f",title={gha_escape(title, prop=True)}"
-    command += "::Test failed; see the job log for details."
-    print(command, flush=True)
+    GitHub.annotate(
+        "error",
+        "Test failed; see the job log for details.",
+        title=f"Test failure: {call.excinfo.type.__name__}",
+        file=path,
+        line=lineno,
+    )
 
 
 def pytest_configure(config):

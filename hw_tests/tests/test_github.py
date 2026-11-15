@@ -94,3 +94,23 @@ def test_list_artifacts_single_page(monkeypatch):
 
     assert names == ["keep1", "keep2"]
     assert mock_get.call_count == 1
+
+
+def test_annotate_starts_on_a_new_line(monkeypatch, capsys):
+    """Print the annotation on its own line, with escaped properties and message."""
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+
+    GitHub.annotate("error", "line 1\nline 2", title="a: b, c", file="test.py", line=3)
+
+    assert capsys.readouterr().out == (
+        "\n::error file=test.py,line=3,title=a%3A b%2C c::line 1%0Aline 2\n"
+    )
+
+
+def test_annotate_redacts_lab_hosts(monkeypatch, capsys):
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+
+    GitHub.annotate("error", "ssh: connect to host 10.1.2.3 via lab.ad.analog.com", title="in 10.1.2.3")
+
+    out = capsys.readouterr().out
+    assert out == "\n::error title=in <IP>::ssh: connect to host <IP> via <INTERNAL_HOST>\n"
