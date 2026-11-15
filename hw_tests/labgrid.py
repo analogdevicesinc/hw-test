@@ -46,7 +46,8 @@ class LabgridClient:
     ``LabError``.
 
     In GitHub Actions, the labgrid user is set to
-    ``labgrid-client-<run id>-<attempt>``, so places left acquired by a
+    ``labgrid-client-<run id>-<attempt>-<job check run id>``, so jobs that run
+    at the same time get different users, and places left acquired by a
     previous attempt of the same run can be taken over.
 
     :param context: Test context.
@@ -67,14 +68,18 @@ class LabgridClient:
 
     def _configure_identity(self):
         self._workflow_owner = None
-        if "LG_USERNAME" in environ or "GITHUB_RUN_ID" not in environ:
+        if "GITHUB_RUN_ID" not in environ:
             return
 
-        self._workflow_owner = (
+        owner = (
             f"labgrid-client-{environ['GITHUB_RUN_ID']}-"
-            f"{environ.get('GITHUB_RUN_ATTEMPT', '1')}"
+            f"{environ.get('GITHUB_RUN_ATTEMPT', '1')}-{environ['JOB_CHECK_RUN_ID']}"
         )
-        environ["LG_USERNAME"] = self._workflow_owner
+        if environ.get("LG_USERNAME", owner) != owner:
+            return
+
+        self._workflow_owner = owner
+        environ["LG_USERNAME"] = owner
 
     def _is_previous_workflow_owner(self, acquired):
         if self._workflow_owner is None or not acquired:
@@ -82,7 +87,7 @@ class LabgridClient:
 
         acquired_user = acquired.rsplit("/", maxsplit=1)[-1]
         run, attempt = self._workflow_owner.split("-")[2:4]
-        match = re.fullmatch(rf"labgrid-client-{run}-(\d+)", acquired_user)
+        match = re.fullmatch(rf"labgrid-client-{run}-(\d+)-\d+", acquired_user)
         return match is not None and int(match.group(1)) < int(attempt)
 
     def _resolve_coordinator(self):
