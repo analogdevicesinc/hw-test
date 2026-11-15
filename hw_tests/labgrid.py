@@ -51,6 +51,7 @@ class LabgridClient:
         self._configure_identity()
         self.coordinator = self._resolve_coordinator()
         self.place = self._resolve_place()
+        GitHub.mask(self.place)
 
         self.hosts = set()
         self.ssh_config = SSHConfig()
