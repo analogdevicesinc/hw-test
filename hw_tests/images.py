@@ -93,7 +93,7 @@ class Images:
         needs = self.context.get("needs") or []
         if isinstance(needs, str):
             needs = [needs]
-        return [n.lower() for n in needs]
+        return [str(n).split("=", 1)[-1].lower() for n in needs]
 
     def _source(self, spec):
         """Return the descriptor-defined release source for a role, if any."""

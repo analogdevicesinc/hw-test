@@ -1,4 +1,4 @@
-needs = ["sc598", "ezkit"]
+needs = ["board=sc598", "kind=ezkit"]
 
 [[repository]]
 name = "u-boot"

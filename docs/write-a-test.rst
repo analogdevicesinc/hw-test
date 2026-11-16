@@ -45,19 +45,19 @@ The directory path is the test name. In this example, its name is
 Describe the hardware you need
 ------------------------------
 
-In ``config.toml``, list the board-selection tags provided by the platform.
-These must match tags on a :ref:`board slot <hw-test-glossary>` (a Labgrid
-Place). ``hw-test`` selects a board only when every value in ``needs``
-matches that place's tags.
+In ``config.toml``, list the board-selection tags provided by the platform,
+as ``key=value``. These must match tags on a :ref:`board slot
+<hw-test-glossary>` (a Labgrid Place). ``hw-test`` selects a board only when
+it has every tag in ``needs``.
 
 .. code:: toml
 
-   needs = ["sc598", "ezkit"]
+   needs = ["board=sc598", "kind=ezkit"]
 
 For example, a board slot tagged with ``family=adsp``, ``board=sc598``, and
-``kind=ezkit`` matches this test because it has both ``sc598`` and ``ezkit``.
-It does not matter which matching board is selected; ``hw-test`` reserves one
-that is currently free.
+``kind=ezkit`` matches this test. It does not matter which matching board is
+selected; the coordinator allocates one that is currently free, or queues the
+request until one is released.
 
 Keep ``needs`` about hardware capabilities, not an individual board-slot name,
 lab location, or the drivers the test will use. That lets the same test run on
@@ -143,8 +143,8 @@ was built.
 
 #. The build system, detected from the repository under test.
 #. The artifact is selected from the run by matching every
-   ``needs`` token as a case-insensitive substring of the artifact name, so
-   ``needs = ["sc598", "ezkit"]`` picks the sc598 ezkit build and rejects
+   ``needs`` tag value as a case-insensitive substring of the artifact name, so
+   ``needs = ["board=sc598", "kind=ezkit"]`` picks the sc598 ezkit build and rejects
    ``ezlite`` or ``sc589``.
 #. Role descriptor maps each role, per flavor, to an artifact and an inner-file pattern.
 
