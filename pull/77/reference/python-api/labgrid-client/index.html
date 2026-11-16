@@ -181,9 +181,10 @@ place, by name, whose tags include all <code class="docutils literal notranslate
 <code class="docutils literal notranslate"><span class="pre">labgrid_target</span></code> is set, only that place is considered. If all matches
 are acquired, waits up to one hour.</p>
 <p>In GitHub Actions, the labgrid user is set to
-<code class="docutils literal notranslate"><span class="pre">labgrid-client-&lt;run</span> <span class="pre">id&gt;-&lt;attempt&gt;-&lt;runner</span> <span class="pre">name&gt;</span></code>. Jobs that run at the
-same time get different users, and places left acquired by a previous
-attempt of the same run can be taken over.</p>
+<code class="docutils literal notranslate"><span class="pre">labgrid-client-&lt;run</span> <span class="pre">id&gt;-&lt;attempt&gt;-&lt;job&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;job&gt;</span></code> is
+<code class="docutils literal notranslate"><span class="pre">HW_TEST_JOB_ID</span></code> (the check run id of the job) or, if unset, the runner
+name. Jobs that run at the same time get different users, and places left
+acquired by a previous attempt of the same run can be taken over.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>context</strong> – Test context.</p>
