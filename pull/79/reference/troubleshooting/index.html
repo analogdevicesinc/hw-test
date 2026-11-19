@@ -182,10 +182,11 @@ config with the expected resources and drivers.</p></li>
 </section>
 <section id="a-test-fails-with-a-lab-problem">
 <h2>A test fails with a lab problem<a class="headerlink" href="#a-test-fails-with-a-lab-problem" title="Link to this heading"></a></h2>
-<p>In GitHub Actions, the annotation of a failed test says why it failed. An
-annotation titled <code class="docutils literal notranslate"><span class="pre">Lab</span> <span class="pre">problem</span> <span class="pre">in</span> <span class="pre">&lt;test&gt;</span></code> means that the lab could not run
-the test, not that the change under test is wrong, for example because each
-matching place misses a resource or has one that is not available. The
+<p>In GitHub Actions, the annotation of a failed test says why it failed. A
+warning annotation titled <code class="docutils literal notranslate"><span class="pre">Lab</span> <span class="pre">problem</span> <span class="pre">in</span> <span class="pre">&lt;test&gt;</span></code> means that the lab could
+not run the test and the test was skipped, not that the change under test is
+wrong, for example because each matching place misses a resource or has one
+that is not available. The
 annotation does not name places or resources. Find them with
 <code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">places</span></code> and <code class="docutils literal notranslate"><span class="pre">labgrid-client</span> <span class="pre">-p</span> <span class="pre">&lt;place&gt;</span> <span class="pre">show</span></code>, then fix
 them or ask whoever maintains the fixture.</p>

@@ -174,8 +174,9 @@ handles acquisition, authentication and lifespan. It picks a free place that
 matches the <code class="docutils literal notranslate"><span class="pre">needs</span></code> of the test, acquires it, configures SSH, and releases.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="hw_tests.labgrid.LabError">
-<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.labgrid.</span></span><span class="sig-name descname"><span class="pre">LabError</span></span><a class="headerlink" href="#hw_tests.labgrid.LabError" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.labgrid.</span></span><span class="sig-name descname"><span class="pre">LabError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pytrace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_module_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">_use_item_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.labgrid.LabError" title="Link to this definition"></a></dt>
 <dd><p>The lab could not run the test, for example because no place is usable.</p>
+<p>Raising it skips the test.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -187,7 +188,8 @@ matches the <code class="docutils literal notranslate"><span class="pre">needs</
 place, by name, whose tags include all <code class="docutils literal notranslate"><span class="pre">needs</span></code> from the context and
 whose resources are all available. If <code class="docutils literal notranslate"><span class="pre">labgrid_target</span></code> is set, only that
 place is considered. If all usable places are acquired, waits up to one
-hour. If no place is usable, or none becomes free, raises <code class="docutils literal notranslate"><span class="pre">LabError</span></code>.</p>
+hour. If no place is usable, or none becomes free, skips the test with
+<code class="docutils literal notranslate"><span class="pre">LabError</span></code>.</p>
 <p>In GitHub Actions, the labgrid user is set to
 <code class="docutils literal notranslate"><span class="pre">labgrid-client-&lt;run</span> <span class="pre">id&gt;-&lt;attempt&gt;</span></code>, so places left acquired by a
 previous attempt of the same run can be taken over.</p>
