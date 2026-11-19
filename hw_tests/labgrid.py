@@ -14,6 +14,7 @@ from pathlib import PurePosixPath
 from time import monotonic, sleep
 from urllib.parse import urlsplit
 
+import pytest
 from labgrid.exceptions import NoResourceFoundError
 from labgrid.remote.client import start_session
 from labgrid.util.ssh import sshmanager
@@ -25,8 +26,11 @@ from hw_tests.ssh_config import SSHConfig
 logger = logging.getLogger(__name__)
 
 
-class LabError(Exception):
-    """The lab could not run the test, for example because no place is usable."""
+class LabError(pytest.skip.Exception):
+    """The lab could not run the test, for example because no place is usable.
+
+    Raising it skips the test.
+    """
 
 
 class LabgridClient:
@@ -37,7 +41,8 @@ class LabgridClient:
     place, by name, whose tags include all ``needs`` from the context and
     whose resources are all available. If ``labgrid_target`` is set, only that
     place is considered. If all usable places are acquired, waits up to one
-    hour. If no place is usable, or none becomes free, raises ``LabError``.
+    hour. If no place is usable, or none becomes free, skips the test with
+    ``LabError``.
 
     In GitHub Actions, the labgrid user is set to
     ``labgrid-client-<run id>-<attempt>``, so places left acquired by a
