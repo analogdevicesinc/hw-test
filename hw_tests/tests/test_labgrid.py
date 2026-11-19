@@ -179,13 +179,13 @@ def test_labgrid_client_selects_configured_place_without_local_env_file(
         name="MUN-00-SC598_EZKIT-01",
         tags={"board": "sc598", "kind": "ezkit"},
         acquired=None,
-        get_config=dict,
+        get_remote_place_config=dict,
     )
     place = SimpleNamespace(
         name="MUN-01-SC598_EZKIT-02",
         tags={"board": "sc598", "kind": "ezkit"},
         acquired=None,
-        get_config=lambda: {"drivers": [{"SSHDriver": {"name": "ssh"}}]},
+        get_remote_place_config=lambda: {"drivers": [{"SSHDriver": {"name": "ssh"}}]},
     )
     session = SimpleNamespace(
         places={unconfigured_place.name: unconfigured_place, place.name: place},
