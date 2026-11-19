@@ -110,7 +110,7 @@ class LabgridClient:
                     tags.update(str(value) for value in place.tags.values())
                     if not (
                         all(need in tags for need in needs)
-                        and place.get_config()
+                        and place.get_remote_place_config()
                     ):
                         continue
 
