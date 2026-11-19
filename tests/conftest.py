@@ -19,20 +19,23 @@ def pytest_exception_interact(node, call, report):
         path, lineno, _ = node.location
         lineno = lineno + 1 if lineno is not None else None
     error = call.excinfo.value
-    if isinstance(error, LabError):
-        title, message = f"Lab problem in {node.nodeid}", str(error)
-    else:
-        title = f"Test failure in {node.nodeid}"
-        message = crash.message if crash is not None else call.excinfo.exconly()
-        if output := getattr(error, "output", None):
-            if isinstance(output, bytes):
-                output = output.decode(errors="replace")
-            lines = output.splitlines()
-            picked = [line for line in lines if "Error" in line][:10] + lines[-3:]
-            if (returncode := getattr(error, "returncode", None)) is not None:
-                message = f"{call.excinfo.typename}, exit status {returncode}"
-            message += "\n" + "\n".join(dict.fromkeys(picked))
+    title = f"Test failure in {node.nodeid}"
+    message = crash.message if crash is not None else call.excinfo.exconly()
+    if output := getattr(error, "output", None):
+        if isinstance(output, bytes):
+            output = output.decode(errors="replace")
+        lines = output.splitlines()
+        picked = [line for line in lines if "Error" in line][:10] + lines[-3:]
+        if (returncode := getattr(error, "returncode", None)) is not None:
+            message = f"{call.excinfo.typename}, exit status {returncode}"
+        message += "\n" + "\n".join(dict.fromkeys(picked))
     GitHub.annotate("error", message, title=title, file=path, line=lineno)
+
+
+def pytest_runtest_makereport(item, call):
+    """Surface a lab problem that skipped a test as a GitHub Actions warning annotation."""
+    if call.excinfo is not None and isinstance(call.excinfo.value, LabError):
+        GitHub.annotate("warning", str(call.excinfo.value), title=f"Lab problem in {item.nodeid}")
 
 
 def pytest_configure(config):

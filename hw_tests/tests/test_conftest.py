@@ -40,3 +40,17 @@ def test_failure_annotation_shows_the_error_lines_of_the_output(monkeypatch, cap
         "Info : b",
         "done",
     ]
+
+
+def test_lab_problem_annotation_is_a_warning(monkeypatch, capsys):
+    """A lab problem skips the test and adds a warning annotation that says why."""
+
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    item = SimpleNamespace(nodeid="tests/x/test.py::test_x")
+    call = SimpleNamespace(excinfo=SimpleNamespace(value=conftest.LabError("No labgrid place matches needs.")))
+
+    conftest.pytest_runtest_makereport(item, call)
+
+    assert capsys.readouterr().out == (
+        "\n::warning title=Lab problem in tests/x/test.py%3A%3Atest_x::No labgrid place matches needs.\n"
+    )
