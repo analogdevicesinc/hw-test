@@ -99,6 +99,7 @@
 <li><a class="reference internal" href="#hw_tests.github.GitHub"><code class="docutils literal notranslate"><span class="pre">GitHub</span></code></a><ul>
 <li><a class="reference internal" href="#hw_tests.github.GitHub.in_actions"><code class="docutils literal notranslate"><span class="pre">GitHub.in_actions()</span></code></a></li>
 <li><a class="reference internal" href="#hw_tests.github.GitHub.mask"><code class="docutils literal notranslate"><span class="pre">GitHub.mask()</span></code></a></li>
+<li><a class="reference internal" href="#hw_tests.github.GitHub.annotate"><code class="docutils literal notranslate"><span class="pre">GitHub.annotate()</span></code></a></li>
 <li><a class="reference internal" href="#hw_tests.github.GitHub.get_id_token"><code class="docutils literal notranslate"><span class="pre">GitHub.get_id_token()</span></code></a></li>
 <li><a class="reference internal" href="#hw_tests.github.GitHub.owner_repository"><code class="docutils literal notranslate"><span class="pre">GitHub.owner_repository</span></code></a></li>
 <li><a class="reference internal" href="#hw_tests.github.GitHub.list_artifacts"><code class="docutils literal notranslate"><span class="pre">GitHub.list_artifacts()</span></code></a></li>
@@ -237,6 +238,12 @@ it, workflow artifacts cannot be downloaded.</p>
 <dt class="sig sig-object py" id="hw_tests.github.GitHub.mask">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.github.GitHub.mask" title="Link to this definition"></a></dt>
 <dd><p>Hide <code class="docutils literal notranslate"><span class="pre">value</span></code> from logs and, in GitHub Actions, from job output.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="hw_tests.github.GitHub.annotate">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.github.GitHub.annotate" title="Link to this definition"></a></dt>
+<dd><p>In GitHub Actions, add an <code class="docutils literal notranslate"><span class="pre">error</span></code> or <code class="docutils literal notranslate"><span class="pre">warning</span></code> annotation to the job.</p>
 </dd></dl>
 
 <dl class="py method">
