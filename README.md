@@ -22,10 +22,10 @@ A context has the format:
 
 ```{json}
 {
-  'name': 'demo/linux-iio-dac',
-  'repository': {
-    'linux': {'ref': '010c31d76bfb49bb2c53cc4cb9a0ae63031a6ead'},
-    'hdl': {'ref': 'refs/heads/main'}}}
+  "name": "demo/linux-iio-dac",
+  "repository": {
+    "linux": {"ref": "010c31d76bfb49bb2c53cc4cb9a0ae63031a6ead"},
+    "hdl": {"ref": "refs/heads/main"}
   }
 }
 ```
@@ -54,7 +54,7 @@ $ export LG_COORDINATOR=<address>
 $ set="{'name': 'adsp/bootstrap', 'workflow_run_url': 'https://api.github.com/repos/analogdevicesinc/br2-external/actions/runs/27766740938'}" pytest -vvs
 ```
 
-For testing the `hw_library` library:
+For testing the `hw_tests` library:
 ```
 $ pytest hw_tests
 ```

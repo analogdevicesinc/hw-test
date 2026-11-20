@@ -83,18 +83,24 @@ Run against local build files
 Some tests download build artifacts from a GitHub Actions run. To use files you
 built locally instead, place them where the test expects and run without a
 token. ``hw-test`` looks under ``_artifacts/<test-name>/0/`` and tells you the
-exact path it expects:
+exact path it expects. Tests that resolve images by role also need the image
+``flavor`` in the context, because without a workflow run the repository that
+built the images is unknown:
 
 .. shell::
 
-   $ set='{"name": "adsp/bootstrap"}' pytest -s
-     WARNING hw_tests.github:
-       Neither 'workflow_run_url' in context or 'GITHUB_REPOSITORY' in
-       environment, cannot download artifacts; assuming you have them at
-       '<cwd>/_artifacts/adsp/bootstrap/0'
-   $ cp /path/to/my.dtb _artifacts/adsp/bootstrap/0/my.dtb
-   $ set='{"name": "adsp/bootstrap"}' pytest -s
-     ... test uses the local file ...
+   $ set='{"name": "adsp/bootstrap", "flavor": "br2-external"}' pytest -s
+     WARNING hw_tests.github: cannot download artifacts; assuming you have
+       them at '<cwd>/_artifacts/adsp/bootstrap/0'
+   $ cp -r /path/to/build/bootstrap /path/to/build/debug _artifacts/adsp/bootstrap/0/
+   $ set='{"name": "adsp/bootstrap", "flavor": "br2-external"}' pytest -s
+     ... test uses the local files ...
+
+The directory stands in for the extracted artifact, so keep the same layout
+inside it as the ``file`` globs in ``tests/<category>/artifacts.toml`` expect
+(for ``br2-external``, ``bootstrap/u-boot-spl``, ``bootstrap/*.dtb``, and so
+on). Each ``download`` call of a test gets its own numbered directory; tests
+that take all images from one artifact only use ``0``.
 
 For artifacts sourced from a GitHub release, place the release files under
 ``_artifacts/<test-name>/release/<source-name>/`` instead.
