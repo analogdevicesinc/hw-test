@@ -95,6 +95,7 @@
         <nav>
           <ul>
 <li><a class="reference internal" href="#">LabgridClient</a><ul>
+<li><a class="reference internal" href="#hw_tests.labgrid.LabError"><code class="docutils literal notranslate"><span class="pre">LabError</span></code></a></li>
 <li><a class="reference internal" href="#hw_tests.labgrid.LabgridClient"><code class="docutils literal notranslate"><span class="pre">LabgridClient</span></code></a><ul>
 <li><a class="reference internal" href="#hw_tests.labgrid.LabgridClient.acquire"><code class="docutils literal notranslate"><span class="pre">LabgridClient.acquire()</span></code></a></li>
 </ul>
@@ -171,20 +172,28 @@ Content on this topic
 <p>To ensure the tests scope is to test a feature, the <code class="docutils literal notranslate"><span class="pre">LabgridClient</span></code> class
 handles acquisition, authentication and lifespan. It picks a free place that
 matches the <code class="docutils literal notranslate"><span class="pre">needs</span></code> of the test, acquires it, configures SSH, and releases.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="hw_tests.labgrid.LabError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.labgrid.</span></span><span class="sig-name descname"><span class="pre">LabError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pytrace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_module_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">_use_item_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.labgrid.LabError" title="Link to this definition"></a></dt>
+<dd><p>The lab could not run the test, for example because no place is usable.</p>
+<p>Raising it skips the test.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="hw_tests.labgrid.LabgridClient">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">hw_tests.labgrid.</span></span><span class="sig-name descname"><span class="pre">LabgridClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hw_tests.labgrid.LabgridClient" title="Link to this definition"></a></dt>
 <dd><p>Select a labgrid place for a test and acquire it.</p>
 <p>The coordinator is <code class="docutils literal notranslate"><span class="pre">labgrid_coordinator</span></code> from the context or
 <code class="docutils literal notranslate"><span class="pre">LG_COORDINATOR</span></code>. The place is selected on creation: the first free
-place, by name, whose tags include all <code class="docutils literal notranslate"><span class="pre">needs</span></code> from the context. If
-<code class="docutils literal notranslate"><span class="pre">labgrid_target</span></code> is set, only that place is considered. If all matches
-are acquired, waits up to one hour.</p>
+place, by name, whose tags include all <code class="docutils literal notranslate"><span class="pre">needs</span></code> from the context and
+whose resources are all available. If <code class="docutils literal notranslate"><span class="pre">labgrid_target</span></code> is set, only that
+place is considered. If all usable places are acquired, waits up to one
+hour. If no place is usable, or none becomes free, skips the test with
+<code class="docutils literal notranslate"><span class="pre">LabError</span></code>.</p>
 <p>In GitHub Actions, the labgrid user is set to
-<code class="docutils literal notranslate"><span class="pre">labgrid-client-&lt;run</span> <span class="pre">id&gt;-&lt;attempt&gt;-&lt;job&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;job&gt;</span></code> is
-<code class="docutils literal notranslate"><span class="pre">HW_TEST_JOB_ID</span></code> (the check run id of the job) or, if unset, the runner
-name. Jobs that run at the same time get different users, and places left
-acquired by a previous attempt of the same run can be taken over.</p>
+<code class="docutils literal notranslate"><span class="pre">labgrid-client-&lt;run</span> <span class="pre">id&gt;-&lt;attempt&gt;-&lt;job</span> <span class="pre">check</span> <span class="pre">run</span> <span class="pre">id&gt;</span></code>, so jobs that run
+at the same time get different users, and places left acquired by a
+previous attempt of the same run can be taken over.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>context</strong> – Test context.</p>

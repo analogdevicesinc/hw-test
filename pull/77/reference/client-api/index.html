@@ -185,6 +185,9 @@ labgrid-client<span class="w"> </span>-p<span class="w"> </span>&lt;place&gt;<sp
 <p>Tests should use <code class="docutils literal notranslate"><span class="pre">hw_tests.labgrid.LabgridClient</span></code> instead of open-coding
 labgrid session handling. It selects a matching place from <code class="docutils literal notranslate"><span class="pre">needs</span></code>, acquires
 it, configures SSH, and releases it at the end.</p>
+<p>Places with a missing or unavailable resource are left out. If no place is
+usable, or none becomes free within one hour, the test is skipped with a
+<code class="docutils literal notranslate"><span class="pre">LabError</span></code>.</p>
 <p>Small smoke test:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">hw_tests.labgrid</span><span class="w"> </span><span class="kn">import</span> <span class="n">LabgridClient</span>
 
