@@ -326,7 +326,7 @@ def exporter_http_server(ssh, files):
         assert port.isdigit(), f"unexpected HTTP port: {port}"
 
         ssh.run_check(
-            "nohup python3 -m http.server --bind 0.0.0.0 "
+            "nohup timeout 6h python3 -m http.server --bind 0.0.0.0 "
             f"--directory {directory_q} {port} >{log_file} 2>&1 </dev/null & "
             f"echo $! > {pid_file} && sleep 1 && kill -0 $(cat {pid_file}) || (cat {log_file}; exit 1)"
         )
