@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from os import environ
 from pathlib import Path
 from threading import Barrier, Lock
 from types import SimpleNamespace
@@ -203,6 +204,7 @@ def test_labgrid_client_selects_configured_place_without_local_env_file(
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("LG_COORDINATOR", "coordinator.example:20408")
+    monkeypatch.delenv("GITHUB_RUN_ID", raising=False)
     monkeypatch.setattr("hw_tests.labgrid.start_session", lambda coordinator: session)
 
     client = LabgridClient({"needs": ["sc598", "ezkit"]})
@@ -328,3 +330,96 @@ def test_labgrid_client_fails_with_a_lab_error_when_no_place_is_usable(monkeypat
         "2 labgrid place(s) match needs ['sc598', 'ezlite'], but each misses a resource or "
         "has one that is not available. See labgrid-client -p <place> show."
     )
+
+
+def test_labgrid_client_takes_over_with_release_from(monkeypatch):
+    """Release a place of an earlier attempt only if that attempt still has it."""
+
+    events = []
+    previous = "runner-host/labgrid-client-100-1-7"
+    place = SimpleNamespace(name="board", acquired=previous)
+
+    class FakeLoop:
+        def run_until_complete(self, result):
+            return result
+
+    session = SimpleNamespace(
+        args=SimpleNamespace(),
+        get_place=lambda name: place,
+        gethostname=lambda: "runner-host",
+        getuser=lambda: "labgrid-client-100-2-8",
+        release_from=lambda: events.append(("release_from", session.args.acquired)),
+        acquire=lambda: events.append("acquire"),
+        get_acquired_place=lambda name: place,
+        _get_target=lambda selected_place: SimpleNamespace(cleanup=lambda: None),
+        release=lambda: events.append("release"),
+        stop=lambda: None,
+        close=lambda: None,
+        loop=FakeLoop(),
+    )
+
+    client = object.__new__(LabgridClient)
+    client.coordinator = "coordinator.example:20408"
+    client.place = place.name
+    client._workflow_owner = "labgrid-client-100-2-8"
+    monkeypatch.setattr("hw_tests.labgrid.start_session", lambda *args, **kwargs: session)
+    monkeypatch.setattr(client, "_configure_ssh", lambda *args: None)
+
+    with client.acquire():
+        pass
+
+    assert events == [("release_from", previous), "acquire", "release"]
+
+
+@pytest.mark.parametrize(
+    ("acquired", "expected"),
+    [
+        ("runner-host/labgrid-client-100-1-7", True),
+        ("runner-host/labgrid-client-100-2-7", False),
+        ("runner-host/labgrid-client-100-3-7", False),
+        ("runner-host/labgrid-client-1000-1-7", False),
+        ("runner-host/someone", False),
+        (None, False),
+    ],
+)
+def test_labgrid_client_takes_over_only_earlier_attempts(acquired, expected):
+    """Take over places of earlier attempts of the run, not of its other jobs."""
+
+    client = object.__new__(LabgridClient)
+    client._workflow_owner = "labgrid-client-100-2-8"
+
+    assert client._is_previous_workflow_owner(acquired) is expected
+
+
+def test_labgrid_client_identity_is_per_job(monkeypatch):
+    """Jobs of one run that run at the same time get different labgrid users."""
+
+    monkeypatch.setenv("GITHUB_RUN_ID", "100")
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
+    owners = []
+    for job in ("7", "8"):
+        monkeypatch.setenv("JOB_CHECK_RUN_ID", job)
+        monkeypatch.delenv("LG_USERNAME", raising=False)
+        client = object.__new__(LabgridClient)
+        client._configure_identity()
+        owners.append(client._workflow_owner)
+
+        again = object.__new__(LabgridClient)
+        again._configure_identity()
+        assert again._workflow_owner == client._workflow_owner
+
+    assert owners == ["labgrid-client-100-2-7", "labgrid-client-100-2-8"]
+    assert not client._is_previous_workflow_owner(f"host/{owners[0]}")
+
+
+def test_labgrid_client_keeps_a_custom_lg_username(monkeypatch):
+    """Do not override LG_USERNAME when the user set it."""
+
+    monkeypatch.setenv("GITHUB_RUN_ID", "100")
+    monkeypatch.setenv("JOB_CHECK_RUN_ID", "7")
+    monkeypatch.setenv("LG_USERNAME", "someone")
+    client = object.__new__(LabgridClient)
+    client._configure_identity()
+
+    assert client._workflow_owner is None
+    assert environ["LG_USERNAME"] == "someone"

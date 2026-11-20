@@ -6,6 +6,7 @@ matches the ``needs`` of the test, acquires it, configures SSH, and releases.
 
 
 import logging
+import re
 import shlex
 from argparse import Namespace
 from contextlib import contextmanager
@@ -45,7 +46,8 @@ class LabgridClient:
     ``LabError``.
 
     In GitHub Actions, the labgrid user is set to
-    ``labgrid-client-<run id>-<attempt>``, so places left acquired by a
+    ``labgrid-client-<run id>-<attempt>-<job check run id>``, so jobs that run
+    at the same time get different users, and places left acquired by a
     previous attempt of the same run can be taken over.
 
     :param context: Test context.
@@ -66,25 +68,27 @@ class LabgridClient:
 
     def _configure_identity(self):
         self._workflow_owner = None
-        if "LG_USERNAME" in environ or "GITHUB_RUN_ID" not in environ:
+        if "GITHUB_RUN_ID" not in environ:
             return
 
-        self._workflow_owner = (
+        owner = (
             f"labgrid-client-{environ['GITHUB_RUN_ID']}-"
-            f"{environ.get('GITHUB_RUN_ATTEMPT', '1')}"
+            f"{environ.get('GITHUB_RUN_ATTEMPT', '1')}-{environ['JOB_CHECK_RUN_ID']}"
         )
-        environ["LG_USERNAME"] = self._workflow_owner
+        if environ.get("LG_USERNAME", owner) != owner:
+            return
+
+        self._workflow_owner = owner
+        environ["LG_USERNAME"] = owner
 
     def _is_previous_workflow_owner(self, acquired):
         if self._workflow_owner is None or not acquired:
             return False
 
         acquired_user = acquired.rsplit("/", maxsplit=1)[-1]
-        prefix = self._workflow_owner.rsplit("-", maxsplit=1)[0]
-        return acquired_user == prefix or (
-            acquired_user.startswith(f"{prefix}-")
-            and acquired_user != self._workflow_owner
-        )
+        run, attempt = self._workflow_owner.split("-")[2:4]
+        match = re.fullmatch(rf"labgrid-client-{run}-(\d+)-\d+", acquired_user)
+        return match is not None and int(match.group(1)) < int(attempt)
 
     def _resolve_coordinator(self):
         coordinator = self.context.get("labgrid_coordinator") or environ.get(
@@ -236,7 +240,8 @@ class LabgridClient:
                 session.check_matches(place)
             else:
                 if self._is_previous_workflow_owner(place.acquired):
-                    session.loop.run_until_complete(session.release())
+                    session.args.acquired = place.acquired
+                    session.loop.run_until_complete(session.release_from())
                 session.loop.run_until_complete(session.acquire())
                 acquired = True
 

@@ -32,6 +32,7 @@ runs:
       env:
         set: ${{ inputs.set }}
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        JOB_CHECK_RUN_ID: ${{ job.check_run_id }}
       run: |
         # Run test
         source "$venv/bin/activate"
